@@ -1,10 +1,12 @@
 const solver = require("javascript-lp-solver");
-const player = (points, salary, qb, rb, wr, te, dst) => ({ points, salary, qb, rb, wr, te, dst, player: 1 });
+let id = 1;
+const player = (points, salary, qb, rb, wr, te, dst) => ({ points, pointz: points, salary, qb, rb, wr, te, dst, player: 1, id: ++id });
 
 const model = {
   optimize: 'points',
   opType: 'max',
   constraints: {
+    pointz: { max: 1000 },
     salary: { max: 50000 },
     qb: { min: 1, max: 1 },
     rb: { min: 2, max: 3 },
@@ -52,4 +54,19 @@ Object.keys(model.variables).forEach((player) => {
   model.ints[player] = 1;
 });
 
-console.log(solver.Solve(model));
+const start = new Date();
+const results = [];
+const n = 150;
+
+for (let i = 0; i < n; ++i) {
+  const result = solver.Solve(model);
+  if (!result.feasible) {
+    break;
+  }
+
+  model.constraints.pointz.max = result.result - 1;
+  results.push(result);
+}
+const end = new Date();
+console.log(results)
+console.log(`${n} unique lineups generated in ${end - start}ms`)
