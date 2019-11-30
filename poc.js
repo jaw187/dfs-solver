@@ -1,72 +1,190 @@
-const solver = require("javascript-lp-solver");
-let id = 1;
-const player = (points, salary, qb, rb, wr, te, dst) => ({ points, pointz: points, salary, qb, rb, wr, te, dst, player: 1, id: ++id });
+const solver = require('javascript-lp-solver');
+const players = require('./players');
+const models = require('./models');
 
-const model = {
-  optimize: 'points',
-  opType: 'max',
-  constraints: {
-    pointz: { max: 1000 },
-    salary: { max: 50000 },
-    qb: { min: 1, max: 1 },
-    rb: { min: 2, max: 3 },
-    wr: { min: 3, max: 4 },
-    te: { min: 1, max: 2 },
-    dst: { min: 1, max: 1 },
-    player: { equal: 9 }
-  },
-  variables: {
-    'Taysom Hill': player(1000, 1000, 1, 0, 0, 0, 0),
-    'Matt Ryan': player(100, 10000, 1, 0, 0, 0, 0),
-    'Drew Brees': player(100, 10000, 1, 0, 0, 0, 0),
-    'David Blough': player(500, 500, 1, 0, 0, 0, 0),
-    'Devin Singletary': player(1000, 10000, 0, 1, 0, 0, 0),
-    'Zeke': player(1000, 1000, 0, 1, 0, 0, 0),
-    'Kamara': player(100, 10000, 0, 1, 0, 0, 0),
-    'David Montgomery': player(145, 3344, 0, 1, 0, 0, 0),
-    'Bo': player(66, 8745, 0, 1, 0, 0, 0),
-    'Kenny Golladay': player(1000, 1000, 0, 0, 1, 0, 0),
-    'Michael Thomas': player(100, 6780, 0, 0, 1, 0, 0),
-    'Cole Beasley': player(10000, 10000, 0, 0, 1, 0, 0),
-    'Anthony Miller': player(900, 6788, 0, 0, 1, 0, 0),
-    'Russell Gage Jr': player(100, 100, 0, 0, 1, 0, 0),
-    'Calvin Ridley': player(1000, 1000, 0, 0, 1, 0, 0),
-    'Julio Jones': player(0, 100, 0, 0, 1, 0, 0),
-    'Dawson Knox': player(5, 1000, 0, 0, 0, 1, 0),
-    'Jason Whitten': player(15, 1000, 0, 0, 0, 1, 0),
-    'Jared Cook': player(7, 1000, 0, 0, 0, 1, 0),
-    'Jaedeanaean Graham': player(25, 4500, 0, 0, 0, 1, 0),
-    'Bears': player(5, 1000, 0, 0, 0, 0, 1),
-    'Lions': player(5, 1000, 0, 0, 0, 0, 1),
-    'Tigers': player(500, 1000, 0, 0, 0, 0, 1)
-  }
-};
-
-Object.keys(model.variables).forEach((player) => {
-
-  model.variables[player][player] = 1;
-
-  model.constraints[player] = { max: 1 };
-
-  if (!model.ints) {
-    model.ints = {};
-  }
-  model.ints[player] = 1;
-});
 
 const start = new Date();
+
+
+const model = models.nfl.draftkings.classic(players);
+
+
+const format = (solution) => {
+
+  const points = solution.result;
+  const roster = {
+    positions: {
+      qb: [],
+      rb: [],
+      wr: [],
+      te: [],
+      dst: []
+    }
+  };
+
+  const resultPlayers = Object.keys(solution).filter((key) => {
+    const keysToRemove = ['feasible', 'result', 'bounded', 'isIntegral']
+    return !keysToRemove.includes(key);
+  });
+
+  // Add players to positions their eligable for
+  const playersElibableAtMoreThanOnePosition = [];
+  resultPlayers.forEach((playerId) => {
+
+    let positions = 0;
+    const player = players[playerId];
+    if (player.qb) {
+      ++positions;
+      roster.positions.qb.push(player);
+    }
+
+    if (player.dst) {
+      ++positions;
+      roster.positions.dst.push(player);
+    }
+
+    if (player.rb) {
+      ++positions;
+      roster.positions.rb.push(player)
+    }
+
+    if (player.wr) {
+      ++positions;
+      roster.positions.wr.push(player)
+    }
+
+    if (player.te) {
+      ++positions;
+      roster.positions.te.push(player)
+    }
+
+    const playsMultiplePositions = positions > 1;
+    if (playsMultiplePositions) {
+      player.multiplePositions = true;
+      playersElibableAtMoreThanOnePosition.push(player);
+    }
+  });
+
+  // Determine expected position of player.
+  playersElibableAtMoreThanOnePosition.forEach((player) => {
+
+    const removePlayer = (positionPlayer) => !(player.id === positionPlayer.id);
+    if (player.qb && roster.positions.qb.length === 1) {
+      roster.positions.rb = roster.positions.rb.filter(removePlayer);
+      roster.positions.wr = roster.positions.wr.filter(removePlayer);
+      roster.positions.te = roster.positions.te.filter(removePlayer);
+      roster.positions.dst = roster.positions.dst.filter(removePlayer);
+
+      return null;
+    }
+
+    if (player.rb && roster.positions.rb.length === 2) {
+      roster.positions.qb = roster.positions.qb.filter(removePlayer);
+      roster.positions.wr = roster.positions.wr.filter(removePlayer);
+      roster.positions.te = roster.positions.te.filter(removePlayer);
+      roster.positions.dst = roster.positions.dst.filter(removePlayer);
+
+      return null;
+    }
+
+    if (player.wr && roster.positions.wr.length === 2) {
+      roster.positions.qb = roster.positions.qb.filter(removePlayer);
+      roster.positions.rb = roster.positions.rb.filter(removePlayer);
+      roster.positions.te = roster.positions.te.filter(removePlayer);
+      roster.positions.dst = roster.positions.dst.filter(removePlayer);
+
+      return null;
+    }
+
+    if (player.te && roster.positions.te.length === 1) {
+      roster.positions.qb = roster.positions.qb.filter(removePlayer);
+      roster.positions.rb = roster.positions.rb.filter(removePlayer);
+      roster.positions.wr = roster.positions.wr.filter(removePlayer);
+      roster.positions.dst = roster.positions.dst.filter(removePlayer);
+
+      return null;
+    }
+
+    if (player.dst && roster.positions.dst.length === 1) {
+      roster.positions.qb = roster.positions.qb.filter(removePlayer);
+      roster.positions.rb = roster.positions.rb.filter(removePlayer);
+      roster.positions.wr = roster.positions.wr.filter(removePlayer);
+      roster.positions.te = roster.positions.te.filter(removePlayer);
+    }
+  });
+
+  // Sort by start time
+  // Attempting to account for late swap
+  const sort = (a, b) => a.startTime >= b.startTime;
+  roster.positions.rb.sort(sort);
+  roster.positions.wr.sort(sort);
+  roster.positions.te.sort(sort);
+
+  //construct lineup
+  const lineup = {
+    qb: roster.positions.qb,
+    rbs: roster.positions.rb.slice(0,2),
+    wrs: roster.positions.wr.slice(0,3),
+    te: roster.positions.te[0],
+    flex: roster.positions.rb[2] || roster.positions.wr[3] || roster.positions.te[1],
+    dst: roster.positions.dst
+  };
+
+  return {
+    points,
+    lineup,
+    players: resultPlayers
+  }
+}
+
 const results = [];
 const n = 150;
+const maxIterations = 500;
 
-for (let i = 0; i < n; ++i) {
-  const result = solver.Solve(model);
-  if (!result.feasible) {
+const lineupsAllowed = {};
+Object.keys(players).forEach((player) => lineupsAllowed[player] = (players[player].ownership/100) * n);
+const originalLineupsAllowed = { ...lineupsAllowed };
+
+for (let i = 0; i < maxIterations; ++i) {
+  const solution = solver.Solve(model);
+  if (!solution.feasible) {
     break;
   }
 
-  model.constraints.pointz.max = result.result - 1;
+  model.constraints.pointz.max = solution.result - 1;
+
+  const result = format(solution);
+
+  // Test if lineup is allowed as per ownership
+  let valid = true;
+  result.players.forEach((player) => {
+
+    if (lineupsAllowed[player] < 1) {
+      valid = false;
+    }
+  });
+
+  if (!valid) {
+    continue;
+  }
+
   results.push(result);
+  result.players.forEach((player) => {
+    --lineupsAllowed[player];
+
+    // Remove players from pool
+    if (lineupsAllowed[player] < 1) {
+      delete players[player];
+    }
+  });
+
+  if (results.length === n) {
+    break;
+  }
 }
+
 const end = new Date();
-console.log(results)
-console.log(`${n} unique lineups generated in ${end - start}ms`)
+//results.forEach((result) => console.log(result.lineup));
+console.log(originalLineupsAllowed)
+console.log(lineupsAllowed)
+console.log(`${results.length} unique lineups generated after ${n} iterations in ${end - start}ms`)
