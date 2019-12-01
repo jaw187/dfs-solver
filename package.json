@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/jaw187/dfs-solver#readme",
   "dependencies": {
-    "javascript-lp-solver": "0.4.24"
+    "javascript-lp-solver": "0.4.24",
+    "lodash": "4.17.15"
   }
 }

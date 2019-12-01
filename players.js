@@ -2,10 +2,10 @@ const rosters = require('./rosters');
 const positions = rosters.nfl.draftkings.classic;
 
 module.exports = {
-  'Taysom Hill': positions.qb(1000, 1000, 50, new Date()),
+  'Taysom Hill': positions.qb(1000, 1000, 100, new Date()),
   'Matt Ryan': positions.qb(100, 10000, 100, new Date()),
   'Drew Brees': positions.qb(100, 10000, 100, new Date()),
-  'David Blough': positions.qb(500, 500, 50, new Date()),
+  'David Blough': positions.qb(500, 500, 100, new Date()),
   'Devin Singletary': positions.rb(1000, 10000, 100, new Date(3)),
   'Zeke': positions.rb(1000, 1000, 100, new Date(2)),
   'Kamara': positions.rb(100, 10000, 100, new Date()),

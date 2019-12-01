@@ -1,4 +1,6 @@
-const constraints = {
+const clone = require('lodash/cloneDeep');
+
+const constraintList = {
   nfl: {
     draftkings: {
       classic: {
@@ -15,29 +17,38 @@ const constraints = {
   }
 };
 
+class Model {
+  constructor(players, constraints) {
+
+    this.optimize = 'points';
+    this.opType = 'max';
+    this.constraints = constraints;
+    this.variables = players;
+    const ints = this.ints = {};
+
+
+    Object.keys(players).forEach((player) => {
+
+      // Limit results so player only shows up once in results.
+      // More players results in more complexity
+      players[player][player] = 1;
+      constraints[player] = { max: 1 };
+      ints[player] = 1;
+    });
+  }
+
+  removePlayer(player) {
+
+    const { constraints, ints } = this;
+    delete constraints[player];
+    delete ints[player];
+  }
+}
+
 module.exports = {
   nfl: {
     draftkings: {
-      classic: (players) => {
-        const model = {
-          optimize: 'points',
-          opType: 'max',
-          constraints: constraints.nfl.draftkings.classic,
-          variables: players,
-          ints: {}
-        }
-
-        Object.keys(model.variables).forEach((player) => {
-
-          // Limit results so player only shows up once in results.
-          // More players results in more complexity
-          model.variables[player][player] = 1;
-          model.constraints[player] = { max: 1 };
-          model.ints[player] = 1;
-        });
-
-        return model;
-      }
+      classic: (players) => new Model(players, clone(constraintList.nfl.draftkings.classic))
     }
   }
 };

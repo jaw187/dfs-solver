@@ -1,50 +1,58 @@
-const solver = require('javascript-lp-solver');
 const players = require('./players');
-const models = require('./models');
-const formaters = require('./formaters');
+const Models = require('./models');
 const OwnershipWatcher = require('./ownership');
+const { solve } = require('./solver');
 
 
 const start = new Date();
 
 
-const model = models.nfl.draftkings.classic(players);
-const format = formaters.nfl.draftkings.classic(players)
-
-
 const results = [];
 const n = 150;
-const maxIterations = 500;
-
-const ownership = new OwnershipWatcher({ players, n });
+const maxIterationsPerStack = 500;
 
 
-for (let i = 0; i < maxIterations; ++i) {
-  const solution = solver.Solve(model);
-  if (!solution.feasible) {
-    break;
+// Stack counts greater than players ownership will prevent n
+const stacks = [
+  {
+    players: ['David Blough', 'Kenny Golladay'],
+    count: 80
+  },
+  {
+    players: ['Taysom Hill', 'Calvin Ridley'],
+    count: 70
   }
+];
 
-  // Prevents finding solutions which have the same total points
-  model.constraints.pointz.max = solution.result - 1;
 
-  const result = format(solution);
+stacks.forEach((stack) => {
 
-  // Test if lineup is allowed as per ownership
-  if (!ownership.validate(result.players)) {
-    continue;
-  }
+  const model = Models.nfl.draftkings.classic(players);
+  // Force players in stack into lineup
+  stack.players.forEach((player) => model.constraints[player] = { equal: 1 });
 
-  results.push(result);
-  ownership.update(result.players);
+  const ownership = new OwnershipWatcher({ players, n });
+  results.forEach((result) => ownership.update(result.players));
 
-  if (results.length === n) {
-    break;
-  }
-}
+  const stackResults = solve(stack.count, maxIterationsPerStack, model, ownership, players);
+
+  stackResults.forEach((result) => results.push(result));
+});
+
 
 const end = new Date();
+
+
 //results.forEach((result) => console.log(result.lineup));
-console.log(ownership.originalLineupsAllowed)
-console.log(ownership.lineupsAllowed)
+const breakdown = {};
+results.forEach((result) => {
+  result.players.forEach((player) => {
+    if (!breakdown[player]) {
+      breakdown[player] = 0;
+    }
+
+    ++breakdown[player];
+  });
+});
+console.log(breakdown)
 console.log(`${results.length} unique lineups generated after ${n} iterations in ${end - start}ms`)

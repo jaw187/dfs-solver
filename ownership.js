@@ -22,7 +22,6 @@ class OwnershipWatcher {
   }
 
   validate(players) {
-
     const { lineupsAllowed } = this;
     return players.filter((player) => lineupsAllowed[player] < 1).length === 0;
   }
