@@ -4,7 +4,10 @@
   "description": "DFS Solver",
   "main": "poc.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "next",
+    "build": "next build",
+    "start": "next start"
   },
   "repository": {
     "type": "git",
@@ -17,7 +20,15 @@
   },
   "homepage": "https://github.com/jaw187/dfs-solver#readme",
   "dependencies": {
+    "@hapi/hapi": "^18.4.0",
+    "@hapi/inert": "^5.2.2",
+    "@hapi/joi": "^16.1.8",
+    "@hapi/wreck": "^16.0.1",
+    "isomorphic-unfetch": "^3.0.0",
     "javascript-lp-solver": "0.4.24",
-    "lodash": "4.17.15"
+    "lodash": "4.17.15",
+    "next": "^9.1.4",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0"
   }
 }
