@@ -1,28 +1,31 @@
 import Card from './card';
 import Joi from '@hapi/joi';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
-class ImportProjection extends React.Component {
-  constructor(props) {
-    super(props);
+const getState = () => {
+  const dispatch = useDispatch();
 
-    this.onChangeHandler = this.onChangeHandler.bind(this);
-    this.import = this.import.bind(this);
+  const importErrors = useSelector(state => state.importErrors, shallowEqual);
+  const rawProjection = useSelector(state => state.rawProjection, shallowEqual);
+  const projection = useSelector(state => state.projection, shallowEqual);
 
-    this.state = {};
+  const setRawProjection = (value) => {
+    dispatch({
+      type: 'SET_RAW_PROJECTION',
+      payload: value
+    });
   }
 
-  onChangeHandler(event) {
-    this.setState({ rawProjection: event.target.value });
-  }
+  const importProjection = () => {
 
-  import() {
+    dispatch({ type: 'CLEAR_IMPORT_ERRORS' });
 
-    if (!this.state.rawProjection) {
-      return this.setState({ importErrors: [new Error('empty textarea')] });
+    if (!rawProjection) {
+      return dispatch({
+        type: 'ADD_IMPORT_ERROR',
+        payload: new Error('empty textarea')
+      });
     }
-
-    const importErrors = [];
-    this.setState({ importErrors })
 
     const validationSchema = Joi.object({
       player: Joi.string().required(),
@@ -33,7 +36,8 @@ class ImportProjection extends React.Component {
     const players = {};
 
     // assumes that values will not contain commas
-    const projection = this.state.rawProjection.split('\n').map((line) => {
+    let errors = false;
+    const formattedProjection = rawProjection.split('\n').map((line) => {
 
       const [player, projection] = line.split(',');
       const result = {
@@ -42,62 +46,81 @@ class ImportProjection extends React.Component {
       };
 
       if (players[player]) {
-        importErrors.push(new Error(`Duplicate player - ${player}`));
+        errors = true;
+        dispatch({
+          type: 'ADD_IMPORT_ERROR',
+          payload: new Error(`Duplicate player - ${player}`)
+        });
       }
 
       players[player] = true;
 
       const validation = validationSchema.validate(result);
       if (validation.error) {
-        importErrors.push(validation);
+        errors = true;
+        dispatch({
+          type: 'ADD_IMPORT_ERROR',
+          payload: validation
+        });
       }
 
       return result;
     });
 
-    if (importErrors.length) {
-      return this.setState({ importErrors });
+    if (!errors) {
+      dispatch({
+        type: 'SET_PROJECTION',
+        payload: formattedProjection
+      });
     }
+  };
 
-    this.setState({ projection });
+  return {
+    setRawProjection,
+    projection,
+    importErrors,
+    importProjection
+  };
+};
 
-    // projection needs to go into redux as it's used later
-  }
+const ImportProjection  = () => {
 
-  render() {
-    return (
-      <Card>
-        <h2 style={{ marginTop: 0 }}>Import Projection</h2>
-        <textarea onChange={this.onChangeHandler} />
+  const { importErrors, projection, setRawProjection, importProjection } = getState();
+
+  const onChange = (event) => setRawProjection(event.target.value);
+
+  return (
+    <Card>
+      <h2 style={{ marginTop: 0 }}>Import Projection</h2>
+      <textarea onChange={onChange} />
+      <div>
+        <button onClick={importProjection}>import</button>
+      </div>
+      {importErrors && !!importErrors.length && (
         <div>
-          <button onClick={this.import}>import</button>
+          <h3>Import Has Errors</h3>
+          <ul>
+            {importErrors.map((err) => (
+              <li>{(err.error && err.error.toString()) || err.toString()}</li>
+            ))}
+          </ul>
         </div>
-        {this.state.importErrors && !!this.state.importErrors.length && (
+      )}
+      {
+        projection && (
           <div>
-            <h3>Import Has Errors</h3>
-            <ul>
-              {this.state.importErrors.map((err) => (
-                <li>{(err.error && err.error.toString()) || err.toString()}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-        {
-          this.state.projection && (
+            <h3>Current Projection</h3>
             <div>
-              <h3>Current Projection</h3>
-              <div>
-                {`${this.state.projection.length} lines imported`}
-                {
-                  this.state.projection.map((projection) => (<li>{projection.player} - {projection.value}</li>))
-                }
-              </div>
+              {`${projection.length} lines imported`}
+              {
+                projection.map((projection) => (<li>{projection.player} - {projection.value}</li>))
+              }
             </div>
-          )
-        }
-      </Card>
-    )
-  }
+          </div>
+        )
+      }
+    </Card>
+  )
 };
 
 export default ImportProjection;

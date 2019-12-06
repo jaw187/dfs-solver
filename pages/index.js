@@ -2,50 +2,78 @@ import Link from 'next/link';
 import Header from  '../components/header';
 import ImportProjection from '../components/importprojection.js';
 import SlatePicker from '../components/slatepicker';
+import PlayerList from '../components/playerlist';
+import { withRedux } from '../lib/redux';
 import fetch from 'isomorphic-unfetch';
 
 const slates = {};
 
-const Index = props => (
-  <div>
-    <Header />
-    <SlatePicker slates={props.slates} />
-    <ImportProjection />
-    <Link href="/about">
-      <a>About Page</a>
-    </Link>
-  </div>
-);
-
 const getPlayers = async function (slate) {
-
   const draftGroupId = slate.DraftGroupId;
   if (!slates[draftGroupId]) {
     //Handle errrrrsssds
-    console.log(`http://api.draftkings.com/draftgroups/v1/${draftGroupId}/draftables?format=json`)
+    console.log(`http://api.draftkings.com/draftgroups/v1/draftgroups/${draftGroupId}/draftables?format=json`)
     const playersRes = await fetch(`http://api.draftkings.com/draftgroups/v1/draftgroups/${draftGroupId}/draftables?format=json`, { mode: 'no-cors' });
 
-    const players = await playersRes.json();
+    const playerIds = [];
+    const rawPlayers = await playersRes.json();
+
+    const players = rawPlayers && rawPlayers.draftables && rawPlayers.draftables.filter((player) => {
+      const id = player.playerId;
+      if (playerIds.includes(id)) {
+        return false;
+      }
+
+      playerIds.push(id);
+      return true;
+    });
 
     slates[draftGroupId] = {
       ...slate,
       players
     };
   }
-  console.log('got players')
 };
 
-Index.getInitialProps = async function() {
-  //Handle errrrrs
-  const res = await fetch('https://www.draftkings.com/lineup/getupcomingcontestinfo', { method: 'post', mode: 'no-cors' });
-  const rawSlates = await res.json();
-  const draftGroupIds = rawSlates.map((slate) => slate.draftGroupId);
+const Index = () => {
+  return (
+    <div>
+      <Header />
+      <SlatePicker />
+      <ImportProjection />
+      <PlayerList />
+      <Link href="/about">
+        <a>About Page</a>
+      </Link>
+    </div>
+  );
+}
 
-  await Promise.all(rawSlates.map(getPlayers));
+// This is to try and stop spamming DK
+let fetched = false;
+let fetching = false;
+Index.getInitialProps = async ({ reduxStore }) => {
+  if (!fetched && !fetching) {
+    fetching = true;
+    // Handle errrrrs
+    // Get all slates
+    // Needs to be improved such that each request doesn't trigger an outgoing request
+    console.log('getting slates')
+    const res = await fetch('https://www.draftkings.com/lineup/getupcomingcontestinfo', { method: 'post', mode: 'no-cors' });
+    const rawSlates = await res.json();
 
-  return {
-    slates
+    // Get players from slate
+    await Promise.all(rawSlates.map(getPlayers));
+    fetched = true;
   }
+
+  const { dispatch } = reduxStore;
+  dispatch({
+    type: 'SET_SLATES',
+    payload: slates
+  });
+
+  return {};
 };
 
-export default Index;
+export default withRedux(Index);
