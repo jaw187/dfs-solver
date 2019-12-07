@@ -2,7 +2,8 @@ import Link from 'next/link';
 import Header from  '../components/header';
 import ImportProjection from '../components/importprojection.js';
 import SlatePicker from '../components/slatepicker';
-import PlayerList from '../components/playerlist';
+import StackBuilder from '../components/stackbuilder';
+import Stacks from '../components/stacks';
 import { withRedux } from '../lib/redux';
 import fetch from 'isomorphic-unfetch';
 
@@ -41,7 +42,8 @@ const Index = () => {
       <Header />
       <SlatePicker />
       <ImportProjection />
-      <PlayerList />
+      <StackBuilder />
+      <Stacks />
       <Link href="/about">
         <a>About Page</a>
       </Link>

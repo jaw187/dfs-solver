@@ -3,7 +3,9 @@ import { composeWithDevTools } from 'redux-devtools-extension'
 
 const initialState = {
   slates: {},
-  importErrors: []
+  importErrors: [],
+  stack: [],
+  stacks: []
 }
 
 const reducer = (state = initialState, { type, payload }) => {
@@ -37,6 +39,31 @@ const reducer = (state = initialState, { type, payload }) => {
       return {
         ...state,
         projection: payload
+      }
+    case 'CLEAR_STACK':
+      return {
+        ...state,
+        stack: []
+      }
+    case 'ADD_STACK':
+      return {
+        ...state,
+        stacks: state.stacks.concat([payload])
+      }
+    case 'REMOVE_STACK':
+      return {
+        ...state,
+        stacks: state.stacks.filter((stack, i) => i !== payload)
+      }
+    case 'ADD_PLAYER_TO_STACK':
+      return {
+        ...state,
+        stack: state.stack.concat([payload])
+      }
+    case 'REMOVE_PLAYER_FROM_STACK':
+      return {
+        ...state,
+        stack: state.stack.filter((player) => player.playerId !== payload.playerId)
       }
     default:
       return state
