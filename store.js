@@ -5,7 +5,8 @@ const initialState = {
   slates: {},
   importErrors: [],
   stack: [],
-  stacks: []
+  stacks: [],
+  stackCounts: []
 }
 
 const reducer = (state = initialState, { type, payload }) => {
@@ -48,12 +49,14 @@ const reducer = (state = initialState, { type, payload }) => {
     case 'ADD_STACK':
       return {
         ...state,
-        stacks: state.stacks.concat([payload])
+        stacks: state.stacks.concat([payload]),
+        stackCounts: state.stackCounts.concat([0])
       }
     case 'REMOVE_STACK':
       return {
         ...state,
-        stacks: state.stacks.filter((stack, i) => i !== payload)
+        stacks: state.stacks.filter((stack, i) => i !== payload),
+        stackCounts: state.stackCounts.filter((n, i) => i !== payload)
       }
     case 'ADD_PLAYER_TO_STACK':
       return {
@@ -64,6 +67,16 @@ const reducer = (state = initialState, { type, payload }) => {
       return {
         ...state,
         stack: state.stack.filter((player) => player.playerId !== payload.playerId)
+      }
+    case 'SET_STACK_N':
+      const { i, n } = payload;
+      console.log('wat', state.stackCounts)
+      const stackCounts = [...state.stackCounts];
+      stackCounts[i] = n;
+
+      return {
+        ...state,
+        stackCounts
       }
     default:
       return state

@@ -4,6 +4,7 @@ import ImportProjection from '../components/importprojection.js';
 import SlatePicker from '../components/slatepicker';
 import StackBuilder from '../components/stackbuilder';
 import Stacks from '../components/stacks';
+import Generator from '../components/generator';
 import { withRedux } from '../lib/redux';
 import fetch from 'isomorphic-unfetch';
 
@@ -44,6 +45,7 @@ const Index = () => {
       <ImportProjection />
       <StackBuilder />
       <Stacks />
+      <Generator />
       <Link href="/about">
         <a>About Page</a>
       </Link>
