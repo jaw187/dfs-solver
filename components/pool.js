@@ -5,49 +5,44 @@ import { useSelector, useDispatch, shallowEqual } from "react-redux";
 const getState = () => {
   const dispatch = useDispatch();
 
-  const { pool, stack, slates, selectedSlate } = useSelector(state => state, shallowEqual);
+  const { slates, selectedSlate, pool } = useSelector(state => state, shallowEqual);
 
-  const clearStack = () => dispatch({ type: "CLEAR_STACK" });
-  const addStack = () => dispatch({ type: "ADD_STACK", payload: stack });
-  const removeStack = (i) => dispatch({ type: "REMOVE_STACK", payload: i });
-  const addPlayerToStack = (player) => dispatch({ type: "ADD_PLAYER_TO_STACK", payload: player});
-  const removePlayerFromStack = (player) => dispatch({ type: "REMOVE_PLAYER_FROM_STACK", payload: player });
+  const addPlayerToPool = (player) => dispatch({ type: "ADD_PLAYER_TO_POOL", payload: player});
+  const removePlayerFromPool = (player) => dispatch({ type: "REMOVE_PLAYER_FROM_POOL", payload: player });
 
   return {
+    slates,
+    selectedSlate,
     pool,
-    stack,
-    slate: slates[selectedSlate],
-    clearStack,
-    addStack,
-    removeStack,
-    addPlayerToStack,
-    removePlayerFromStack
+    addPlayerToPool,
+    removePlayerFromPool
   }
 }
 
-const StackBuilder = () => {
+const Pool = () => {
   const {
+    slates,
+    selectedSlate,
     pool,
-    stack,
-    slate,
-    clearStack,
-    addStack,
-    addPlayerToStack,
-    removePlayerFromStack
+    addPlayerToPool,
+    removePlayerFromPool
   } = getState();
 
-  if (!pool.length) {
+  const slate = slates && slates[selectedSlate];
+
+  if (!slate) {
     return null;
   }
 
   const togglePlayer = (player) => {
     return () => {
-      const inStack = stack && !!stack.find((stackPlayer) => player.playerId === stackPlayer.playerId)
-      if (inStack) {
-        return removePlayerFromStack(player);
+      const inPool = pool && !!pool.find((poolPlayer) => player.playerId === poolPlayer.playerId);
+
+      if (inPool) {
+        return removePlayerFromPool(player);
       }
 
-      addPlayerToStack(player);
+      addPlayerToPool(player);
     };
   };
 
@@ -57,18 +52,13 @@ const StackBuilder = () => {
     checkboxes.forEach((checkbox) => {
       checkbox.current.checked = false;
     });
-    clearStack();
-  };
-
-  const add = () => {
-    addStack();
-    clear();
+    clearPool();
   };
 
   return (
     <Card>
       <div>
-        <h2 style={{ marginTop: 0 }}>Stack Builder</h2>
+        <h2 style={{ marginTop: 0 }}>Player Pool</h2>
         <p>{slate.Sport} - {slate.GameType.Name}</p>
         <div style={{
           display: "flex",
@@ -77,7 +67,7 @@ const StackBuilder = () => {
           <div>
             <h3>Players</h3>
               {
-                pool && pool.map((player, i) => {
+                slate && slate.players && slate.players.map((player, i) => {
                   const ref = React.createRef();
                   checkboxes.push(ref);
 
@@ -90,18 +80,17 @@ const StackBuilder = () => {
               }
           </div>
           <div>
-            <h3>Stack</h3>
+            <h3>Pool</h3>
             <ul>
               {
-                stack && stack.map((player, i) => (
+                pool && pool.map((player, i) => (
                   <li key={i}>{player.displayName}</li>
                 ))
               }
             </ul>
             {
-              stack && stack.length > 1 && (
+              pool && pool.length > 1 && (
                 <div>
-                  <button onClick={add}>Add</button>
                   <button onClick={clear}>Clear</button>
                 </div>
               )
@@ -113,4 +102,4 @@ const StackBuilder = () => {
   );
 };
 
-export default StackBuilder;
+export default Pool;

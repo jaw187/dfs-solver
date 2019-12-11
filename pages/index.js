@@ -5,35 +5,39 @@ import SlatePicker from '../components/slatepicker';
 import StackBuilder from '../components/stackbuilder';
 import Stacks from '../components/stacks';
 import Generator from '../components/generator';
+import Pool from '../components/pool';
 import { withRedux } from '../lib/redux';
 import fetch from 'isomorphic-unfetch';
 
 const slates = {};
 
 const getPlayers = async function (slate) {
-  const draftGroupId = slate.DraftGroupId;
-  if (!slates[draftGroupId]) {
-    //Handle errrrrsssds
-    console.log(`http://api.draftkings.com/draftgroups/v1/draftgroups/${draftGroupId}/draftables?format=json`)
-    const playersRes = await fetch(`http://api.draftkings.com/draftgroups/v1/draftgroups/${draftGroupId}/draftables?format=json`, { mode: 'no-cors' });
+  //MVP for NFL Classic style only
+  if (slate.Sport === "NFL" && slate.GameType && slate.GameType.Name === "Classic") {
+    const draftGroupId = slate.DraftGroupId;
+    if (!slates[draftGroupId]) {
+      //Handle errrrrsssds
+      console.log(`http://api.draftkings.com/draftgroups/v1/draftgroups/${draftGroupId}/draftables?format=json`)
+      const playersRes = await fetch(`http://api.draftkings.com/draftgroups/v1/draftgroups/${draftGroupId}/draftables?format=json`, { mode: 'no-cors' });
 
-    const playerIds = [];
-    const rawPlayers = await playersRes.json();
+      const playerIds = [];
+      const rawPlayers = await playersRes.json();
 
-    const players = rawPlayers && rawPlayers.draftables && rawPlayers.draftables.filter((player) => {
-      const id = player.playerId;
-      if (playerIds.includes(id)) {
-        return false;
-      }
+      const players = rawPlayers && rawPlayers.draftables && rawPlayers.draftables.filter((player) => {
+        const id = player.playerId;
+        if (playerIds.includes(id)) {
+          return false;
+        }
 
-      playerIds.push(id);
-      return true;
-    });
+        playerIds.push(id);
+        return true;
+      });
 
-    slates[draftGroupId] = {
-      ...slate,
-      players
-    };
+      slates[draftGroupId] = {
+        ...slate,
+        players
+      };
+    }
   }
 };
 
@@ -43,6 +47,7 @@ const Index = () => {
       <Header />
       <SlatePicker />
       <ImportProjection />
+      <Pool />
       <StackBuilder />
       <Stacks />
       <Generator />

@@ -1,6 +1,71 @@
 const rosters = require('./rosters');
 const positions = rosters.nfl.draftkings.classic;
 
+const convertPlayer = (rawPlayer) => {
+  const {
+    draftableId,
+    salary,
+    position,
+    projection,
+    ownership,
+    competition: {
+      startTime
+    }
+  } = rawPlayer;
+
+  const playerPositions = position.split('/');
+  const primaryPosition = playerPositions.shift();
+
+  const player = positions[primaryPosition](projection, salary, ownership, new Date(startTime));
+  playerPositions.forEach((extraPosition) => {
+    player[extraPosition] = 1;
+  });
+
+  player[draftableId] = 1;
+
+  return player;
+};
+
+const convertPlayers = (rawPlayers, rawProjections) => {
+
+  const projections = {};
+  rawProjections.forEach((rawProjection) => {
+    const { value, ownership, player } = rawProjection;
+
+    projections[player] = {
+      value,
+      ownership
+    };
+  });
+
+  const players = {};
+  rawPlayers.forEach((rawPlayer) => {
+    const { draftableId } = rawPlayer;
+    const { value, ownership } = projections[draftableId];
+
+    // Ignore players without a projection
+    if (!value) {
+      return null;
+    }
+
+    const player = {
+      ...rawPlayer,
+      ownership,
+      projection: value
+    };
+
+    players[draftableId] = convertPlayer(player);
+  });
+
+  return players;
+};
+
+const players = {
+  convertPlayers
+};
+
+export default players;
+/*
 module.exports = {
   'Taysom Hill': positions.qb(1000, 1000, 100, new Date()),
   'Matt Ryan': positions.qb(100, 10000, 100, new Date()),
@@ -26,3 +91,4 @@ module.exports = {
   'Lions': positions.dst(5, 1000, 50, new Date()),
   'Tigers': positions.dst(500, 1000, 100, new Date())
 }
+*/

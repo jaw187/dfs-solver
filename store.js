@@ -6,7 +6,9 @@ const initialState = {
   importErrors: [],
   stack: [],
   stacks: [],
-  stackCounts: []
+  stackCounts: [],
+  results: [],
+  pool: []
 }
 
 const reducer = (state = initialState, { type, payload }) => {
@@ -70,7 +72,6 @@ const reducer = (state = initialState, { type, payload }) => {
       }
     case 'SET_STACK_N':
       const { i, n } = payload;
-      console.log('wat', state.stackCounts)
       const stackCounts = [...state.stackCounts];
       stackCounts[i] = n;
 
@@ -78,6 +79,21 @@ const reducer = (state = initialState, { type, payload }) => {
         ...state,
         stackCounts
       }
+    case 'ADD_RESULT':
+      return {
+        ...state,
+        results: state.results.concat(payload)
+      }
+    case 'ADD_PLAYER_TO_POOL':
+      return {
+        ...state,
+        pool: state.pool.concat([payload])
+      }
+    case 'REMOVE_PLAYER_FROM_POOL':
+        return {
+          ...state,
+          pool: state.pool.filter((player) => player.playerId !== payload.playerId)
+        }
     default:
       return state
   }

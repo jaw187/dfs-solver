@@ -29,7 +29,8 @@ const getState = () => {
 
     const validationSchema = Joi.object({
       player: Joi.string().required(),
-      value: Joi.number().required()
+      value: Joi.number().required(),
+      ownership: Joi.number().required()
     });
 
     // track players, they should be unique
@@ -39,10 +40,11 @@ const getState = () => {
     let errors = false;
     const formattedProjection = rawProjection.split('\n').map((line) => {
 
-      const [player, projection] = line.split(',');
+      const [player, projection, ownership] = line.split(',');
       const result = {
         player,
-        value: Number(projection)
+        value: Number(projection),
+        ownership: Number(ownership)
       };
 
       if (players[player]) {

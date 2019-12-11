@@ -5,7 +5,7 @@ module.exports = {
   nfl: {
     draftkings: {
       classic: {
-        qb: (points, salary, ownership, startTime) => {
+        QB: (points, salary, ownership, startTime) => {
           const positions = { qb: 1, rb: 0, wr: 0, te: 0, dst: 0 };
           const player = createPlayer(points, salary, ownership, startTime);
 
@@ -14,7 +14,7 @@ module.exports = {
             ...positions
           }
         },
-        rb: (points, salary, ownership, startTime) => {
+        RB: (points, salary, ownership, startTime) => {
           const positions = { qb: 0, rb: 1, wr: 0, te: 0, dst: 0 };
           const player = createPlayer(points, salary, ownership, startTime);
 
@@ -23,7 +23,7 @@ module.exports = {
             ...positions
           }
         },
-        wr: (points, salary, ownership, startTime) => {
+        WR: (points, salary, ownership, startTime) => {
           const positions = { qb: 0, rb: 0, wr: 1, te: 0, dst: 0 };
           const player = createPlayer(points, salary, ownership, startTime);
 
@@ -32,7 +32,7 @@ module.exports = {
             ...positions
           }
         },
-        te: (points, salary, ownership, startTime) => {
+        TE: (points, salary, ownership, startTime) => {
           const positions = { qb: 0, rb: 0, wr: 0, te: 1, dst: 0 };
           const player = createPlayer(points, salary, ownership, startTime);
 
@@ -41,7 +41,7 @@ module.exports = {
             ...positions
           }
         },
-        dst: (points, salary, ownership, startTime) => {
+        DST: (points, salary, ownership, startTime) => {
           const positions = { qb: 0, rb: 0, wr: 0, te: 0, dst: 1 };
           const player = createPlayer(points, salary, ownership, startTime);
 

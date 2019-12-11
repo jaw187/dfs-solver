@@ -9,6 +9,7 @@ module.exports.solve = (n, maxIterations, model, ownership, players) => {
 
   for (let i = 0; i < maxIterations; ++i) {
     const solution = solver.Solve(model);
+    console.log('wat', i, solution.feasible)
     if (!solution.feasible) {
       break;
     }
