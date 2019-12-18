@@ -8,8 +8,9 @@ const initialState = {
   stacks: [],
   stackCounts: [],
   results: [],
-  pool: []
-}
+  pool: [],
+  view: 'slatepicker'
+};
 
 const reducer = (state = initialState, { type, payload }) => {
   switch (type) {
@@ -73,7 +74,7 @@ const reducer = (state = initialState, { type, payload }) => {
     case 'SET_STACK_N':
       const { i, n } = payload;
       const stackCounts = [...state.stackCounts];
-      stackCounts[i] = n;
+      stackCounts[i] = Number(n);
 
       return {
         ...state,
@@ -84,16 +85,26 @@ const reducer = (state = initialState, { type, payload }) => {
         ...state,
         results: state.results.concat(payload)
       }
+    case 'REMOVE_RESULT':
+      return {
+        ...state,
+        results: state.results.filter((result, i) => i !== payload)
+      }
     case 'ADD_PLAYER_TO_POOL':
       return {
         ...state,
         pool: state.pool.concat([payload])
       }
     case 'REMOVE_PLAYER_FROM_POOL':
-        return {
-          ...state,
-          pool: state.pool.filter((player) => player.playerId !== payload.playerId)
-        }
+      return {
+        ...state,
+        pool: state.pool.filter((player) => player.playerId !== payload.playerId)
+      }
+    case 'SET_VIEW':
+      return {
+        ...state,
+        view: payload
+      }
     default:
       return state
   }

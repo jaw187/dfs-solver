@@ -15,6 +15,7 @@ const getState = () => {
   const projection = useSelector(state => state.projection);
   const results = useSelector(state => state.results);
   const pool = useSelector(state => state.pool);
+  const view = useSelector(state => state.view);
 
   const addResults = (results) => {
     dispatch({
@@ -31,7 +32,8 @@ const getState = () => {
     projection,
     addResults,
     results,
-    pool
+    pool,
+    view
   };
 };
 
@@ -44,11 +46,29 @@ const Generator = () => {
     projection,
     addResults,
     results,
-    pool
+    pool,
+    view
   } = getState();
 
-  if (stacks.length === 0) {
+  if (view !== 'generator') {
     return null;
+  }
+
+  if (!projection || stacks.length === 0) {
+    const issues = [];
+    if (stacks.length === 0) {
+      issues.push((<div>You need to create stacks first</div>))
+    }
+
+    if (!projection) {
+      issues.push((<div>You need to import projections first</div>))
+    }
+
+    return (
+      <div>
+        {issues.map((issue) => (<div>{issue}</div>))}
+      </div>
+    );
   }
 
   const slate = slates && slates[selectedSlate]
@@ -70,6 +90,7 @@ const Generator = () => {
       const ownership = new OwnershipWatcher({ players: playersForModel, n });
       generateResults.forEach((result) => ownership.update(result.players));
 
+      console.log(stack.map((player) => player.displayName).join(" "))
       const stackResults = solve(stackCounts[i], 500, model, ownership, playersForModel);
       stackResults.forEach((result) => generateResults.push(result));
     });
@@ -99,26 +120,6 @@ const Generator = () => {
         ))
       }
       </ul>
-      {
-        !!results.length && (
-          <div>
-            <h3>Results</h3>
-            <ul>
-              {
-                results.map((result, i) => (
-                  <li>
-                    {
-                      result.players.map((id, j) => (
-                        <div>{formatPlayer(id)}</div>
-                      ))
-                    }
-                  </li>
-                ))
-              }
-            </ul>
-          </div>
-        )
-      }
     </Card>
   );
 };

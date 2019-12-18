@@ -1,5 +1,12 @@
+const headerStyle = {
+  fontSize: 36,
+  fontWeight: 900,
+  paddingTop: 6,
+  paddingRight: 16
+};
+
 const Header = () => (
-  <h1>DFS Solver</h1>
+  <div style={headerStyle}>DFS Solver</div>
 );
 
 export default Header

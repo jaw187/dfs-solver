@@ -41,12 +41,11 @@ const convertPlayers = (rawPlayers, rawProjections) => {
   const players = {};
   rawPlayers.forEach((rawPlayer) => {
     const { draftableId } = rawPlayer;
-    const { value, ownership } = projections[draftableId];
-
     // Ignore players without a projection
-    if (!value) {
+    if (!projections[draftableId]) {
       return null;
     }
+    const { value, ownership } = projections[draftableId];
 
     const player = {
       ...rawPlayer,

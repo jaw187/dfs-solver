@@ -9,7 +9,7 @@ module.exports.solve = (n, maxIterations, model, ownership, players) => {
 
   for (let i = 0; i < maxIterations; ++i) {
     const solution = solver.Solve(model);
-    console.log('wat', i, solution.feasible)
+    console.log(`Iteration ${i + 1} is ${solution.feasible ? '' : 'not'} feasible`);
     if (!solution.feasible) {
       break;
     }

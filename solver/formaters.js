@@ -26,6 +26,8 @@ module.exports = {
 
             let positions = 0;
             const player = players[playerId];
+            player.id = playerId;
+
             if (player.qb) {
               ++positions;
               roster.positions.qb.push(player);
@@ -115,12 +117,12 @@ module.exports = {
 
           //construct lineup
           const lineup = {
-            qb: roster.positions.qb,
+            qb: roster.positions.qb[0],
             rbs: roster.positions.rb.slice(0,2),
             wrs: roster.positions.wr.slice(0,3),
             te: roster.positions.te[0],
             flex: roster.positions.rb[2] || roster.positions.wr[3] || roster.positions.te[1],
-            dst: roster.positions.dst
+            dst: roster.positions.dst[0]
           };
 
           return {

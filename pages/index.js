@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Head from 'next/head';
 import Header from  '../components/header';
 import ImportProjection from '../components/importprojection.js';
 import SlatePicker from '../components/slatepicker';
@@ -6,6 +7,8 @@ import StackBuilder from '../components/stackbuilder';
 import Stacks from '../components/stacks';
 import Generator from '../components/generator';
 import Pool from '../components/pool';
+import Navigation from '../components/navigation';
+import Lineups from '../components/lineups';
 import { withRedux } from '../lib/redux';
 import fetch from 'isomorphic-unfetch';
 
@@ -41,19 +44,49 @@ const getPlayers = async function (slate) {
   }
 };
 
+const containerStyle = {
+  backgroundColor: '#f6f6f6',
+  height: '100%',
+  width: '100%'
+};
+
+const topBarStyle = {
+  backgroundColor: '#ffffff',
+  margin: '0px 0px 16px 0px',
+  padding: 16,
+  display: 'flex',
+  flexDirection: 'row',
+  boxShadow: '1px 1px 17px -1px hsla(0, 0%, 63%, .69)'
+}
+
 const Index = () => {
   return (
-    <div>
-      <Header />
+    <div style={containerStyle}>
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta charSet="utf-8" />
+        <link href="https://fonts.googleapis.com/css?family=Ubuntu&display=swap" rel="stylesheet"></link>
+      </Head>
+      <style jsx global>{`
+        body {
+          background: #f6f6f6;
+          color: #333;
+          margin: 0;
+          padding: 0;
+          font-family: 'Ubuntu';
+          overflow-x: scroll;
+        }
+      `}</style>
+      <div style={topBarStyle}>
+        <Header />
+        <Navigation />
+      </div>
       <SlatePicker />
       <ImportProjection />
       <Pool />
       <StackBuilder />
-      <Stacks />
       <Generator />
-      <Link href="/about">
-        <a>About Page</a>
-      </Link>
+      <Lineups />
     </div>
   );
 }

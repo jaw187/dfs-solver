@@ -1,11 +1,12 @@
 import React from "react";
 import Card from "./card"
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
+import Stacks from "./stacks";
 
 const getState = () => {
   const dispatch = useDispatch();
 
-  const { pool, stack, slates, selectedSlate } = useSelector(state => state, shallowEqual);
+  const { pool, stack, slates, selectedSlate, view } = useSelector(state => state, shallowEqual);
 
   const clearStack = () => dispatch({ type: "CLEAR_STACK" });
   const addStack = () => dispatch({ type: "ADD_STACK", payload: stack });
@@ -21,7 +22,8 @@ const getState = () => {
     addStack,
     removeStack,
     addPlayerToStack,
-    removePlayerFromStack
+    removePlayerFromStack,
+    view
   }
 }
 
@@ -33,11 +35,18 @@ const StackBuilder = () => {
     clearStack,
     addStack,
     addPlayerToStack,
-    removePlayerFromStack
+    removePlayerFromStack,
+    view
   } = getState();
 
-  if (!pool.length) {
+  if (view !== 'stackbuilder') {
     return null;
+  }
+
+  if (!pool.length) {
+    return (
+      <div>Pick players for pool first.</div>
+    )
   }
 
   const togglePlayer = (player) => {
@@ -65,51 +74,70 @@ const StackBuilder = () => {
     clear();
   };
 
+  const componentContainer = {
+    display: 'flex',
+    flexDirection: 'row',
+    padding: 16
+  };
+
+  const cardContainer = {
+    display: 'flex',
+    flexDirection: 'row'
+  };
+
   return (
-    <Card>
+    <div style={componentContainer}>
       <div>
         <h2 style={{ marginTop: 0 }}>Stack Builder</h2>
-        <p>{slate.Sport} - {slate.GameType.Name}</p>
-        <div style={{
-          display: "flex",
-          flexDirection: "row"
-        }}>
-          <div>
-            <h3>Players</h3>
-              {
-                pool && pool.map((player, i) => {
-                  const ref = React.createRef();
-                  checkboxes.push(ref);
+        <div style={cardContainer}>
+          <Card>
+            <div>
+              <div style={{
+                display: "flex",
+                flexDirection: "row"
+              }}>
+                <div style={{ minWidth: 240 }}>
+                  <h3>Players</h3>
+                    {
+                      pool && pool.map((player, i) => {
+                        const ref = React.createRef();
+                        checkboxes.push(ref);
 
-                  return (
-                    <div>
-                      <input ref={ref} type="checkbox" onClick={togglePlayer(player)} key={i} />{player.displayName} - ${player.salary}
-                    </div>
-                  )
-                })
-              }
-          </div>
-          <div>
-            <h3>Stack</h3>
-            <ul>
-              {
-                stack && stack.map((player, i) => (
-                  <li key={i}>{player.displayName}</li>
-                ))
-              }
-            </ul>
-            {
-              stack && stack.length > 1 && (
-                <div>
-                  <button onClick={add}>Add</button>
-                  <button onClick={clear}>Clear</button>
+                        return (
+                          <div>
+                            <input ref={ref} type="checkbox" onClick={togglePlayer(player)} key={i} />{player.displayName} - ${player.salary}
+                          </div>
+                        )
+                      })
+                    }
                 </div>
-              )
-            }
-          </div>
+                <div style={{ paddingLeft: 16, minWidth: 240 }}>
+                  <h3>Stack</h3>
+                  <ul>
+                    {
+                      stack && stack.map((player, i) => (
+                        <li key={i}>{player.displayName}</li>
+                      ))
+                    }
+                  </ul>
+                  {
+                    stack && stack.length > 1 && (
+                      <div>
+                        <button onClick={add}>Add</button>
+                        <button onClick={clear}>Clear</button>
+                      </div>
+                    )
+                  }
+                </div>
+              </div>
+            </div>
+          </Card>
         </div>
       </div>
-    </Card>
+      <div>
+        <Stacks />
+      </div>
+    </div>
   );
 };
 
