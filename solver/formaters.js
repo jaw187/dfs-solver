@@ -110,7 +110,7 @@ module.exports = {
 
           // Sort by start time
           // Attempting to account for late swap
-          const sort = (a, b) => a.startTime >= b.startTime;
+          const sort = (a, b) => a.startTime - b.startTime;
           roster.positions.rb.sort(sort);
           roster.positions.wr.sort(sort);
           roster.positions.te.sort(sort);

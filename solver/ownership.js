@@ -1,29 +1,55 @@
 class OwnershipWatcher {
-  constructor ({ players, n }) {
+  constructor ({ players, n, stack, lineupStrings }) {
     const pool = this.pool = players;
 
     const lineupsAllowed = {};
-    Object.keys(pool).forEach((player) => lineupsAllowed[player] = (pool[player].ownership/100) * n);
+    Object.keys(pool).forEach((player) => {
+      const count = (pool[player].ownership/100) * n;
+      lineupsAllowed[player] = count >= 1 ? lineupsAllowed : 1;
+    });
 
     this.lineupsAllowed = { ...lineupsAllowed };
     this.originalLineupsAllowed = { ...lineupsAllowed };
+    this.stack = stack.map((player) => player.draftableId);
+    this.lineupStrings = lineupStrings;
   }
 
   update(players) {
-    const { lineupsAllowed } = this;
+    const { lineupsAllowed, lineupStrings } = this;
+
+    const lineupString = players.sort((a, b) => a > b).join('');
+    lineupStrings.push(lineupString);
+
     players.forEach((player) => {
       --lineupsAllowed[player];
 
       // Remove players from pool
-      if (lineupsAllowed[player] < 1) {
+      if (lineupsAllowed[player] < 1 && !(this.stack.includes(Number(player)))) {
         delete this.pool[player];
       }
     });
   }
 
   validate(players) {
-    const { lineupsAllowed } = this;
-    return players.filter((player) => lineupsAllowed[player] < 1).length === 0;
+    const { lineupsAllowed, lineupStrings } = this;
+    const lineupString = players.sort((a, b) => a > b).join('');
+
+    if (lineupStrings.includes(lineupString)) {
+      return false;
+    }
+
+    const ineligiblePlayers = players.filter((player) => {
+      if (lineupsAllowed[player] < 1) {
+        if (this.stack.includes(Number(player))) {
+          return false;
+        }
+        return true;
+      }
+
+      return false;
+    });
+
+    return ineligiblePlayers.length === 0;
   }
 }
 

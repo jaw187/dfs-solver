@@ -9,10 +9,14 @@ const initialState = {
   stackCounts: [],
   results: [],
   pool: [],
-  view: 'slatepicker'
+  view: 'slatepicker',
+  showPoolTools: false
 };
 
 const reducer = (state = initialState, { type, payload }) => {
+
+  const stackCounts = [...state.stackCounts];
+
   switch (type) {
     case 'SET_SLATES':
       return {
@@ -73,7 +77,6 @@ const reducer = (state = initialState, { type, payload }) => {
       }
     case 'SET_STACK_N':
       const { i, n } = payload;
-      const stackCounts = [...state.stackCounts];
       stackCounts[i] = Number(n);
 
       return {
@@ -104,6 +107,43 @@ const reducer = (state = initialState, { type, payload }) => {
       return {
         ...state,
         view: payload
+      }
+    case 'MOVE_STACK':
+      const { j, which } = payload;
+      const stacks = state.stacks.concat([]);
+      const stack = stacks[j];
+
+      if (which === "right" && j < (stacks.length - 1)) {
+        const right = stacks[j + 1];
+        stacks.splice(j, 1, right);
+        stacks.splice(j + 1, 1, stack);
+      }
+
+      if (which === "left" && j > 0) {
+        const left = stacks[j - 1];
+        stacks.splice(j, 1, left);
+        stacks.splice(j - 1, 1, stack);
+      }
+
+      return {
+        ...state,
+        stacks,
+        stackCounts
+      }
+    case 'CLEAR_POOL':
+      return {
+        ...state,
+        pool: []
+      }
+    case 'SET_POOL_SALARY_RANGE':
+      return {
+        ...state,
+        poolSalaryRange: payload
+      }
+    case 'TOGGLE_POOL_TOOLS':
+      return {
+        ...state,
+        showPoolTools: !state.showPoolTools
       }
     default:
       return state

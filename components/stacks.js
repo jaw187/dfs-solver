@@ -18,14 +18,22 @@ const getState = () => {
       type: "SET_STACK_N",
       payload: { i, n }
     });
-  }
+  };
+
+  const moveStack = (j, which) => {
+    dispatch({
+      type: "MOVE_STACK",
+      payload: { j, which }
+    });
+  };
 
   return {
     stacks,
     removeStack,
     setStackN,
     view,
-    stackCounts
+    stackCounts,
+    moveStack
   };
 };
 
@@ -35,7 +43,8 @@ const Stacks = () => {
     removeStack,
     setStackN,
     view,
-    stackCounts
+    stackCounts,
+    moveStack
   } = getState();
 
   if (view !== 'stackbuilder') {
@@ -103,6 +112,12 @@ const Stacks = () => {
     };
   };
 
+  const move = (j, which) => {
+    return () => {
+      moveStack(j, which);
+    }
+  };
+
   return (
     <div>
       <h2 style={{ marginTop: 0 }}>Stacks</h2>
@@ -115,14 +130,20 @@ const Stacks = () => {
 
             return (
               <Card>
-                <div key={j}>
-                  <ul>
-                    {
-                      stack.map((player, i) => (
-                        <li key={i}>{player.displayName}</li>
-                      ))
-                    }
-                  </ul>
+                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }} key={j}>
+                  <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <div onClick={move(j, 'left')}>Move Left</div>
+                    <div onClick={move(j, 'right')}>Move Right</div>
+                  </div>
+                  <div style={{ display: 'flex' }}>
+                    <ul>
+                      {
+                        stack.map((player, i) => (
+                          <li key={i}>{player.displayName}</li>
+                        ))
+                      }
+                    </ul>
+                  </div>
                   <div style={{display: "flex", flexDirection: "row" }}>
                     <div style={{ minWidth: 240, marginRight: 16 }}>
                       No. of lineups
@@ -155,9 +176,11 @@ const Stacks = () => {
                   </div>
                   <div style={{display: "flex", flexDirection: "row"}}>
                   </div>
-                  <Button onClick={remove(j)} variant="contained" color="secondary">
-                    Delete
-                  </Button>
+                  <div style={{ display: 'flex' }}>
+                    <Button onClick={remove(j)} variant="contained" color="secondary">
+                      Delete
+                    </Button>
+                  </div>
                 </div>
               </Card>
             )

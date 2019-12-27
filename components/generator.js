@@ -2,8 +2,9 @@ import Card from './card';
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import Solver from "../solver/index";
 import OwnershipWatcher from '../solver/ownership';
+import clone from 'lodash/clone';
 
-const { solve, Models, players } = Solver;
+const { solve, Models, players, Queue } = Solver;
 
 const getState = () => {
   const dispatch = useDispatch();
@@ -74,7 +75,6 @@ const Generator = () => {
   const slate = slates && slates[selectedSlate]
 
   const generate = () => {
-    const generateResults = [];
     const playersForModel = players.convertPlayers(pool, projection);
 
     let n = 0;
@@ -82,19 +82,19 @@ const Generator = () => {
       n = n + count;
     });
 
+    const lineupStrings = [];
+
     stacks.forEach((stack, i) => {
-      const model = Models.nfl.draftkings.classic(playersForModel);
+      const stackPlayers = clone(playersForModel);
+      const model = Models.nfl.draftkings.classic(stackPlayers);
       // Force players in stack into lineup
       stack.forEach((player) => model.constraints[player.draftableId] = { equal: 1 });
 
-      const ownership = new OwnershipWatcher({ players: playersForModel, n });
-      generateResults.forEach((result) => ownership.update(result.players));
-
-      console.log(stack.map((player) => player.displayName).join(" "))
-      const stackResults = solve(stackCounts[i], 500, model, ownership, playersForModel);
-      stackResults.forEach((result) => generateResults.push(result));
+      const ownership = new OwnershipWatcher({ players: stackPlayers, n: stackCounts[i], stack, lineupStrings });
+      Queue.register(stackCounts[i], 500, model, ownership, stackPlayers);
     });
 
+    const generateResults = Queue.go();
     if (generateResults.length) {
       addResults(generateResults);
     }
