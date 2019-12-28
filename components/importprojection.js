@@ -119,14 +119,49 @@ const ImportProjection  = () => {
   };
 
   const buttonContainerStyle = {
-    paddingTop: 16
+    paddingBottom: 24
   }
+
+  const buttonStyle = {
+    paddingLeft: 36,
+    paddingRight: 36
+  };
+
+  const infoContainer = {
+    paddingBottom: 36
+  };
 
   return (
     <div style={componentContainer}>
       <h2 style={{ marginTop: 0 }}>Your Projections</h2>
       <div style={cardContainer}>
         <Card>
+          {importErrors && !!importErrors.length && (
+            <div style={infoContainer}>
+              <h3 style={{ marginTop: 0 }}>Import Has Errors</h3>
+              <ul>
+                {importErrors.map((err) => (
+                  <li>{(err.error && err.error.toString()) || err.toString()}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {
+            projection && (
+              <div style={infoContainer}>
+                <h3 style={{ marginTop: 0 }}>Current Projection</h3>
+                <div>
+                  {`Projections for ${projection.length} players`}
+                  {
+                    //projection.map((projection) => (<li>{projection.player} - {projection.value}</li>))
+                  }
+                </div>
+              </div>
+            )
+          }
+          <div style={buttonContainerStyle}>
+            <Button variant="contained" onClick={importProjection} color="primary" style={buttonStyle}>Import</Button>
+          </div>
           <TextField
             id="standard-multiline-static"
             label="Import projections"
@@ -137,32 +172,6 @@ const ImportProjection  = () => {
             style={textAreaStyle}
             onChange={onChange}
           />
-          <div style={buttonContainerStyle}>
-            <Button variant="contained" onClick={importProjection} color="primary">Import</Button>
-          </div>
-          {importErrors && !!importErrors.length && (
-            <div>
-              <h3>Import Has Errors</h3>
-              <ul>
-                {importErrors.map((err) => (
-                  <li>{(err.error && err.error.toString()) || err.toString()}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-          {
-            projection && (
-              <div>
-                <h3>Current Projection</h3>
-                <div>
-                  {`${projection.length} lines imported`}
-                  {
-                    //projection.map((projection) => (<li>{projection.player} - {projection.value}</li>))
-                  }
-                </div>
-              </div>
-            )
-          }
         </Card>
       </div>
     </div>

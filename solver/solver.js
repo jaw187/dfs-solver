@@ -12,7 +12,7 @@ module.exports.solve = (n, maxIterations, model, ownership, players) => {
     ++i;
     const solution = solver.Solve(model);
     console.log(`Iteration ${i} is ${solution.feasible ? '' : 'not'} feasible`);
-
+    console.log('ownership - solver', ownership)
     if (!solution.feasible) {
       return { notFeasible: true };
     }

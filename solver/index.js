@@ -1,13 +1,11 @@
-import { solve } from './solver';
+import Worker from './solve.worker';
 import players from './players';
 import Models from './models';
-import Queue from './queue';
 
 const Solver = {
-  solve,
+  Worker,
   players,
-  Models,
-  Queue
+  Models
 };
 
 export default Solver;

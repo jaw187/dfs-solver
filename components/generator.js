@@ -4,7 +4,7 @@ import Solver from "../solver/index";
 import OwnershipWatcher from '../solver/ownership';
 import clone from 'lodash/clone';
 
-const { solve, Models, players, Queue } = Solver;
+const { Models, players, Worker } = Solver;
 
 const getState = () => {
   const dispatch = useDispatch();
@@ -82,7 +82,7 @@ const Generator = () => {
       n = n + count;
     });
 
-    const lineupStrings = [];
+    const worker = new Worker();
 
     stacks.forEach((stack, i) => {
       const stackPlayers = clone(playersForModel);
@@ -90,14 +90,26 @@ const Generator = () => {
       // Force players in stack into lineup
       stack.forEach((player) => model.constraints[player.draftableId] = { equal: 1 });
 
-      const ownership = new OwnershipWatcher({ players: stackPlayers, n: stackCounts[i], stack, lineupStrings });
-      Queue.register(stackCounts[i], 500, model, ownership, stackPlayers);
+      const ownershipOptions = { players: stackPlayers, n: stackCounts[i], stack }
+      worker.postMessage({ action: 'ownership', options: ownershipOptions});
+
+      const enqueueOptions = {
+        action: 'enqueue',
+        n: stackCounts[i],
+        maxIterations: 500,
+        model,
+        players: stackPlayers
+      };
+      worker.postMessage(enqueueOptions);
     });
 
-    const generateResults = Queue.go();
-    if (generateResults.length) {
-      addResults(generateResults);
-    }
+    worker.postMessage({ action: 'solve' });
+    worker.addEventListener('message', (event) => {
+      const results = event.data;
+      if (results.length) {
+        addResults(results);
+      }
+    });
   };
 
   const formatPlayer = (draftableId) => {
