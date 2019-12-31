@@ -52,5 +52,20 @@ module.exports = {
         }
       }
     }
+  },
+  golf: {
+    draftkings: {
+      classic: {
+        G: (points, salary, ownership, startTime) => {
+          const positions = { g: 1 };
+          const player = createPlayer(points, salary, ownership, startTime);
+
+          return {
+            ...player,
+            ...positions
+          }
+        },
+      }
+    }
   }
 };

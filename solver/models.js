@@ -14,6 +14,15 @@ const constraintList = {
         player: { equal: 9 }
       }
     }
+  },
+  golf: {
+    draftkings: {
+      classic: {
+        pointz: { max: 100000 },
+        salary: { max: 50000 },
+        g: { equal: 6 }
+      }
+    }
   }
 };
 
@@ -49,6 +58,11 @@ module.exports = {
   nfl: {
     draftkings: {
       classic: (players) => new Model(players, clone(constraintList.nfl.draftkings.classic))
+    }
+  },
+  golf: {
+    draftkings: {
+      classic: (players) => new Model(players, clone(constraintList.golf.draftkings.classic))
     }
   }
 };

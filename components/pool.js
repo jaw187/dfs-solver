@@ -110,6 +110,11 @@ const Pool = () => {
 
   const positionCard = (which) => {
     const players = poolPositions[which];
+
+    if (!players) {
+      return null;
+    }
+
     const playerContainerStyle = {
       whiteSpace: 'nowrap',
       fontSize: 12
@@ -176,7 +181,7 @@ const Pool = () => {
   return (
     <div style={componentContainer}>
       <h2 style={{ marginTop: 0 }}>Player Pool</h2>
-        {
+        {/* {
           showPoolTools && (
             <div style={cardContainer}>
               <Card>
@@ -227,13 +232,14 @@ const Pool = () => {
               </Card>
             </div>
           )
-        }
+        } */}
       <div style={cardContainer}>
         { positionCard("QB") }
         { positionCard("RB") }
         { positionCard("WR") }
         { positionCard("TE") }
         { positionCard("DST") }
+        { positionCard("G") }
       </div>
     </div>
   );

@@ -1,5 +1,7 @@
 import { createStore, applyMiddleware } from 'redux'
 import { composeWithDevTools } from 'redux-devtools-extension'
+import { persistReducer } from 'redux-persist'
+import storage from 'redux-persist/lib/storage'
 
 const initialState = {
   slates: {},
@@ -145,14 +147,23 @@ const reducer = (state = initialState, { type, payload }) => {
         ...state,
         showPoolTools: !state.showPoolTools
       }
+    case 'PURGE':
+      return state
     default:
       return state
   }
 };
 
+const persistConfig = {
+  key: 'primary',
+  storage
+}
+
+const persistedReducer = persistReducer(persistConfig, reducer)
+
 export const initializeStore = (preloadedState = initialState) => {
   return createStore(
-    reducer,
+    persistedReducer,
     preloadedState,
     composeWithDevTools(applyMiddleware())
   );

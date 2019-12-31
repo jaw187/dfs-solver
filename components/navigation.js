@@ -19,6 +19,13 @@ const Navigation = () => {
 
   const { view, setView } = getState();
 
+  const clear = () => {
+    if (window && window.localStorage) {
+      window.localStorage.clear();
+      window.location.reload(true);
+    }
+  }
+
   const containerStyle = {
     display: 'flex',
     flexDirection: 'row'
@@ -41,6 +48,12 @@ const Navigation = () => {
     color: '#fff'
   }
 
+  const clearButtonStyle = {
+    ...buttonStyle,
+    backgroundColor: 'red',
+    color: '#fff'
+  }
+
   const set = (which) => {
     return () => setView(which);
   };
@@ -59,6 +72,9 @@ const Navigation = () => {
       {navigationButton('stackbuilder', 'Stacks')}
       {navigationButton('generator', 'Generate')}
       {navigationButton('results', 'Lineups')}
+      <div style={linkContainerStyle}>
+      <button style={clearButtonStyle} onClick={clear}>Clear</button>
+    </div>
     </div>
   )
 };

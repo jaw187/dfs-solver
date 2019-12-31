@@ -1,10 +1,8 @@
-import Link from 'next/link';
 import Head from 'next/head';
 import Header from  '../components/header';
 import ImportProjection from '../components/importprojection.js';
 import SlatePicker from '../components/slatepicker';
 import StackBuilder from '../components/stackbuilder';
-import Stacks from '../components/stacks';
 import Generator from '../components/generator';
 import Pool from '../components/pool';
 import Navigation from '../components/navigation';
@@ -14,9 +12,13 @@ import fetch from 'isomorphic-unfetch';
 
 const slates = {};
 
+const supportedSports = ['NFL', 'GOLF'];
+const supportedGameTypes = ['Classic'];
+
 const getPlayers = async function (slate) {
-  //MVP for NFL Classic style only
-  if (slate.Sport === "NFL" && slate.GameType && slate.GameType.Name === "Classic") {
+  console.log('getting players')
+  if (supportedSports.includes(slate.Sport) && slate.GameType && supportedGameTypes.includes(slate.GameType.Name)) {
+    console.log('wat', slate.DraftGroupId)
     const draftGroupId = slate.DraftGroupId;
     if (!slates[draftGroupId]) {
       //Handle errrrrsssds
@@ -110,6 +112,7 @@ Index.getInitialProps = async ({ reduxStore }) => {
   }
 
   const { dispatch } = reduxStore;
+  console.log('setting slates')//, slates)
   dispatch({
     type: 'SET_SLATES',
     payload: slates
