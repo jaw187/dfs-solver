@@ -49,7 +49,10 @@ const Lineups = () => {
     return (<div>Generate some lineups</div>);
   }
 
-  const slate = slates && slates[selectedSlate]
+  const slate = slates && slates[selectedSlate];
+  const sport = slate.Sport.toLowerCase();
+  const site = 'draftkings';
+  const type = slate.GameType.Name.toLowerCase();
 
   const formatPlayer = (lineupPlayer) => {
     const player = slate.players.find((player) => player.draftableId == lineupPlayer.id);
@@ -58,14 +61,43 @@ const Lineups = () => {
     }
 
     return `${player.position} - ${player.displayName} - $${player.salary}`;
-  }
+  };
+
+  const headers = {
+    nfl: {
+      draftkings: {
+        classic: "QB,RB,RB,WR,WR,WR,TE,FLEX,DST\n"
+      }
+    },
+    golf: {
+      draftkings: {
+        classic: "G,G,G,G,G,G\n"
+      }
+    }
+  };
+
+  const exporters = {
+    nfl: {
+      draftkings: {
+        classic: (result) => {
+          const { lineup: { qb, rbs, wrs, te, flex, dst } } = result;
+          return `${qb.id},${rbs[0].id},${rbs[1].id},${wrs[0].id},${wrs[1].id},${wrs[2].id},${te.id},${flex.id},${dst.id}`
+        }
+      }
+    },
+    golf: {
+      draftkings: {
+        classic: (result) => {
+          const { lineup: { g } } =  result;
+          return `${g[0].id},${g[1].id},${g[2].id},${g[3].id},${g[4].id},${g[5].id}`;
+        }
+      }
+    }
+  };
 
   const exportToCSV = () => {
-    const header = "QB,RB,RB,WR,WR,WR,TE,FLEX,DST\n";
-    const csv = "data:text/csv;charset=utf-8," + header + results.map(result => {
-      const lineup = result.lineup;
-      return `${lineup.qb.id},${lineup.rbs[0].id},${lineup.rbs[1].id},${lineup.wrs[0].id},${lineup.wrs[1].id},${lineup.wrs[2].id},${lineup.te.id},${lineup.flex.id},${lineup.dst.id}`
-    }).join('\n');
+    const header = headers[sport][site][type];
+    const csv = "data:text/csv;charset=utf-8," + header + results.map(exporters[sport][site][type]).join('\n');
     const { encodeURI, open } = window;
     open(encodeURI(csv));
   };
@@ -120,7 +152,42 @@ const Lineups = () => {
     whiteSpace: 'nowrap'
   }
 
-  console.log('ownership', ownership)
+  const lineupFormats = {
+    nfl: {
+      draftkings: {
+        classic: (result, i) => (
+          <div key={i} style={lineupStyle}>
+            <button onClick={remove(i)}>Remove</button>
+            <div>{formatPlayer(result.lineup.qb)}</div>
+            <div>{formatPlayer(result.lineup.rbs[0])}</div>
+            <div>{formatPlayer(result.lineup.rbs[1])}</div>
+            <div>{formatPlayer(result.lineup.wrs[0])}</div>
+            <div>{formatPlayer(result.lineup.wrs[1])}</div>
+            <div>{formatPlayer(result.lineup.wrs[2])}</div>
+            <div>{formatPlayer(result.lineup.te)}</div>
+            <div>{formatPlayer(result.lineup.flex)}</div>
+            <div>{formatPlayer(result.lineup.dst)}</div>
+          </div>
+        )
+      }
+    },
+    golf: {
+      draftkings: {
+        classic: (result, i) => (
+          <div key={i} style={lineupStyle}>
+            <button onClick={remove(i)}>Remove</button>
+            <div>{formatPlayer(result.lineup.g[0])}</div>
+            <div>{formatPlayer(result.lineup.g[1])}</div>
+            <div>{formatPlayer(result.lineup.g[2])}</div>
+            <div>{formatPlayer(result.lineup.g[3])}</div>
+            <div>{formatPlayer(result.lineup.g[4])}</div>
+            <div>{formatPlayer(result.lineup.g[5])}</div>
+          </div>
+        )
+      }
+    }
+  };
+
   return (
     <div style={componentContainer}>
       <h2 style={{ marginTop: 0 }}>Lineups</h2>
@@ -149,20 +216,7 @@ const Lineups = () => {
                 <button onClick={exportToCSV}>Export</button>
                 <div style={containerStyle}>
                   {
-                    results.map((result, i) => (
-                      <div key={i} style={lineupStyle}>
-                        <button onClick={remove(i)}>Remove</button>
-                        <div>{formatPlayer(result.lineup.qb)}</div>
-                        <div>{formatPlayer(result.lineup.rbs[0])}</div>
-                        <div>{formatPlayer(result.lineup.rbs[1])}</div>
-                        <div>{formatPlayer(result.lineup.wrs[0])}</div>
-                        <div>{formatPlayer(result.lineup.wrs[1])}</div>
-                        <div>{formatPlayer(result.lineup.wrs[2])}</div>
-                        <div>{formatPlayer(result.lineup.te)}</div>
-                        <div>{formatPlayer(result.lineup.flex)}</div>
-                        <div>{formatPlayer(result.lineup.dst)}</div>
-                      </div>
-                    ))
+                    results.map(lineupFormats[sport][site][type])
                   }
                 </div>
               </div>

@@ -14,8 +14,8 @@ console.log('wat', action, event)
   }
 
   if (action === 'enqueue') {
-    const { data: { n, maxIterations, model, players } } = event;
-    Queue.register(n, maxIterations, model, ownership, players);
+    const { data: { n, maxIterations, model, players, sport, site, type } } = event;
+    Queue.register(n, maxIterations, model, ownership, players, sport, site, type);
     console.log('ownership', ownership)
   }
 

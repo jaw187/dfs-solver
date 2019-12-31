@@ -43,7 +43,7 @@ const getState = () => {
     let errors = false;
     const formattedProjection = rawProjection.split('\n').map((line) => {
 
-      const [player, projection, ownership] = line.split(',');
+      const [player, projection, ownership] = line.indexOf(',') > 0 ? line.split(',') : line.split('\t');
       const result = {
         player,
         value: Number(projection),

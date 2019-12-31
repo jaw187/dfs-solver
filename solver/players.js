@@ -1,7 +1,6 @@
 const rosters = require('./rosters');
-const positions = rosters.nfl.draftkings.classic;
 
-const convertPlayer = (rawPlayer) => {
+const convertPlayer = (rawPlayer, positions) => {
   const {
     draftableId,
     salary,
@@ -26,8 +25,8 @@ const convertPlayer = (rawPlayer) => {
   return player;
 };
 
-const convertPlayers = (rawPlayers, rawProjections) => {
-
+const convertPlayers = (rawPlayers, rawProjections, sport, site, type) => {
+  const positions = rosters[sport][site][type];
   const projections = {};
   rawProjections.forEach((rawProjection) => {
     const { value, ownership, player } = rawProjection;
@@ -53,7 +52,7 @@ const convertPlayers = (rawPlayers, rawProjections) => {
       projection: value
     };
 
-    players[draftableId] = convertPlayer(player);
+    players[draftableId] = convertPlayer(player, positions);
   });
 
   return players;

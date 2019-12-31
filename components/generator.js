@@ -73,9 +73,12 @@ const Generator = () => {
   }
 
   const slate = slates && slates[selectedSlate]
+  const sport = slate.Sport.toLowerCase();
+  const site = 'draftkings';
+  const type = slate.GameType.Name.toLowerCase();
 
   const generate = () => {
-    const playersForModel = players.convertPlayers(pool, projection);
+    const playersForModel = players.convertPlayers(pool, projection, sport, site, type);
 
     let n = 0;
     stackCounts.forEach((count) => {
@@ -86,7 +89,7 @@ const Generator = () => {
 
     stacks.forEach((stack, i) => {
       const stackPlayers = clone(playersForModel);
-      const model = Models.nfl.draftkings.classic(stackPlayers);
+      const model = Models[sport][site][type](stackPlayers);
       // Force players in stack into lineup
       stack.forEach((player) => model.constraints[player.draftableId] = { equal: 1 });
 
@@ -98,7 +101,10 @@ const Generator = () => {
         n: stackCounts[i],
         maxIterations: 500,
         model,
-        players: stackPlayers
+        players: stackPlayers,
+        sport,
+        site,
+        type
       };
       worker.postMessage(enqueueOptions);
     });

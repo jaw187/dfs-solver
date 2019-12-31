@@ -133,5 +133,50 @@ module.exports = {
         }
       }
     }
+  },
+  golf: {
+    draftkings: {
+      classic: (players) => {
+        return (solution) => {
+
+          const points = solution.result;
+          const roster = {
+            positions: {
+              g: []
+            }
+          };
+
+          const resultPlayers = Object.keys(solution).filter((key) => {
+            const keysToRemove = ['feasible', 'result', 'bounded', 'isIntegral']
+            return !keysToRemove.includes(key);
+          });
+
+          // Add players to positions their eligible for
+          const playersEligibleAtMoreThanOnePosition = [];
+          resultPlayers.forEach((playerId) => {
+
+            const player = players[playerId];
+            player.id = playerId;
+            roster.positions.g.push(player);
+          });
+
+          // Sort by start time
+          // Attempting to account for late swap
+          const sort = (a, b) => a.startTime - b.startTime;
+          roster.positions.g.sort(sort);
+
+          //construct lineup
+          const lineup = {
+            g: roster.positions.g
+          };
+
+          return {
+            points,
+            lineup,
+            players: resultPlayers
+          }
+        }
+      }
+    }
   }
 }

@@ -1,9 +1,9 @@
 const solver = require('javascript-lp-solver');
 const formaters = require('./formaters');
 
-module.exports.solve = (n, maxIterations, model, ownership, players) => {
+module.exports.solve = (n, maxIterations, model, ownership, players, sport, site, type) => {
 
-  const format = formaters.nfl.draftkings.classic(players);
+  const format = formaters[sport][site][type](players);
 
   const results = [];
 

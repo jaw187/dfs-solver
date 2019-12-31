@@ -2,8 +2,8 @@ import { solve } from './solver';
 const queue = [];
 
 const Queue = {
-  register: (n, maxIterations, model, ownership, players) => {
-    queue.push(solve(n, maxIterations, model, ownership, players))
+  register: (n, maxIterations, model, ownership, players, sport, site, type) => {
+    queue.push(solve(n, maxIterations, model, ownership, players, sport, site, type))
   },
   go: () => {
     const results = [];
