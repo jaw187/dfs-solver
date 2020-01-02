@@ -1,6 +1,9 @@
 const withWorkers = require('@zeit/next-workers')
 module.exports = withWorkers({
-  webpack(config, options) {
-    return config
+  webpack(config) {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      // your aliases
+    }
   }
 })
