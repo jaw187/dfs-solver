@@ -16,9 +16,7 @@ const supportedSports = ['NFL', 'GOLF'];
 const supportedGameTypes = ['Classic'];
 
 const getPlayers = async function (slate) {
-  console.log('getting players')
   if (supportedSports.includes(slate.Sport) && slate.GameType && supportedGameTypes.includes(slate.GameType.Name)) {
-    console.log('wat', slate.DraftGroupId)
     const draftGroupId = slate.DraftGroupId;
     if (!slates[draftGroupId]) {
       //Handle errrrrsssds
@@ -97,6 +95,17 @@ const Index = () => {
 // This is to try and stop spamming DK
 let fetched = false;
 let fetching = false;
+const refreshSlatesRate = 1000 * 60 * 60;
+const clearSlates = () => {
+  Object.keys(slates).forEach((slate) => {
+    delete slates[slate];
+  });
+
+  fetched = false;
+  fetching = false;
+};
+setInterval(clearSlates, refreshSlatesRate);
+
 Index.getInitialProps = async ({ reduxStore }) => {
   if (!fetched && !fetching) {
     fetching = true;
