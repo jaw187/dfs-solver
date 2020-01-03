@@ -10,17 +10,18 @@ const getState = () => {
   const importErrors = useSelector(state => state.importErrors, shallowEqual);
   const rawProjection = useSelector(state => state.rawProjection, shallowEqual);
   const projection = useSelector(state => state.projection, shallowEqual);
-  const view = useSelector(state => state.view);
+  const view = useSelector(state => state.view, shallowEqual);
+  const slates = useSelector(state => state.slates, shallowEqual);
+  const selectedSlate = useSelector(state => state.selectedSlate, shallowEqual);
 
   const setRawProjection = (value) => {
     dispatch({
       type: 'SET_RAW_PROJECTION',
       payload: value
     });
-  }
+  };
 
   const importProjection = () => {
-
     dispatch({ type: 'CLEAR_IMPORT_ERRORS' });
 
     if (!rawProjection) {
@@ -80,12 +81,26 @@ const getState = () => {
     }
   };
 
+  const exportTemplate = () => {
+    if (slates && selectedSlate) {
+      const { players } = slates[selectedSlate];
+      const format = (player) => {
+        return `${player.displayName},${player.draftableId},,50`;
+      };
+      const header = "Delete the player name column and this row\n"
+      const csv = "data:text/csv;charset=utf-8," + header + players.map(format).join('\n');
+      const { encodeURI, open } = window;
+      open(encodeURI(csv));
+    }
+  };
+
   return {
     setRawProjection,
     projection,
     importErrors,
     importProjection,
-    view
+    view,
+    exportTemplate
   };
 };
 
@@ -108,7 +123,7 @@ player id projection  desired ownership
 
 const ImportProjection  = () => {
 
-  const { importErrors, projection, setRawProjection, importProjection, view } = getState();
+  const { importErrors, projection, setRawProjection, importProjection, view, exportTemplate } = getState();
 
   if (view !== 'importprojections') {
     return null;
@@ -162,6 +177,10 @@ const ImportProjection  = () => {
               </div>
             )
           }
+          <div style={buttonContainerStyle}>
+            <Button variant="contained" onClick={exportTemplate} color="secondary" style={buttonStyle}>Export Template</Button>
+            <div>Download a csv template which can be used to fill in projections</div>
+          </div>
           <div style={buttonContainerStyle}>
             <Button variant="contained" onClick={importProjection} color="primary" style={buttonStyle}>Import</Button>
           </div>
