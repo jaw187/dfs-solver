@@ -1,0 +1,1 @@
+{"ast":null,"code":"import Worker from './solve.worker';\nimport players from './players';\nimport Models from './models';\nconst Solver = {\n  Worker,\n  players,\n  Models\n};\nexport default Solver;","map":null,"metadata":{},"sourceType":"module"}

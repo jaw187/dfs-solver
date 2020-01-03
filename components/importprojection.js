@@ -98,9 +98,12 @@ const cardContainer = {
   flexDirection: 'row'
 };
 
-const placeholder = `Copy and paste a csv file of your own projections with desired ownership percentages.  Format each line of your csv like this:
+const placeholder = `Copy and paste a csv or tab deliminated file of your own projections with desired ownership percentages.  Format each line of your csv like this:
 
 player id, projection, desired ownership
+
+or for a tab deliminated file, like this:
+player id projection  desired ownership
 `;
 
 const ImportProjection  = () => {

@@ -1,0 +1,54 @@
+{
+  "worker": [
+    {
+      "modules": {
+        "byIdentifier": {},
+        "usedIds": {}
+      },
+      "chunks": {
+        "byName": {
+          "main": 0
+        },
+        "bySource": {},
+        "usedIds": [
+          0
+        ]
+      }
+    }
+  ],
+  "modules": {
+    "byIdentifier": {},
+    "usedIds": {}
+  },
+  "chunks": {
+    "byName": {
+      "static/runtime/webpack.js": 0,
+      "commons": 1,
+      "static/MyphDFKRPq546ClzgFiRK/pages/_app.js": 2,
+      "static/MyphDFKRPq546ClzgFiRK/pages/_error.js": 3,
+      "static/MyphDFKRPq546ClzgFiRK/pages/about.js": 4,
+      "static/MyphDFKRPq546ClzgFiRK/pages/index.js": 5,
+      "static/runtime/main.js": 6,
+      "static/runtime/polyfills.js": 7,
+      "static/z6PU8kPK3PpY_8L-phynt/pages/_app.js": 8,
+      "static/z6PU8kPK3PpY_8L-phynt/pages/_error.js": 9,
+      "static/z6PU8kPK3PpY_8L-phynt/pages/about.js": 10,
+      "static/z6PU8kPK3PpY_8L-phynt/pages/index.js": 11,
+      "static/7EQHScBPgEkIxVto15Ywv/pages/_app.js": 2,
+      "static/7EQHScBPgEkIxVto15Ywv/pages/_error.js": 3,
+      "static/7EQHScBPgEkIxVto15Ywv/pages/about.js": 4,
+      "static/7EQHScBPgEkIxVto15Ywv/pages/index.js": 5
+    },
+    "bySource": {},
+    "usedIds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ]
+  }
+}
