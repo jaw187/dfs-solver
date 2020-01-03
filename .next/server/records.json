@@ -36,21 +36,11 @@
     "byName": {
       "init-server.js": 0,
       "on-error-server.js": 1,
-      "static/MyphDFKRPq546ClzgFiRK/pages/_app.js": 2,
-      "static/MyphDFKRPq546ClzgFiRK/pages/_document.js": 3,
-      "static/MyphDFKRPq546ClzgFiRK/pages/_error.js": 4,
-      "static/MyphDFKRPq546ClzgFiRK/pages/about.js": 5,
-      "static/MyphDFKRPq546ClzgFiRK/pages/index.js": 6,
-      "static/z6PU8kPK3PpY_8L-phynt/pages/_app.js": 7,
-      "static/z6PU8kPK3PpY_8L-phynt/pages/_document.js": 8,
-      "static/z6PU8kPK3PpY_8L-phynt/pages/_error.js": 9,
-      "static/z6PU8kPK3PpY_8L-phynt/pages/about.js": 10,
-      "static/z6PU8kPK3PpY_8L-phynt/pages/index.js": 11,
-      "static/7EQHScBPgEkIxVto15Ywv/pages/_app.js": 2,
-      "static/7EQHScBPgEkIxVto15Ywv/pages/_document.js": 3,
-      "static/7EQHScBPgEkIxVto15Ywv/pages/_error.js": 4,
-      "static/7EQHScBPgEkIxVto15Ywv/pages/about.js": 5,
-      "static/7EQHScBPgEkIxVto15Ywv/pages/index.js": 6
+      "static/9WIhuJXMfGHQSP1TzxPNj/pages/_app.js": 2,
+      "static/9WIhuJXMfGHQSP1TzxPNj/pages/_document.js": 3,
+      "static/9WIhuJXMfGHQSP1TzxPNj/pages/_error.js": 4,
+      "static/9WIhuJXMfGHQSP1TzxPNj/pages/about.js": 5,
+      "static/9WIhuJXMfGHQSP1TzxPNj/pages/index.js": 6
     },
     "bySource": {},
     "usedIds": [

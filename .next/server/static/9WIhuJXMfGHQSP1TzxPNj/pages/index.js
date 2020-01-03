@@ -767,7 +767,9 @@ const getState = () => {
   const importErrors = Object(external_react_redux_["useSelector"])(state => state.importErrors, external_react_redux_["shallowEqual"]);
   const rawProjection = Object(external_react_redux_["useSelector"])(state => state.rawProjection, external_react_redux_["shallowEqual"]);
   const projection = Object(external_react_redux_["useSelector"])(state => state.projection, external_react_redux_["shallowEqual"]);
-  const view = Object(external_react_redux_["useSelector"])(state => state.view);
+  const view = Object(external_react_redux_["useSelector"])(state => state.view, external_react_redux_["shallowEqual"]);
+  const slates = Object(external_react_redux_["useSelector"])(state => state.slates, external_react_redux_["shallowEqual"]);
+  const selectedSlate = Object(external_react_redux_["useSelector"])(state => state.selectedSlate, external_react_redux_["shallowEqual"]);
 
   const setRawProjection = value => {
     dispatch({
@@ -835,12 +837,33 @@ const getState = () => {
     }
   };
 
+  const exportTemplate = () => {
+    if (slates && selectedSlate) {
+      const {
+        players
+      } = slates[selectedSlate];
+
+      const format = player => {
+        return `${player.displayName},${player.draftableId},,50`;
+      };
+
+      const header = "Delete the player name column and this row\n";
+      const csv = "data:text/csv;charset=utf-8," + header + players.map(format).join('\n');
+      const {
+        encodeURI,
+        open
+      } = window;
+      open(encodeURI(csv));
+    }
+  };
+
   return {
     setRawProjection,
     projection,
     importErrors,
     importProjection,
-    view
+    view,
+    exportTemplate
   };
 };
 
@@ -851,9 +874,12 @@ const importprojection_cardContainer = {
   display: 'flex',
   flexDirection: 'row'
 };
-const placeholder = `Copy and paste a csv file of your own projections with desired ownership percentages.  Format each line of your csv like this:
+const placeholder = `Copy and paste a csv or tab deliminated file of your own projections with desired ownership percentages.  Format each line of your csv like this:
 
 player id, projection, desired ownership
+
+or for a tab deliminated file, like this:
+player id projection  desired ownership
 `;
 
 const ImportProjection = () => {
@@ -862,7 +888,8 @@ const ImportProjection = () => {
     projection,
     setRawProjection,
     importProjection,
-    view
+    view,
+    exportTemplate
   } = getState();
 
   if (view !== 'importprojections') {
@@ -906,6 +933,13 @@ const ImportProjection = () => {
       marginTop: 0
     }
   }, "Current Projection"), importprojection_jsx("div", null, `Projections for ${projection.length} players`)), importprojection_jsx("div", {
+    style: buttonContainerStyle
+  }, importprojection_jsx(Button_default.a, {
+    variant: "contained",
+    onClick: exportTemplate,
+    color: "secondary",
+    style: buttonStyle
+  }, "Export Template"), importprojection_jsx("div", null, "Download a csv template which can be used to fill in projections")), importprojection_jsx("div", {
     style: buttonContainerStyle
   }, importprojection_jsx(Button_default.a, {
     variant: "contained",

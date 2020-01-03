@@ -355,7 +355,13 @@ var getState = function getState() {
   }, react_redux__WEBPACK_IMPORTED_MODULE_4__["shallowEqual"]);
   var view = Object(react_redux__WEBPACK_IMPORTED_MODULE_4__["useSelector"])(function (state) {
     return state.view;
-  });
+  }, react_redux__WEBPACK_IMPORTED_MODULE_4__["shallowEqual"]);
+  var slates = Object(react_redux__WEBPACK_IMPORTED_MODULE_4__["useSelector"])(function (state) {
+    return state.slates;
+  }, react_redux__WEBPACK_IMPORTED_MODULE_4__["shallowEqual"]);
+  var selectedSlate = Object(react_redux__WEBPACK_IMPORTED_MODULE_4__["useSelector"])(function (state) {
+    return state.selectedSlate;
+  }, react_redux__WEBPACK_IMPORTED_MODULE_4__["shallowEqual"]);
 
   var setRawProjection = function setRawProjection(value) {
     dispatch({
@@ -428,12 +434,30 @@ var getState = function getState() {
     }
   };
 
+  var exportTemplate = function exportTemplate() {
+    if (slates && selectedSlate) {
+      var players = slates[selectedSlate].players;
+
+      var format = function format(player) {
+        return "".concat(player.displayName, ",").concat(player.draftableId, ",,50");
+      };
+
+      var header = "Delete the player name column and this row\n";
+      var csv = "data:text/csv;charset=utf-8," + header + players.map(format).join('\n');
+      var _window = window,
+          _encodeURI = _window.encodeURI,
+          open = _window.open;
+      open(_encodeURI(csv));
+    }
+  };
+
   return {
     setRawProjection: setRawProjection,
     projection: projection,
     importErrors: importErrors,
     importProjection: importProjection,
-    view: view
+    view: view,
+    exportTemplate: exportTemplate
   };
 };
 
@@ -444,7 +468,7 @@ var cardContainer = {
   display: 'flex',
   flexDirection: 'row'
 };
-var placeholder = "Copy and paste a csv file of your own projections with desired ownership percentages.  Format each line of your csv like this:\n\nplayer id, projection, desired ownership\n";
+var placeholder = "Copy and paste a csv or tab deliminated file of your own projections with desired ownership percentages.  Format each line of your csv like this:\n\nplayer id, projection, desired ownership\n\nor for a tab deliminated file, like this:\nplayer id projection  desired ownership\n";
 
 var ImportProjection = function ImportProjection() {
   var _getState = getState(),
@@ -452,7 +476,8 @@ var ImportProjection = function ImportProjection() {
       projection = _getState.projection,
       setRawProjection = _getState.setRawProjection,
       importProjection = _getState.importProjection,
-      view = _getState.view;
+      view = _getState.view,
+      exportTemplate = _getState.exportTemplate;
 
   if (view !== 'importprojections') {
     return null;
@@ -480,7 +505,7 @@ var ImportProjection = function ImportProjection() {
     style: componentContainer,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 135
+      lineNumber: 153
     },
     __self: this
   }, __jsx("h2", {
@@ -489,27 +514,27 @@ var ImportProjection = function ImportProjection() {
     },
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 136
+      lineNumber: 154
     },
     __self: this
   }, "Your Projections"), __jsx("div", {
     style: cardContainer,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 137
+      lineNumber: 155
     },
     __self: this
   }, __jsx(_card__WEBPACK_IMPORTED_MODULE_2__["default"], {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 138
+      lineNumber: 156
     },
     __self: this
   }, importErrors && !!importErrors.length && __jsx("div", {
     style: infoContainer,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 140
+      lineNumber: 158
     },
     __self: this
   }, __jsx("h3", {
@@ -518,20 +543,20 @@ var ImportProjection = function ImportProjection() {
     },
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 141
+      lineNumber: 159
     },
     __self: this
   }, "Import Has Errors"), __jsx("ul", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 142
+      lineNumber: 160
     },
     __self: this
   }, importErrors.map(function (err) {
     return __jsx("li", {
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 144
+        lineNumber: 162
       },
       __self: this
     }, err.error && err.error.toString() || err.toString());
@@ -539,7 +564,7 @@ var ImportProjection = function ImportProjection() {
     style: infoContainer,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 151
+      lineNumber: 169
     },
     __self: this
   }, __jsx("h3", {
@@ -548,20 +573,43 @@ var ImportProjection = function ImportProjection() {
     },
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 152
+      lineNumber: 170
     },
     __self: this
   }, "Current Projection"), __jsx("div", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 153
+      lineNumber: 171
     },
     __self: this
   }, "Projections for ".concat(projection.length, " players"))), __jsx("div", {
     style: buttonContainerStyle,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 162
+      lineNumber: 180
+    },
+    __self: this
+  }, __jsx(_material_ui_core_Button__WEBPACK_IMPORTED_MODULE_6__["default"], {
+    variant: "contained",
+    onClick: exportTemplate,
+    color: "secondary",
+    style: buttonStyle,
+    __source: {
+      fileName: _jsxFileName,
+      lineNumber: 181
+    },
+    __self: this
+  }, "Export Template"), __jsx("div", {
+    __source: {
+      fileName: _jsxFileName,
+      lineNumber: 182
+    },
+    __self: this
+  }, "Download a csv template which can be used to fill in projections")), __jsx("div", {
+    style: buttonContainerStyle,
+    __source: {
+      fileName: _jsxFileName,
+      lineNumber: 184
     },
     __self: this
   }, __jsx(_material_ui_core_Button__WEBPACK_IMPORTED_MODULE_6__["default"], {
@@ -571,7 +619,7 @@ var ImportProjection = function ImportProjection() {
     style: buttonStyle,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 163
+      lineNumber: 185
     },
     __self: this
   }, "Import")), __jsx(_material_ui_core_TextField__WEBPACK_IMPORTED_MODULE_5__["default"], {
@@ -585,7 +633,7 @@ var ImportProjection = function ImportProjection() {
     onChange: onChange,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 165
+      lineNumber: 187
     },
     __self: this
   }))));

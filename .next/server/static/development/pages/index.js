@@ -417,7 +417,9 @@ const getState = () => {
   const importErrors = Object(react_redux__WEBPACK_IMPORTED_MODULE_3__["useSelector"])(state => state.importErrors, react_redux__WEBPACK_IMPORTED_MODULE_3__["shallowEqual"]);
   const rawProjection = Object(react_redux__WEBPACK_IMPORTED_MODULE_3__["useSelector"])(state => state.rawProjection, react_redux__WEBPACK_IMPORTED_MODULE_3__["shallowEqual"]);
   const projection = Object(react_redux__WEBPACK_IMPORTED_MODULE_3__["useSelector"])(state => state.projection, react_redux__WEBPACK_IMPORTED_MODULE_3__["shallowEqual"]);
-  const view = Object(react_redux__WEBPACK_IMPORTED_MODULE_3__["useSelector"])(state => state.view);
+  const view = Object(react_redux__WEBPACK_IMPORTED_MODULE_3__["useSelector"])(state => state.view, react_redux__WEBPACK_IMPORTED_MODULE_3__["shallowEqual"]);
+  const slates = Object(react_redux__WEBPACK_IMPORTED_MODULE_3__["useSelector"])(state => state.slates, react_redux__WEBPACK_IMPORTED_MODULE_3__["shallowEqual"]);
+  const selectedSlate = Object(react_redux__WEBPACK_IMPORTED_MODULE_3__["useSelector"])(state => state.selectedSlate, react_redux__WEBPACK_IMPORTED_MODULE_3__["shallowEqual"]);
 
   const setRawProjection = value => {
     dispatch({
@@ -485,12 +487,33 @@ const getState = () => {
     }
   };
 
+  const exportTemplate = () => {
+    if (slates && selectedSlate) {
+      const {
+        players
+      } = slates[selectedSlate];
+
+      const format = player => {
+        return `${player.displayName},${player.draftableId},,50`;
+      };
+
+      const header = "Delete the player name column and this row\n";
+      const csv = "data:text/csv;charset=utf-8," + header + players.map(format).join('\n');
+      const {
+        encodeURI,
+        open
+      } = window;
+      open(encodeURI(csv));
+    }
+  };
+
   return {
     setRawProjection,
     projection,
     importErrors,
     importProjection,
-    view
+    view,
+    exportTemplate
   };
 };
 
@@ -501,9 +524,12 @@ const cardContainer = {
   display: 'flex',
   flexDirection: 'row'
 };
-const placeholder = `Copy and paste a csv file of your own projections with desired ownership percentages.  Format each line of your csv like this:
+const placeholder = `Copy and paste a csv or tab deliminated file of your own projections with desired ownership percentages.  Format each line of your csv like this:
 
 player id, projection, desired ownership
+
+or for a tab deliminated file, like this:
+player id projection  desired ownership
 `;
 
 const ImportProjection = () => {
@@ -512,7 +538,8 @@ const ImportProjection = () => {
     projection,
     setRawProjection,
     importProjection,
-    view
+    view,
+    exportTemplate
   } = getState();
 
   if (view !== 'importprojections') {
@@ -539,7 +566,7 @@ const ImportProjection = () => {
     style: componentContainer,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 135
+      lineNumber: 153
     },
     __self: undefined
   }, __jsx("h2", {
@@ -548,27 +575,27 @@ const ImportProjection = () => {
     },
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 136
+      lineNumber: 154
     },
     __self: undefined
   }, "Your Projections"), __jsx("div", {
     style: cardContainer,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 137
+      lineNumber: 155
     },
     __self: undefined
   }, __jsx(_card__WEBPACK_IMPORTED_MODULE_1__["default"], {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 138
+      lineNumber: 156
     },
     __self: undefined
   }, importErrors && !!importErrors.length && __jsx("div", {
     style: infoContainer,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 140
+      lineNumber: 158
     },
     __self: undefined
   }, __jsx("h3", {
@@ -577,26 +604,26 @@ const ImportProjection = () => {
     },
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 141
+      lineNumber: 159
     },
     __self: undefined
   }, "Import Has Errors"), __jsx("ul", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 142
+      lineNumber: 160
     },
     __self: undefined
   }, importErrors.map(err => __jsx("li", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 144
+      lineNumber: 162
     },
     __self: undefined
   }, err.error && err.error.toString() || err.toString())))), projection && __jsx("div", {
     style: infoContainer,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 151
+      lineNumber: 169
     },
     __self: undefined
   }, __jsx("h3", {
@@ -605,20 +632,43 @@ const ImportProjection = () => {
     },
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 152
+      lineNumber: 170
     },
     __self: undefined
   }, "Current Projection"), __jsx("div", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 153
+      lineNumber: 171
     },
     __self: undefined
   }, `Projections for ${projection.length} players`)), __jsx("div", {
     style: buttonContainerStyle,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 162
+      lineNumber: 180
+    },
+    __self: undefined
+  }, __jsx(_material_ui_core_Button__WEBPACK_IMPORTED_MODULE_5___default.a, {
+    variant: "contained",
+    onClick: exportTemplate,
+    color: "secondary",
+    style: buttonStyle,
+    __source: {
+      fileName: _jsxFileName,
+      lineNumber: 181
+    },
+    __self: undefined
+  }, "Export Template"), __jsx("div", {
+    __source: {
+      fileName: _jsxFileName,
+      lineNumber: 182
+    },
+    __self: undefined
+  }, "Download a csv template which can be used to fill in projections")), __jsx("div", {
+    style: buttonContainerStyle,
+    __source: {
+      fileName: _jsxFileName,
+      lineNumber: 184
     },
     __self: undefined
   }, __jsx(_material_ui_core_Button__WEBPACK_IMPORTED_MODULE_5___default.a, {
@@ -628,7 +678,7 @@ const ImportProjection = () => {
     style: buttonStyle,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 163
+      lineNumber: 185
     },
     __self: undefined
   }, "Import")), __jsx(_material_ui_core_TextField__WEBPACK_IMPORTED_MODULE_4___default.a, {
@@ -642,7 +692,7 @@ const ImportProjection = () => {
     onChange: onChange,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 165
+      lineNumber: 187
     },
     __self: undefined
   }))));
