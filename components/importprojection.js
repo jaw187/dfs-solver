@@ -43,12 +43,12 @@ const getState = () => {
     // assumes that values will not contain commas
     let errors = false;
     const formattedProjection = rawProjection.split('\n').map((line) => {
+      const [player, projection, ownership] = line.indexOf(',') > 0 ? line.split(',') : line.split('\t');
 
-      if (line === 'Name,ID,Projection,Ownership') {
-        return 'HEADER';
+      if (player === 'ID' || player === '') {
+        return 'REMOVE';
       }
 
-      const [player, projection, ownership] = line.indexOf(',') > 0 ? line.split(',') : line.split('\t');
       const result = {
         player,
         value: Number(projection),
@@ -75,11 +75,7 @@ const getState = () => {
       }
 
       return result;
-    });
-
-    if (formattedProjection && formattedProjection[0] === 'HEADER') {
-      formattedProjection.shift();
-    }
+    }).filter((result) => result !== 'REMOVE');
 
     if (!errors) {
       dispatch({
