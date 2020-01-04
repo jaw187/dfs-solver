@@ -98,8 +98,16 @@ const Lineups = () => {
   const exportToCSV = () => {
     const header = headers[sport][site][type];
     const csv = "data:text/csv;charset=utf-8," + header + results.map(exporters[sport][site][type]).join('\n');
-    const { encodeURI, open } = window;
-    open(encodeURI(csv));
+
+    const { encodeURI } = window;
+    const { createElement, body } = document
+
+    const downloadLink = createElement("a");
+    downloadLink.href = encodeURI(csv);
+    downloadLink.download = `${selectedSlate} - Lineups.csv`;
+    body.appendChild(downloadLink);
+    downloadLink.click();
+    body.removeChild(downloadLink);
   };
 
   const remove = (i) => {

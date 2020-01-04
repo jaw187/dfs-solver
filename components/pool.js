@@ -234,6 +234,9 @@ const Pool = () => {
           )
         } */}
       <div style={cardContainer}>
+          <div style={{ color: 'red', paddingBottom: 24 } }>Player names in red indicate missing projection</div>
+      </div>
+      <div style={cardContainer}>
         { positionCard("QB") }
         { positionCard("RB") }
         { positionCard("WR") }

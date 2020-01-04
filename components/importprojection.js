@@ -44,6 +44,10 @@ const getState = () => {
     let errors = false;
     const formattedProjection = rawProjection.split('\n').map((line) => {
 
+      if (line === 'Name,ID,Projection,Ownership') {
+        return 'HEADER';
+      }
+
       const [player, projection, ownership] = line.indexOf(',') > 0 ? line.split(',') : line.split('\t');
       const result = {
         player,
@@ -73,6 +77,10 @@ const getState = () => {
       return result;
     });
 
+    if (formattedProjection && formattedProjection[0] === 'HEADER') {
+      formattedProjection.shift();
+    }
+
     if (!errors) {
       dispatch({
         type: 'SET_PROJECTION',
@@ -87,10 +95,18 @@ const getState = () => {
       const format = (player) => {
         return `${player.displayName},${player.draftableId},,50`;
       };
-      const header = "Delete the player name column and this row\n"
+      const header = "Do not copy the player name column as well as this row\nName,ID,Projection,Ownership\n"
       const csv = "data:text/csv;charset=utf-8," + header + players.map(format).join('\n');
-      const { encodeURI, open } = window;
-      open(encodeURI(csv));
+
+      const { encodeURI } = window;
+      const { createElement, body } = document
+
+      const downloadLink = createElement("a");
+      downloadLink.href = encodeURI(csv);
+      downloadLink.download = `${selectedSlate} - Projections.csv`;
+      body.appendChild(downloadLink);
+      downloadLink.click();
+      body.removeChild(downloadLink);
     }
   };
 
@@ -136,8 +152,14 @@ const ImportProjection  = () => {
     padding: 8
   };
 
-  const buttonContainerStyle = {
+  const buttonsContainerStyle = {
+    display: 'flex',
+    flexDirection: 'row',
     paddingBottom: 24
+  };
+
+  const buttonContainerStyle = {
+    paddingRight: 24
   }
 
   const buttonStyle = {
@@ -154,6 +176,12 @@ const ImportProjection  = () => {
       <h2 style={{ marginTop: 0 }}>Your Projections</h2>
       <div style={cardContainer}>
         <Card>
+          { !projection && (
+            <div style={infoContainer}>
+              DFS Solver is a Bring Your Own Projection system.  You'll need to copy and paste your projections into the text area below.
+              Use the Export Template button to download a sheet with proper player id's for your selected slate.
+            </div>
+          )}
           {importErrors && !!importErrors.length && (
             <div style={infoContainer}>
               <h3 style={{ marginTop: 0 }}>Import Has Errors</h3>
@@ -177,12 +205,13 @@ const ImportProjection  = () => {
               </div>
             )
           }
-          <div style={buttonContainerStyle}>
-            <Button variant="contained" onClick={exportTemplate} color="secondary" style={buttonStyle}>Export Template</Button>
-            <div>Download a csv template which can be used to fill in projections</div>
-          </div>
-          <div style={buttonContainerStyle}>
-            <Button variant="contained" onClick={importProjection} color="primary" style={buttonStyle}>Import</Button>
+          <div style={buttonsContainerStyle}>
+            <div style={buttonContainerStyle}>
+              <Button variant="contained" onClick={importProjection} color="primary" style={buttonStyle}>Import Projections</Button>
+            </div>
+            <div style={buttonContainerStyle}>
+              <Button variant="contained" onClick={exportTemplate} color="secondary" style={buttonStyle}>Export Template</Button>
+            </div>
           </div>
           <TextField
             id="standard-multiline-static"
