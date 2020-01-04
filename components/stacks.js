@@ -4,6 +4,7 @@ import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import Slider from '@material-ui/core/Slider';
 import Input from '@material-ui/core/Input';
 import Button from '@material-ui/core/Button';
+import { log } from './utils';
 
 const getState = () => {
   const dispatch = useDispatch();
@@ -57,6 +58,7 @@ const Stacks = () => {
 
   const remove = (i) => {
     return () => {
+      log('stack remove');
       removeStack(i)
     }
   };

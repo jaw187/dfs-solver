@@ -3,6 +3,7 @@ import Joi from '@hapi/joi';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import { log } from './utils';
 
 const getState = () => {
   const dispatch = useDispatch();
@@ -22,9 +23,12 @@ const getState = () => {
   };
 
   const importProjection = () => {
+    log('import');
+
     dispatch({ type: 'CLEAR_IMPORT_ERRORS' });
 
     if (!rawProjection) {
+      log('import error empty textarea')
       return dispatch({
         type: 'ADD_IMPORT_ERROR',
         payload: new Error('empty textarea')
@@ -57,6 +61,7 @@ const getState = () => {
 
       if (players[player]) {
         errors = true;
+        log('import error duplicate player')
         dispatch({
           type: 'ADD_IMPORT_ERROR',
           payload: new Error(`Duplicate player - ${player}`)
@@ -68,6 +73,7 @@ const getState = () => {
       const validation = validationSchema.validate(result);
       if (validation.error) {
         errors = true;
+        log('import error validation error')
         dispatch({
           type: 'ADD_IMPORT_ERROR',
           payload: validation
@@ -78,6 +84,7 @@ const getState = () => {
     }).filter((result) => result !== 'REMOVE');
 
     if (!errors) {
+      log(`import ${formattedProjection.length} records`)
       dispatch({
         type: 'SET_PROJECTION',
         payload: formattedProjection
@@ -87,6 +94,7 @@ const getState = () => {
 
   const exportTemplate = () => {
     if (slates && selectedSlate) {
+      log(`export template`)
       const { players } = slates[selectedSlate];
       const format = (player) => {
         return `${player.displayName},${player.draftableId},,50`;
@@ -95,14 +103,13 @@ const getState = () => {
       const csv = "data:text/csv;charset=utf-8," + header + players.map(format).join('\n');
 
       const { encodeURI } = window;
-      const { createElement, body } = document
 
-      const downloadLink = createElement("a");
+      const downloadLink = document.createElement("a");
       downloadLink.href = encodeURI(csv);
       downloadLink.download = `${selectedSlate} - Projections.csv`;
-      body.appendChild(downloadLink);
+      document.body.appendChild(downloadLink);
       downloadLink.click();
-      body.removeChild(downloadLink);
+      document.body.removeChild(downloadLink);
     }
   };
 

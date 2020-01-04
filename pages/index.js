@@ -87,7 +87,7 @@ const Index = () => {
       <StackBuilder />
       <Generator />
       <Lineups />
-      <img src="https://logs-01.loggly.com/inputs/8a465978-add2-4b58-9d57-02f8869b2f17.gif?source=pixel&data=wut" />
+      <img src="https://logs-01.loggly.com/inputs/8a465978-add2-4b58-9d57-02f8869b2f17.gif?source=pixel&data=load" />
     </div>
   );
 }

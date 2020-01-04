@@ -2,6 +2,7 @@ import React from "react";
 import Card from "./card"
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import Stacks from "./stacks";
+import { log } from './utils';
 
 const getState = () => {
   const dispatch = useDispatch();
@@ -70,6 +71,7 @@ const StackBuilder = () => {
   };
 
   const add = () => {
+    log('stack add')
     addStack();
     clear();
   };

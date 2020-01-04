@@ -1,8 +1,8 @@
 import Card from './card';
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import Solver from "../solver/index";
-import OwnershipWatcher from '../solver/ownership';
 import clone from 'lodash/clone';
+import { log } from './utils';
 
 const { Models, players, Worker } = Solver;
 
@@ -78,6 +78,7 @@ const Generator = () => {
   const type = slate.GameType.Name.toLowerCase();
 
   const generate = () => {
+    log('generate');
     const playersForModel = players.convertPlayers(pool, projection, sport, site, type);
 
     let n = 0;
@@ -112,6 +113,7 @@ const Generator = () => {
     worker.postMessage({ action: 'solve' });
     worker.addEventListener('message', (event) => {
       const results = event.data;
+      log(`generated ${results.length} lineups`);
       if (results.length) {
         addResults(results);
       }
@@ -130,7 +132,7 @@ const Generator = () => {
   return (
     <Card>
       <h2>Generator</h2>
-      <button onClick={generate}>Generateee</button>
+      <button onClick={generate}>Generate</button>
       <ul>
       {
         stacks.map((stack, i) => (
