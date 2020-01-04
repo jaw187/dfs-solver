@@ -88,7 +88,7 @@ module.exports =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 3);
+/******/ 	return __webpack_require__(__webpack_require__.s = 4);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -144,10 +144,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-redux */ "react-redux");
 /* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react_redux__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _solver_index__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../solver/index */ "./solver/index.js");
-/* harmony import */ var _solver_ownership__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../solver/ownership */ "./solver/ownership.js");
-/* harmony import */ var _solver_ownership__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_solver_ownership__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var lodash_clone__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! lodash/clone */ "lodash/clone");
-/* harmony import */ var lodash_clone__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(lodash_clone__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var lodash_clone__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lodash/clone */ "lodash/clone");
+/* harmony import */ var lodash_clone__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(lodash_clone__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utils */ "./components/utils.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_utils__WEBPACK_IMPORTED_MODULE_5__);
 var _jsxFileName = "/Users/jwesto1/Code/jaw187/dfs-solver/components/generator.js";
 
 var __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;
@@ -254,6 +254,7 @@ const Generator = () => {
   const type = slate.GameType.Name.toLowerCase();
 
   const generate = () => {
+    Object(_utils__WEBPACK_IMPORTED_MODULE_5__["log"])('generate');
     const playersForModel = players.convertPlayers(pool, projection, sport, site, type);
     let n = 0;
     stackCounts.forEach(count => {
@@ -261,7 +262,7 @@ const Generator = () => {
     });
     const worker = new Worker();
     stacks.forEach((stack, i) => {
-      const stackPlayers = lodash_clone__WEBPACK_IMPORTED_MODULE_5___default()(playersForModel);
+      const stackPlayers = lodash_clone__WEBPACK_IMPORTED_MODULE_4___default()(playersForModel);
       const model = Models[sport][site][type](stackPlayers); // Force players in stack into lineup
 
       stack.forEach(player => model.constraints[player.draftableId] = {
@@ -293,6 +294,7 @@ const Generator = () => {
     });
     worker.addEventListener('message', event => {
       const results = event.data;
+      Object(_utils__WEBPACK_IMPORTED_MODULE_5__["log"])(`generated ${results.length} lineups`);
 
       if (results.length) {
         addResults(results);
@@ -313,33 +315,33 @@ const Generator = () => {
   return __jsx(_card__WEBPACK_IMPORTED_MODULE_1__["default"], {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 131
+      lineNumber: 133
     },
     __self: undefined
   }, __jsx("h2", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 132
+      lineNumber: 134
     },
     __self: undefined
   }, "Generator"), __jsx("button", {
     onClick: generate,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 133
+      lineNumber: 135
     },
     __self: undefined
-  }, "Generateee"), __jsx("ul", {
+  }, "Generate"), __jsx("ul", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 134
+      lineNumber: 136
     },
     __self: undefined
   }, stacks.map((stack, i) => __jsx("li", {
     key: i,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 137
+      lineNumber: 139
     },
     __self: undefined
   }, "Stack with ", stackCounts[i], " lineups"))));
@@ -403,9 +405,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _material_ui_core_TextField__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_material_ui_core_TextField__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _material_ui_core_Button__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @material-ui/core/Button */ "@material-ui/core/Button");
 /* harmony import */ var _material_ui_core_Button__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_material_ui_core_Button__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./utils */ "./components/utils.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_utils__WEBPACK_IMPORTED_MODULE_6__);
 var _jsxFileName = "/Users/jwesto1/Code/jaw187/dfs-solver/components/importprojection.js";
 
 var __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;
+
 
 
 
@@ -429,11 +434,13 @@ const getState = () => {
   };
 
   const importProjection = () => {
+    Object(_utils__WEBPACK_IMPORTED_MODULE_6__["log"])('import');
     dispatch({
       type: 'CLEAR_IMPORT_ERRORS'
     });
 
     if (!rawProjection) {
+      Object(_utils__WEBPACK_IMPORTED_MODULE_6__["log"])('import error empty textarea');
       return dispatch({
         type: 'ADD_IMPORT_ERROR',
         payload: new Error('empty textarea')
@@ -451,6 +458,11 @@ const getState = () => {
     let errors = false;
     const formattedProjection = rawProjection.split('\n').map(line => {
       const [player, projection, ownership] = line.indexOf(',') > 0 ? line.split(',') : line.split('\t');
+
+      if (player === 'ID' || player === '') {
+        return 'REMOVE';
+      }
+
       const result = {
         player,
         value: Number(projection),
@@ -459,6 +471,7 @@ const getState = () => {
 
       if (players[player]) {
         errors = true;
+        Object(_utils__WEBPACK_IMPORTED_MODULE_6__["log"])('import error duplicate player');
         dispatch({
           type: 'ADD_IMPORT_ERROR',
           payload: new Error(`Duplicate player - ${player}`)
@@ -470,6 +483,7 @@ const getState = () => {
 
       if (validation.error) {
         errors = true;
+        Object(_utils__WEBPACK_IMPORTED_MODULE_6__["log"])('import error validation error');
         dispatch({
           type: 'ADD_IMPORT_ERROR',
           payload: validation
@@ -477,9 +491,10 @@ const getState = () => {
       }
 
       return result;
-    });
+    }).filter(result => result !== 'REMOVE');
 
     if (!errors) {
+      Object(_utils__WEBPACK_IMPORTED_MODULE_6__["log"])(`import ${formattedProjection.length} records`);
       dispatch({
         type: 'SET_PROJECTION',
         payload: formattedProjection
@@ -489,6 +504,7 @@ const getState = () => {
 
   const exportTemplate = () => {
     if (slates && selectedSlate) {
+      Object(_utils__WEBPACK_IMPORTED_MODULE_6__["log"])(`export template`);
       const {
         players
       } = slates[selectedSlate];
@@ -497,13 +513,17 @@ const getState = () => {
         return `${player.displayName},${player.draftableId},,50`;
       };
 
-      const header = "Delete the player name column and this row\n";
+      const header = "Do not copy the player name column as well as this row\nName,ID,Projection,Ownership\n";
       const csv = "data:text/csv;charset=utf-8," + header + players.map(format).join('\n');
       const {
-        encodeURI,
-        open
+        encodeURI
       } = window;
-      open(encodeURI(csv));
+      const downloadLink = document.createElement("a");
+      downloadLink.href = encodeURI(csv);
+      downloadLink.download = `${selectedSlate} - Projections.csv`;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
     }
   };
 
@@ -552,8 +572,13 @@ const ImportProjection = () => {
     width: 480,
     padding: 8
   };
-  const buttonContainerStyle = {
+  const buttonsContainerStyle = {
+    display: 'flex',
+    flexDirection: 'row',
     paddingBottom: 24
+  };
+  const buttonContainerStyle = {
+    paddingRight: 24
   };
   const buttonStyle = {
     paddingLeft: 36,
@@ -566,7 +591,7 @@ const ImportProjection = () => {
     style: componentContainer,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 153
+      lineNumber: 178
     },
     __self: undefined
   }, __jsx("h2", {
@@ -575,27 +600,34 @@ const ImportProjection = () => {
     },
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 154
+      lineNumber: 179
     },
     __self: undefined
   }, "Your Projections"), __jsx("div", {
     style: cardContainer,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 155
+      lineNumber: 180
     },
     __self: undefined
   }, __jsx(_card__WEBPACK_IMPORTED_MODULE_1__["default"], {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 156
+      lineNumber: 181
     },
     __self: undefined
-  }, importErrors && !!importErrors.length && __jsx("div", {
+  }, !projection && __jsx("div", {
     style: infoContainer,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 158
+      lineNumber: 183
+    },
+    __self: undefined
+  }, "DFS Solver is a Bring Your Own Projection system.  You'll need to copy and paste your projections into the text area below. Use the Export Template button to download a sheet with proper player id's for your selected slate."), importErrors && !!importErrors.length && __jsx("div", {
+    style: infoContainer,
+    __source: {
+      fileName: _jsxFileName,
+      lineNumber: 189
     },
     __self: undefined
   }, __jsx("h3", {
@@ -604,26 +636,26 @@ const ImportProjection = () => {
     },
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 159
+      lineNumber: 190
     },
     __self: undefined
   }, "Import Has Errors"), __jsx("ul", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 160
+      lineNumber: 191
     },
     __self: undefined
   }, importErrors.map(err => __jsx("li", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 162
+      lineNumber: 193
     },
     __self: undefined
   }, err.error && err.error.toString() || err.toString())))), projection && __jsx("div", {
     style: infoContainer,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 169
+      lineNumber: 200
     },
     __self: undefined
   }, __jsx("h3", {
@@ -632,43 +664,27 @@ const ImportProjection = () => {
     },
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 170
+      lineNumber: 201
     },
     __self: undefined
   }, "Current Projection"), __jsx("div", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 171
+      lineNumber: 202
     },
     __self: undefined
   }, `Projections for ${projection.length} players`)), __jsx("div", {
+    style: buttonsContainerStyle,
+    __source: {
+      fileName: _jsxFileName,
+      lineNumber: 211
+    },
+    __self: undefined
+  }, __jsx("div", {
     style: buttonContainerStyle,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 180
-    },
-    __self: undefined
-  }, __jsx(_material_ui_core_Button__WEBPACK_IMPORTED_MODULE_5___default.a, {
-    variant: "contained",
-    onClick: exportTemplate,
-    color: "secondary",
-    style: buttonStyle,
-    __source: {
-      fileName: _jsxFileName,
-      lineNumber: 181
-    },
-    __self: undefined
-  }, "Export Template"), __jsx("div", {
-    __source: {
-      fileName: _jsxFileName,
-      lineNumber: 182
-    },
-    __self: undefined
-  }, "Download a csv template which can be used to fill in projections")), __jsx("div", {
-    style: buttonContainerStyle,
-    __source: {
-      fileName: _jsxFileName,
-      lineNumber: 184
+      lineNumber: 212
     },
     __self: undefined
   }, __jsx(_material_ui_core_Button__WEBPACK_IMPORTED_MODULE_5___default.a, {
@@ -678,10 +694,27 @@ const ImportProjection = () => {
     style: buttonStyle,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 185
+      lineNumber: 213
     },
     __self: undefined
-  }, "Import")), __jsx(_material_ui_core_TextField__WEBPACK_IMPORTED_MODULE_4___default.a, {
+  }, "Import Projections")), __jsx("div", {
+    style: buttonContainerStyle,
+    __source: {
+      fileName: _jsxFileName,
+      lineNumber: 215
+    },
+    __self: undefined
+  }, __jsx(_material_ui_core_Button__WEBPACK_IMPORTED_MODULE_5___default.a, {
+    variant: "contained",
+    onClick: exportTemplate,
+    color: "secondary",
+    style: buttonStyle,
+    __source: {
+      fileName: _jsxFileName,
+      lineNumber: 216
+    },
+    __self: undefined
+  }, "Export Template"))), __jsx(_material_ui_core_TextField__WEBPACK_IMPORTED_MODULE_4___default.a, {
     id: "standard-multiline-static",
     label: "Import projections",
     multiline: true,
@@ -692,7 +725,7 @@ const ImportProjection = () => {
     onChange: onChange,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 187
+      lineNumber: 219
     },
     __self: undefined
   }))));
@@ -719,8 +752,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-redux */ "react-redux");
 /* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(react_redux__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _solver_index__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../solver/index */ "./solver/index.js");
-/* harmony import */ var _solver_ownership__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../solver/ownership */ "./solver/ownership.js");
-/* harmony import */ var _solver_ownership__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_solver_ownership__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utils */ "./components/utils.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_utils__WEBPACK_IMPORTED_MODULE_5__);
 
 var _jsxFileName = "/Users/jwesto1/Code/jaw187/dfs-solver/components/lineups.js";
 
@@ -844,16 +877,22 @@ const Lineups = () => {
   };
 
   const exportToCSV = () => {
+    Object(_utils__WEBPACK_IMPORTED_MODULE_5__["log"])('export linieups');
     const header = headers[sport][site][type];
     const csv = "data:text/csv;charset=utf-8," + header + results.map(exporters[sport][site][type]).join('\n');
     const {
-      encodeURI,
-      open
+      encodeURI
     } = window;
-    open(encodeURI(csv));
+    const downloadLink = document.createElement("a");
+    downloadLink.href = encodeURI(csv);
+    downloadLink.download = `${selectedSlate} - Lineups.csv`;
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
   };
 
   const remove = i => {
+    Object(_utils__WEBPACK_IMPORTED_MODULE_5__["log"])('remove lineup');
     return () => removeLineup(i);
   };
 
@@ -908,68 +947,68 @@ const Lineups = () => {
           style: lineupStyle,
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 159
+            lineNumber: 168
           },
           __self: undefined
         }, __jsx("button", {
           onClick: remove(i),
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 160
+            lineNumber: 169
           },
           __self: undefined
         }, "Remove"), __jsx("div", {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 161
+            lineNumber: 170
           },
           __self: undefined
         }, formatPlayer(result.lineup.qb)), __jsx("div", {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 162
+            lineNumber: 171
           },
           __self: undefined
         }, formatPlayer(result.lineup.rbs[0])), __jsx("div", {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 163
+            lineNumber: 172
           },
           __self: undefined
         }, formatPlayer(result.lineup.rbs[1])), __jsx("div", {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 164
+            lineNumber: 173
           },
           __self: undefined
         }, formatPlayer(result.lineup.wrs[0])), __jsx("div", {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 165
+            lineNumber: 174
           },
           __self: undefined
         }, formatPlayer(result.lineup.wrs[1])), __jsx("div", {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 166
+            lineNumber: 175
           },
           __self: undefined
         }, formatPlayer(result.lineup.wrs[2])), __jsx("div", {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 167
+            lineNumber: 176
           },
           __self: undefined
         }, formatPlayer(result.lineup.te)), __jsx("div", {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 168
+            lineNumber: 177
           },
           __self: undefined
         }, formatPlayer(result.lineup.flex)), __jsx("div", {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 169
+            lineNumber: 178
           },
           __self: undefined
         }, formatPlayer(result.lineup.dst)))
@@ -982,50 +1021,50 @@ const Lineups = () => {
           style: lineupStyle,
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 177
+            lineNumber: 186
           },
           __self: undefined
         }, __jsx("button", {
           onClick: remove(i),
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 178
+            lineNumber: 187
           },
           __self: undefined
         }, "Remove"), __jsx("div", {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 179
+            lineNumber: 188
           },
           __self: undefined
         }, formatPlayer(result.lineup.g[0])), __jsx("div", {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 180
+            lineNumber: 189
           },
           __self: undefined
         }, formatPlayer(result.lineup.g[1])), __jsx("div", {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 181
+            lineNumber: 190
           },
           __self: undefined
         }, formatPlayer(result.lineup.g[2])), __jsx("div", {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 182
+            lineNumber: 191
           },
           __self: undefined
         }, formatPlayer(result.lineup.g[3])), __jsx("div", {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 183
+            lineNumber: 192
           },
           __self: undefined
         }, formatPlayer(result.lineup.g[4])), __jsx("div", {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 184
+            lineNumber: 193
           },
           __self: undefined
         }, formatPlayer(result.lineup.g[5])))
@@ -1036,7 +1075,7 @@ const Lineups = () => {
     style: componentContainer,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 192
+      lineNumber: 201
     },
     __self: undefined
   }, __jsx("h2", {
@@ -1045,20 +1084,20 @@ const Lineups = () => {
     },
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 193
+      lineNumber: 202
     },
     __self: undefined
   }, "Lineups"), __jsx("div", {
     style: cardContainer,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 194
+      lineNumber: 203
     },
     __self: undefined
   }, __jsx(_card__WEBPACK_IMPORTED_MODULE_2__["default"], {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 195
+      lineNumber: 204
     },
     __self: undefined
   }, __jsx("h3", {
@@ -1067,32 +1106,32 @@ const Lineups = () => {
     },
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 196
+      lineNumber: 205
     },
     __self: undefined
   }, "Ownership"), !!ownership.length && __jsx("div", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 199
+      lineNumber: 208
     },
     __self: undefined
   }, ownership.map(data => __jsx("div", {
     style: ownershipPlayerStyle,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 202
+      lineNumber: 211
     },
     __self: undefined
   }, data.player, " - ", data.count, " - ", data.percentage, "%")))), __jsx(_card__WEBPACK_IMPORTED_MODULE_2__["default"], {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 211
+      lineNumber: 220
     },
     __self: undefined
   }, !!results.length && __jsx("div", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 214
+      lineNumber: 223
     },
     __self: undefined
   }, __jsx("h3", {
@@ -1101,21 +1140,21 @@ const Lineups = () => {
     },
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 215
+      lineNumber: 224
     },
     __self: undefined
   }, results.length, " lineups"), __jsx("button", {
     onClick: exportToCSV,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 216
+      lineNumber: 225
     },
     __self: undefined
   }, "Export"), __jsx("div", {
     style: containerStyle,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 217
+      lineNumber: 226
     },
     __self: undefined
   }, results.map(lineupFormats[sport][site][type]))))));
@@ -1581,6 +1620,23 @@ const Pool = () => {
       lineNumber: 236
     },
     __self: undefined
+  }, __jsx("div", {
+    style: {
+      color: 'red',
+      paddingBottom: 24
+    },
+    __source: {
+      fileName: _jsxFileName,
+      lineNumber: 237
+    },
+    __self: undefined
+  }, "Player names in red indicate missing projection")), __jsx("div", {
+    style: cardContainer,
+    __source: {
+      fileName: _jsxFileName,
+      lineNumber: 239
+    },
+    __self: undefined
   }, positionCard("QB"), positionCard("RB"), positionCard("WR"), positionCard("TE"), positionCard("DST"), positionCard("G")));
 };
 
@@ -1801,8 +1857,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-redux */ "react-redux");
 /* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react_redux__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _stacks__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./stacks */ "./components/stacks.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utils */ "./components/utils.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_utils__WEBPACK_IMPORTED_MODULE_4__);
 var _jsxFileName = "/Users/jwesto1/Code/jaw187/dfs-solver/components/stackbuilder.js";
 var __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;
+
 
 
 
@@ -1875,7 +1934,7 @@ const StackBuilder = () => {
     return __jsx("div", {
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 48
+        lineNumber: 49
       },
       __self: undefined
     }, "Pick players for pool first.");
@@ -1903,6 +1962,7 @@ const StackBuilder = () => {
   };
 
   const add = () => {
+    Object(_utils__WEBPACK_IMPORTED_MODULE_4__["log"])('stack add');
     addStack();
     clear();
   };
@@ -1920,13 +1980,13 @@ const StackBuilder = () => {
     style: componentContainer,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 89
+      lineNumber: 91
     },
     __self: undefined
   }, __jsx("div", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 90
+      lineNumber: 92
     },
     __self: undefined
   }, __jsx("h2", {
@@ -1935,26 +1995,26 @@ const StackBuilder = () => {
     },
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 91
+      lineNumber: 93
     },
     __self: undefined
   }, "Stack Builder"), __jsx("div", {
     style: cardContainer,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 92
+      lineNumber: 94
     },
     __self: undefined
   }, __jsx(_card__WEBPACK_IMPORTED_MODULE_1__["default"], {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 93
+      lineNumber: 95
     },
     __self: undefined
   }, __jsx("div", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 94
+      lineNumber: 96
     },
     __self: undefined
   }, __jsx("div", {
@@ -1964,7 +2024,7 @@ const StackBuilder = () => {
     },
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 95
+      lineNumber: 97
     },
     __self: undefined
   }, __jsx("div", {
@@ -1973,13 +2033,13 @@ const StackBuilder = () => {
     },
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 99
+      lineNumber: 101
     },
     __self: undefined
   }, __jsx("h3", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 100
+      lineNumber: 102
     },
     __self: undefined
   }, "Players"), pool && pool.map((player, i) => {
@@ -1988,7 +2048,7 @@ const StackBuilder = () => {
     return __jsx("div", {
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 107
+        lineNumber: 109
       },
       __self: undefined
     }, __jsx("input", {
@@ -1998,7 +2058,7 @@ const StackBuilder = () => {
       key: i,
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 108
+        lineNumber: 110
       },
       __self: undefined
     }), player.displayName, " - $", player.salary);
@@ -2009,58 +2069,58 @@ const StackBuilder = () => {
     },
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 114
+      lineNumber: 116
     },
     __self: undefined
   }, __jsx("h3", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 115
+      lineNumber: 117
     },
     __self: undefined
   }, "Stack"), __jsx("ul", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 116
+      lineNumber: 118
     },
     __self: undefined
   }, stack && stack.map((player, i) => __jsx("li", {
     key: i,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 119
+      lineNumber: 121
     },
     __self: undefined
   }, player.displayName))), stack && stack.length > 1 && __jsx("div", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 125
+      lineNumber: 127
     },
     __self: undefined
   }, __jsx("button", {
     onClick: add,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 126
+      lineNumber: 128
     },
     __self: undefined
   }, "Add"), __jsx("button", {
     onClick: clear,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 127
+      lineNumber: 129
     },
     __self: undefined
   }, "Clear")))))))), __jsx("div", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 137
+      lineNumber: 139
     },
     __self: undefined
   }, __jsx(_stacks__WEBPACK_IMPORTED_MODULE_3__["default"], {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 138
+      lineNumber: 140
     },
     __self: undefined
   })));
@@ -2090,8 +2150,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _material_ui_core_Input__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_material_ui_core_Input__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _material_ui_core_Button__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @material-ui/core/Button */ "@material-ui/core/Button");
 /* harmony import */ var _material_ui_core_Button__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_material_ui_core_Button__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./utils */ "./components/utils.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_utils__WEBPACK_IMPORTED_MODULE_6__);
 var _jsxFileName = "/Users/jwesto1/Code/jaw187/dfs-solver/components/stacks.js";
 var __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;
+
 
 
 
@@ -2159,6 +2222,7 @@ const Stacks = () => {
   }
 
   const remove = i => {
+    Object(_utils__WEBPACK_IMPORTED_MODULE_6__["log"])('stack remove');
     return () => {
       removeStack(i);
     };
@@ -2218,7 +2282,7 @@ const Stacks = () => {
   return __jsx("div", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 122
+      lineNumber: 124
     },
     __self: undefined
   }, __jsx("h2", {
@@ -2227,14 +2291,14 @@ const Stacks = () => {
     },
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 123
+      lineNumber: 125
     },
     __self: undefined
   }, "Stacks"), __jsx("div", {
     style: cardContainer,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 124
+      lineNumber: 126
     },
     __self: undefined
   }, stacks.map((stack, j) => {
@@ -2245,7 +2309,7 @@ const Stacks = () => {
     return __jsx(_card__WEBPACK_IMPORTED_MODULE_1__["default"], {
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 132
+        lineNumber: 134
       },
       __self: undefined
     }, __jsx("div", {
@@ -2258,7 +2322,7 @@ const Stacks = () => {
       key: j,
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 133
+        lineNumber: 135
       },
       __self: undefined
     }, __jsx("div", {
@@ -2269,21 +2333,21 @@ const Stacks = () => {
       },
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 134
+        lineNumber: 136
       },
       __self: undefined
     }, __jsx("div", {
       onClick: move(j, 'left'),
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 135
+        lineNumber: 137
       },
       __self: undefined
     }, "Move Left"), __jsx("div", {
       onClick: move(j, 'right'),
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 136
+        lineNumber: 138
       },
       __self: undefined
     }, "Move Right")), __jsx("div", {
@@ -2292,20 +2356,20 @@ const Stacks = () => {
       },
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 138
+        lineNumber: 140
       },
       __self: undefined
     }, __jsx("ul", {
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 139
+        lineNumber: 141
       },
       __self: undefined
     }, stack.map((player, i) => __jsx("li", {
       key: i,
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 142
+        lineNumber: 144
       },
       __self: undefined
     }, player.displayName)))), __jsx("div", {
@@ -2315,7 +2379,7 @@ const Stacks = () => {
       },
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 147
+        lineNumber: 149
       },
       __self: undefined
     }, __jsx("div", {
@@ -2325,7 +2389,7 @@ const Stacks = () => {
       },
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 148
+        lineNumber: 150
       },
       __self: undefined
     }, "No. of lineups", __jsx(_material_ui_core_Slider__WEBPACK_IMPORTED_MODULE_3___default.a, {
@@ -2339,7 +2403,7 @@ const Stacks = () => {
       "aria-labelledby": "input-slider",
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 150
+        lineNumber: 152
       },
       __self: undefined
     })), __jsx("div", {
@@ -2348,7 +2412,7 @@ const Stacks = () => {
       },
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 161
+        lineNumber: 163
       },
       __self: undefined
     }, __jsx(_material_ui_core_Input__WEBPACK_IMPORTED_MODULE_4___default.a, {
@@ -2365,7 +2429,7 @@ const Stacks = () => {
       },
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 162
+        lineNumber: 164
       },
       __self: undefined
     }))), __jsx("div", {
@@ -2375,7 +2439,7 @@ const Stacks = () => {
       },
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 177
+        lineNumber: 179
       },
       __self: undefined
     }), __jsx("div", {
@@ -2384,7 +2448,7 @@ const Stacks = () => {
       },
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 179
+        lineNumber: 181
       },
       __self: undefined
     }, __jsx(_material_ui_core_Button__WEBPACK_IMPORTED_MODULE_5___default.a, {
@@ -2393,7 +2457,7 @@ const Stacks = () => {
       color: "secondary",
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 180
+        lineNumber: 182
       },
       __self: undefined
     }, "Delete"))));
@@ -2401,6 +2465,24 @@ const Stacks = () => {
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (Stacks);
+
+/***/ }),
+
+/***/ "./components/utils.js":
+/*!*****************************!*\
+  !*** ./components/utils.js ***!
+  \*****************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+const log = data => {
+  const pixel = new Image();
+  pixel.src = `https://logs-01.loggly.com/inputs/8a465978-add2-4b58-9d57-02f8869b2f17.gif?source=pixel&data=${data}`;
+};
+
+module.exports = {
+  log
+};
 
 /***/ }),
 
@@ -4852,7 +4934,7 @@ const Index = () => {
   })), __jsx(styled_jsx_style__WEBPACK_IMPORTED_MODULE_8___default.a, {
     id: "2111231969",
     __self: undefined
-  }, "body{background:#f6f6f6;color:#333;margin:0;padding:0;font-family:'Ubuntu';overflow-x:scroll;}\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9qd2VzdG8xL0NvZGUvamF3MTg3L2Rmcy1zb2x2ZXIvcGFnZXMvaW5kZXguanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBcUV5QixBQUc4QixtQkFDUixXQUNGLFNBQ0MsVUFDVyxxQkFDSCxrQkFDcEIiLCJmaWxlIjoiL1VzZXJzL2p3ZXN0bzEvQ29kZS9qYXcxODcvZGZzLXNvbHZlci9wYWdlcy9pbmRleC5qcyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBIZWFkIGZyb20gJ25leHQvaGVhZCc7XG5pbXBvcnQgSGVhZGVyIGZyb20gICcuLi9jb21wb25lbnRzL2hlYWRlcic7XG5pbXBvcnQgSW1wb3J0UHJvamVjdGlvbiBmcm9tICcuLi9jb21wb25lbnRzL2ltcG9ydHByb2plY3Rpb24uanMnO1xuaW1wb3J0IFNsYXRlUGlja2VyIGZyb20gJy4uL2NvbXBvbmVudHMvc2xhdGVwaWNrZXInO1xuaW1wb3J0IFN0YWNrQnVpbGRlciBmcm9tICcuLi9jb21wb25lbnRzL3N0YWNrYnVpbGRlcic7XG5pbXBvcnQgR2VuZXJhdG9yIGZyb20gJy4uL2NvbXBvbmVudHMvZ2VuZXJhdG9yJztcbmltcG9ydCBQb29sIGZyb20gJy4uL2NvbXBvbmVudHMvcG9vbCc7XG5pbXBvcnQgTmF2aWdhdGlvbiBmcm9tICcuLi9jb21wb25lbnRzL25hdmlnYXRpb24nO1xuaW1wb3J0IExpbmV1cHMgZnJvbSAnLi4vY29tcG9uZW50cy9saW5ldXBzJztcbmltcG9ydCB7IHdpdGhSZWR1eCB9IGZyb20gJy4uL2xpYi9yZWR1eCc7XG5pbXBvcnQgZmV0Y2ggZnJvbSAnaXNvbW9ycGhpYy11bmZldGNoJztcblxuY29uc3Qgc2xhdGVzID0ge307XG5cbmNvbnN0IHN1cHBvcnRlZFNwb3J0cyA9IFsnTkZMJywgJ0dPTEYnXTtcbmNvbnN0IHN1cHBvcnRlZEdhbWVUeXBlcyA9IFsnQ2xhc3NpYyddO1xuXG5jb25zdCBnZXRQbGF5ZXJzID0gYXN5bmMgZnVuY3Rpb24gKHNsYXRlKSB7XG4gIGlmIChzdXBwb3J0ZWRTcG9ydHMuaW5jbHVkZXMoc2xhdGUuU3BvcnQpICYmIHNsYXRlLkdhbWVUeXBlICYmIHN1cHBvcnRlZEdhbWVUeXBlcy5pbmNsdWRlcyhzbGF0ZS5HYW1lVHlwZS5OYW1lKSkge1xuICAgIGNvbnN0IGRyYWZ0R3JvdXBJZCA9IHNsYXRlLkRyYWZ0R3JvdXBJZDtcbiAgICBpZiAoIXNsYXRlc1tkcmFmdEdyb3VwSWRdKSB7XG4gICAgICAvL0hhbmRsZSBlcnJycnJzc3Nkc1xuICAgICAgY29uc29sZS5sb2coYGh0dHA6Ly9hcGkuZHJhZnRraW5ncy5jb20vZHJhZnRncm91cHMvdjEvZHJhZnRncm91cHMvJHtkcmFmdEdyb3VwSWR9L2RyYWZ0YWJsZXM/Zm9ybWF0PWpzb25gKVxuICAgICAgY29uc3QgcGxheWVyc1JlcyA9IGF3YWl0IGZldGNoKGBodHRwOi8vYXBpLmRyYWZ0a2luZ3MuY29tL2RyYWZ0Z3JvdXBzL3YxL2RyYWZ0Z3JvdXBzLyR7ZHJhZnRHcm91cElkfS9kcmFmdGFibGVzP2Zvcm1hdD1qc29uYCwgeyBtb2RlOiAnbm8tY29ycycgfSk7XG5cbiAgICAgIGNvbnN0IHBsYXllcklkcyA9IFtdO1xuICAgICAgY29uc3QgcmF3UGxheWVycyA9IGF3YWl0IHBsYXllcnNSZXMuanNvbigpO1xuXG4gICAgICBjb25zdCBwbGF5ZXJzID0gcmF3UGxheWVycyAmJiByYXdQbGF5ZXJzLmRyYWZ0YWJsZXMgJiYgcmF3UGxheWVycy5kcmFmdGFibGVzLmZpbHRlcigocGxheWVyKSA9PiB7XG4gICAgICAgIGNvbnN0IGlkID0gcGxheWVyLnBsYXllcklkO1xuICAgICAgICBpZiAocGxheWVySWRzLmluY2x1ZGVzKGlkKSkge1xuICAgICAgICAgIHJldHVybiBmYWxzZTtcbiAgICAgICAgfVxuXG4gICAgICAgIHBsYXllcklkcy5wdXNoKGlkKTtcbiAgICAgICAgcmV0dXJuIHRydWU7XG4gICAgICB9KTtcblxuICAgICAgc2xhdGVzW2RyYWZ0R3JvdXBJZF0gPSB7XG4gICAgICAgIC4uLnNsYXRlLFxuICAgICAgICBwbGF5ZXJzXG4gICAgICB9O1xuICAgIH1cbiAgfVxufTtcblxuY29uc3QgY29udGFpbmVyU3R5bGUgPSB7XG4gIGJhY2tncm91bmRDb2xvcjogJyNmNmY2ZjYnLFxuICBoZWlnaHQ6ICcxMDAlJyxcbiAgd2lkdGg6ICcxMDAlJ1xufTtcblxuY29uc3QgdG9wQmFyU3R5bGUgPSB7XG4gIGJhY2tncm91bmRDb2xvcjogJyNmZmZmZmYnLFxuICBtYXJnaW46ICcwcHggMHB4IDE2cHggMHB4JyxcbiAgcGFkZGluZzogMTYsXG4gIGRpc3BsYXk6ICdmbGV4JyxcbiAgZmxleERpcmVjdGlvbjogJ3JvdycsXG4gIGJveFNoYWRvdzogJzFweCAxcHggMTdweCAtMXB4IGhzbGEoMCwgMCUsIDYzJSwgLjY5KSdcbn1cblxuY29uc3QgSW5kZXggPSAoKSA9PiB7XG4gIHJldHVybiAoXG4gICAgPGRpdiBzdHlsZT17Y29udGFpbmVyU3R5bGV9PlxuICAgICAgPEhlYWQ+XG4gICAgICAgIDxtZXRhIG5hbWU9XCJ2aWV3cG9ydFwiIGNvbnRlbnQ9XCJ3aWR0aD1kZXZpY2Utd2lkdGgsIGluaXRpYWwtc2NhbGU9MVwiIC8+XG4gICAgICAgIDxtZXRhIGNoYXJTZXQ9XCJ1dGYtOFwiIC8+XG4gICAgICAgIDxsaW5rIGhyZWY9XCJodHRwczovL2ZvbnRzLmdvb2dsZWFwaXMuY29tL2Nzcz9mYW1pbHk9VWJ1bnR1JmRpc3BsYXk9c3dhcFwiIHJlbD1cInN0eWxlc2hlZXRcIj48L2xpbms+XG4gICAgICA8L0hlYWQ+XG4gICAgICA8c3R5bGUganN4IGdsb2JhbD57YFxuICAgICAgICBib2R5IHtcbiAgICAgICAgICBiYWNrZ3JvdW5kOiAjZjZmNmY2O1xuICAgICAgICAgIGNvbG9yOiAjMzMzO1xuICAgICAgICAgIG1hcmdpbjogMDtcbiAgICAgICAgICBwYWRkaW5nOiAwO1xuICAgICAgICAgIGZvbnQtZmFtaWx5OiAnVWJ1bnR1JztcbiAgICAgICAgICBvdmVyZmxvdy14OiBzY3JvbGw7XG4gICAgICAgIH1cbiAgICAgIGB9PC9zdHlsZT5cbiAgICAgIDxkaXYgc3R5bGU9e3RvcEJhclN0eWxlfT5cbiAgICAgICAgPEhlYWRlciAvPlxuICAgICAgICA8TmF2aWdhdGlvbiAvPlxuICAgICAgPC9kaXY+XG4gICAgICA8U2xhdGVQaWNrZXIgLz5cbiAgICAgIDxJbXBvcnRQcm9qZWN0aW9uIC8+XG4gICAgICA8UG9vbCAvPlxuICAgICAgPFN0YWNrQnVpbGRlciAvPlxuICAgICAgPEdlbmVyYXRvciAvPlxuICAgICAgPExpbmV1cHMgLz5cbiAgICAgIDxpbWcgc3JjPVwiaHR0cHM6Ly9sb2dzLTAxLmxvZ2dseS5jb20vaW5wdXRzLzhhNDY1OTc4LWFkZDItNGI1OC05ZDU3LTAyZjg4NjliMmYxNy5naWY/c291cmNlPXBpeGVsJmRhdGE9d3V0XCIgLz5cbiAgICA8L2Rpdj5cbiAgKTtcbn1cblxuLy8gVGhpcyBpcyB0byB0cnkgYW5kIHN0b3Agc3BhbW1pbmcgREtcbmxldCBmZXRjaGVkID0gZmFsc2U7XG5sZXQgZmV0Y2hpbmcgPSBmYWxzZTtcbmNvbnN0IHJlZnJlc2hTbGF0ZXNSYXRlID0gMTAwMCAqIDYwICogNjA7XG5jb25zdCBjbGVhclNsYXRlcyA9ICgpID0+IHtcbiAgT2JqZWN0LmtleXMoc2xhdGVzKS5mb3JFYWNoKChzbGF0ZSkgPT4ge1xuICAgIGRlbGV0ZSBzbGF0ZXNbc2xhdGVdO1xuICB9KTtcblxuICBmZXRjaGVkID0gZmFsc2U7XG4gIGZldGNoaW5nID0gZmFsc2U7XG59O1xuc2V0SW50ZXJ2YWwoY2xlYXJTbGF0ZXMsIHJlZnJlc2hTbGF0ZXNSYXRlKTtcblxuSW5kZXguZ2V0SW5pdGlhbFByb3BzID0gYXN5bmMgKHsgcmVkdXhTdG9yZSB9KSA9PiB7XG4gIGlmICghZmV0Y2hlZCAmJiAhZmV0Y2hpbmcpIHtcbiAgICBmZXRjaGluZyA9IHRydWU7XG4gICAgLy8gSGFuZGxlIGVycnJycnNcbiAgICAvLyBHZXQgYWxsIHNsYXRlc1xuICAgIC8vIE5lZWRzIHRvIGJlIGltcHJvdmVkIHN1Y2ggdGhhdCBlYWNoIHJlcXVlc3QgZG9lc24ndCB0cmlnZ2VyIGFuIG91dGdvaW5nIHJlcXVlc3RcbiAgICBjb25zb2xlLmxvZygnZ2V0dGluZyBzbGF0ZXMnKVxuICAgIGNvbnN0IHJlcyA9IGF3YWl0IGZldGNoKCdodHRwczovL3d3dy5kcmFmdGtpbmdzLmNvbS9saW5ldXAvZ2V0dXBjb21pbmdjb250ZXN0aW5mbycsIHsgbWV0aG9kOiAncG9zdCcsIG1vZGU6ICduby1jb3JzJyB9KTtcbiAgICBjb25zdCByYXdTbGF0ZXMgPSBhd2FpdCByZXMuanNvbigpO1xuXG4gICAgLy8gR2V0IHBsYXllcnMgZnJvbSBzbGF0ZVxuICAgIGF3YWl0IFByb21pc2UuYWxsKHJhd1NsYXRlcy5tYXAoZ2V0UGxheWVycykpO1xuICAgIGZldGNoZWQgPSB0cnVlO1xuICB9XG5cbiAgY29uc3QgeyBkaXNwYXRjaCB9ID0gcmVkdXhTdG9yZTtcbiAgY29uc29sZS5sb2coJ3NldHRpbmcgc2xhdGVzJykvLywgc2xhdGVzKVxuICBkaXNwYXRjaCh7XG4gICAgdHlwZTogJ1NFVF9TTEFURVMnLFxuICAgIHBheWxvYWQ6IHNsYXRlc1xuICB9KTtcblxuICByZXR1cm4ge307XG59O1xuXG5leHBvcnQgZGVmYXVsdCB3aXRoUmVkdXgoSW5kZXgpO1xuIl19 */\n/*@ sourceURL=/Users/jwesto1/Code/jaw187/dfs-solver/pages/index.js */"), __jsx("div", {
+  }, "body{background:#f6f6f6;color:#333;margin:0;padding:0;font-family:'Ubuntu';overflow-x:scroll;}\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9qd2VzdG8xL0NvZGUvamF3MTg3L2Rmcy1zb2x2ZXIvcGFnZXMvaW5kZXguanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBcUV5QixBQUc4QixtQkFDUixXQUNGLFNBQ0MsVUFDVyxxQkFDSCxrQkFDcEIiLCJmaWxlIjoiL1VzZXJzL2p3ZXN0bzEvQ29kZS9qYXcxODcvZGZzLXNvbHZlci9wYWdlcy9pbmRleC5qcyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBIZWFkIGZyb20gJ25leHQvaGVhZCc7XG5pbXBvcnQgSGVhZGVyIGZyb20gICcuLi9jb21wb25lbnRzL2hlYWRlcic7XG5pbXBvcnQgSW1wb3J0UHJvamVjdGlvbiBmcm9tICcuLi9jb21wb25lbnRzL2ltcG9ydHByb2plY3Rpb24uanMnO1xuaW1wb3J0IFNsYXRlUGlja2VyIGZyb20gJy4uL2NvbXBvbmVudHMvc2xhdGVwaWNrZXInO1xuaW1wb3J0IFN0YWNrQnVpbGRlciBmcm9tICcuLi9jb21wb25lbnRzL3N0YWNrYnVpbGRlcic7XG5pbXBvcnQgR2VuZXJhdG9yIGZyb20gJy4uL2NvbXBvbmVudHMvZ2VuZXJhdG9yJztcbmltcG9ydCBQb29sIGZyb20gJy4uL2NvbXBvbmVudHMvcG9vbCc7XG5pbXBvcnQgTmF2aWdhdGlvbiBmcm9tICcuLi9jb21wb25lbnRzL25hdmlnYXRpb24nO1xuaW1wb3J0IExpbmV1cHMgZnJvbSAnLi4vY29tcG9uZW50cy9saW5ldXBzJztcbmltcG9ydCB7IHdpdGhSZWR1eCB9IGZyb20gJy4uL2xpYi9yZWR1eCc7XG5pbXBvcnQgZmV0Y2ggZnJvbSAnaXNvbW9ycGhpYy11bmZldGNoJztcblxuY29uc3Qgc2xhdGVzID0ge307XG5cbmNvbnN0IHN1cHBvcnRlZFNwb3J0cyA9IFsnTkZMJywgJ0dPTEYnXTtcbmNvbnN0IHN1cHBvcnRlZEdhbWVUeXBlcyA9IFsnQ2xhc3NpYyddO1xuXG5jb25zdCBnZXRQbGF5ZXJzID0gYXN5bmMgZnVuY3Rpb24gKHNsYXRlKSB7XG4gIGlmIChzdXBwb3J0ZWRTcG9ydHMuaW5jbHVkZXMoc2xhdGUuU3BvcnQpICYmIHNsYXRlLkdhbWVUeXBlICYmIHN1cHBvcnRlZEdhbWVUeXBlcy5pbmNsdWRlcyhzbGF0ZS5HYW1lVHlwZS5OYW1lKSkge1xuICAgIGNvbnN0IGRyYWZ0R3JvdXBJZCA9IHNsYXRlLkRyYWZ0R3JvdXBJZDtcbiAgICBpZiAoIXNsYXRlc1tkcmFmdEdyb3VwSWRdKSB7XG4gICAgICAvL0hhbmRsZSBlcnJycnJzc3Nkc1xuICAgICAgY29uc29sZS5sb2coYGh0dHA6Ly9hcGkuZHJhZnRraW5ncy5jb20vZHJhZnRncm91cHMvdjEvZHJhZnRncm91cHMvJHtkcmFmdEdyb3VwSWR9L2RyYWZ0YWJsZXM/Zm9ybWF0PWpzb25gKVxuICAgICAgY29uc3QgcGxheWVyc1JlcyA9IGF3YWl0IGZldGNoKGBodHRwOi8vYXBpLmRyYWZ0a2luZ3MuY29tL2RyYWZ0Z3JvdXBzL3YxL2RyYWZ0Z3JvdXBzLyR7ZHJhZnRHcm91cElkfS9kcmFmdGFibGVzP2Zvcm1hdD1qc29uYCwgeyBtb2RlOiAnbm8tY29ycycgfSk7XG5cbiAgICAgIGNvbnN0IHBsYXllcklkcyA9IFtdO1xuICAgICAgY29uc3QgcmF3UGxheWVycyA9IGF3YWl0IHBsYXllcnNSZXMuanNvbigpO1xuXG4gICAgICBjb25zdCBwbGF5ZXJzID0gcmF3UGxheWVycyAmJiByYXdQbGF5ZXJzLmRyYWZ0YWJsZXMgJiYgcmF3UGxheWVycy5kcmFmdGFibGVzLmZpbHRlcigocGxheWVyKSA9PiB7XG4gICAgICAgIGNvbnN0IGlkID0gcGxheWVyLnBsYXllcklkO1xuICAgICAgICBpZiAocGxheWVySWRzLmluY2x1ZGVzKGlkKSkge1xuICAgICAgICAgIHJldHVybiBmYWxzZTtcbiAgICAgICAgfVxuXG4gICAgICAgIHBsYXllcklkcy5wdXNoKGlkKTtcbiAgICAgICAgcmV0dXJuIHRydWU7XG4gICAgICB9KTtcblxuICAgICAgc2xhdGVzW2RyYWZ0R3JvdXBJZF0gPSB7XG4gICAgICAgIC4uLnNsYXRlLFxuICAgICAgICBwbGF5ZXJzXG4gICAgICB9O1xuICAgIH1cbiAgfVxufTtcblxuY29uc3QgY29udGFpbmVyU3R5bGUgPSB7XG4gIGJhY2tncm91bmRDb2xvcjogJyNmNmY2ZjYnLFxuICBoZWlnaHQ6ICcxMDAlJyxcbiAgd2lkdGg6ICcxMDAlJ1xufTtcblxuY29uc3QgdG9wQmFyU3R5bGUgPSB7XG4gIGJhY2tncm91bmRDb2xvcjogJyNmZmZmZmYnLFxuICBtYXJnaW46ICcwcHggMHB4IDE2cHggMHB4JyxcbiAgcGFkZGluZzogMTYsXG4gIGRpc3BsYXk6ICdmbGV4JyxcbiAgZmxleERpcmVjdGlvbjogJ3JvdycsXG4gIGJveFNoYWRvdzogJzFweCAxcHggMTdweCAtMXB4IGhzbGEoMCwgMCUsIDYzJSwgLjY5KSdcbn1cblxuY29uc3QgSW5kZXggPSAoKSA9PiB7XG4gIHJldHVybiAoXG4gICAgPGRpdiBzdHlsZT17Y29udGFpbmVyU3R5bGV9PlxuICAgICAgPEhlYWQ+XG4gICAgICAgIDxtZXRhIG5hbWU9XCJ2aWV3cG9ydFwiIGNvbnRlbnQ9XCJ3aWR0aD1kZXZpY2Utd2lkdGgsIGluaXRpYWwtc2NhbGU9MVwiIC8+XG4gICAgICAgIDxtZXRhIGNoYXJTZXQ9XCJ1dGYtOFwiIC8+XG4gICAgICAgIDxsaW5rIGhyZWY9XCJodHRwczovL2ZvbnRzLmdvb2dsZWFwaXMuY29tL2Nzcz9mYW1pbHk9VWJ1bnR1JmRpc3BsYXk9c3dhcFwiIHJlbD1cInN0eWxlc2hlZXRcIj48L2xpbms+XG4gICAgICA8L0hlYWQ+XG4gICAgICA8c3R5bGUganN4IGdsb2JhbD57YFxuICAgICAgICBib2R5IHtcbiAgICAgICAgICBiYWNrZ3JvdW5kOiAjZjZmNmY2O1xuICAgICAgICAgIGNvbG9yOiAjMzMzO1xuICAgICAgICAgIG1hcmdpbjogMDtcbiAgICAgICAgICBwYWRkaW5nOiAwO1xuICAgICAgICAgIGZvbnQtZmFtaWx5OiAnVWJ1bnR1JztcbiAgICAgICAgICBvdmVyZmxvdy14OiBzY3JvbGw7XG4gICAgICAgIH1cbiAgICAgIGB9PC9zdHlsZT5cbiAgICAgIDxkaXYgc3R5bGU9e3RvcEJhclN0eWxlfT5cbiAgICAgICAgPEhlYWRlciAvPlxuICAgICAgICA8TmF2aWdhdGlvbiAvPlxuICAgICAgPC9kaXY+XG4gICAgICA8U2xhdGVQaWNrZXIgLz5cbiAgICAgIDxJbXBvcnRQcm9qZWN0aW9uIC8+XG4gICAgICA8UG9vbCAvPlxuICAgICAgPFN0YWNrQnVpbGRlciAvPlxuICAgICAgPEdlbmVyYXRvciAvPlxuICAgICAgPExpbmV1cHMgLz5cbiAgICAgIDxpbWcgc3JjPVwiaHR0cHM6Ly9sb2dzLTAxLmxvZ2dseS5jb20vaW5wdXRzLzhhNDY1OTc4LWFkZDItNGI1OC05ZDU3LTAyZjg4NjliMmYxNy5naWY/c291cmNlPXBpeGVsJmRhdGE9bG9hZFwiIC8+XG4gICAgPC9kaXY+XG4gICk7XG59XG5cbi8vIFRoaXMgaXMgdG8gdHJ5IGFuZCBzdG9wIHNwYW1taW5nIERLXG5sZXQgZmV0Y2hlZCA9IGZhbHNlO1xubGV0IGZldGNoaW5nID0gZmFsc2U7XG5jb25zdCByZWZyZXNoU2xhdGVzUmF0ZSA9IDEwMDAgKiA2MCAqIDYwO1xuY29uc3QgY2xlYXJTbGF0ZXMgPSAoKSA9PiB7XG4gIE9iamVjdC5rZXlzKHNsYXRlcykuZm9yRWFjaCgoc2xhdGUpID0+IHtcbiAgICBkZWxldGUgc2xhdGVzW3NsYXRlXTtcbiAgfSk7XG5cbiAgZmV0Y2hlZCA9IGZhbHNlO1xuICBmZXRjaGluZyA9IGZhbHNlO1xufTtcbnNldEludGVydmFsKGNsZWFyU2xhdGVzLCByZWZyZXNoU2xhdGVzUmF0ZSk7XG5cbkluZGV4LmdldEluaXRpYWxQcm9wcyA9IGFzeW5jICh7IHJlZHV4U3RvcmUgfSkgPT4ge1xuICBpZiAoIWZldGNoZWQgJiYgIWZldGNoaW5nKSB7XG4gICAgZmV0Y2hpbmcgPSB0cnVlO1xuICAgIC8vIEhhbmRsZSBlcnJycnJzXG4gICAgLy8gR2V0IGFsbCBzbGF0ZXNcbiAgICAvLyBOZWVkcyB0byBiZSBpbXByb3ZlZCBzdWNoIHRoYXQgZWFjaCByZXF1ZXN0IGRvZXNuJ3QgdHJpZ2dlciBhbiBvdXRnb2luZyByZXF1ZXN0XG4gICAgY29uc29sZS5sb2coJ2dldHRpbmcgc2xhdGVzJylcbiAgICBjb25zdCByZXMgPSBhd2FpdCBmZXRjaCgnaHR0cHM6Ly93d3cuZHJhZnRraW5ncy5jb20vbGluZXVwL2dldHVwY29taW5nY29udGVzdGluZm8nLCB7IG1ldGhvZDogJ3Bvc3QnLCBtb2RlOiAnbm8tY29ycycgfSk7XG4gICAgY29uc3QgcmF3U2xhdGVzID0gYXdhaXQgcmVzLmpzb24oKTtcblxuICAgIC8vIEdldCBwbGF5ZXJzIGZyb20gc2xhdGVcbiAgICBhd2FpdCBQcm9taXNlLmFsbChyYXdTbGF0ZXMubWFwKGdldFBsYXllcnMpKTtcbiAgICBmZXRjaGVkID0gdHJ1ZTtcbiAgfVxuXG4gIGNvbnN0IHsgZGlzcGF0Y2ggfSA9IHJlZHV4U3RvcmU7XG4gIGNvbnNvbGUubG9nKCdzZXR0aW5nIHNsYXRlcycpLy8sIHNsYXRlcylcbiAgZGlzcGF0Y2goe1xuICAgIHR5cGU6ICdTRVRfU0xBVEVTJyxcbiAgICBwYXlsb2FkOiBzbGF0ZXNcbiAgfSk7XG5cbiAgcmV0dXJuIHt9O1xufTtcblxuZXhwb3J0IGRlZmF1bHQgd2l0aFJlZHV4KEluZGV4KTtcbiJdfQ== */\n/*@ sourceURL=/Users/jwesto1/Code/jaw187/dfs-solver/pages/index.js */"), __jsx("div", {
     style: topBarStyle,
     className: "jsx-2111231969",
     __source: {
@@ -4909,7 +4991,7 @@ const Index = () => {
     },
     __self: undefined
   }), __jsx("img", {
-    src: "https://logs-01.loggly.com/inputs/8a465978-add2-4b58-9d57-02f8869b2f17.gif?source=pixel&data=wut",
+    src: "https://logs-01.loggly.com/inputs/8a465978-add2-4b58-9d57-02f8869b2f17.gif?source=pixel&data=load",
     className: "jsx-2111231969",
     __source: {
       fileName: _jsxFileName,
@@ -5102,99 +5184,6 @@ module.exports = {
     }
   }
 };
-
-/***/ }),
-
-/***/ "./solver/ownership.js":
-/*!*****************************!*\
-  !*** ./solver/ownership.js ***!
-  \*****************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-var _Object$defineProperty = __webpack_require__(/*! @babel/runtime-corejs2/core-js/object/define-property */ "./node_modules/@babel/runtime-corejs2/core-js/object/define-property.js");
-
-var _Object$defineProperties = __webpack_require__(/*! @babel/runtime-corejs2/core-js/object/define-properties */ "./node_modules/@babel/runtime-corejs2/core-js/object/define-properties.js");
-
-var _Object$getOwnPropertyDescriptors = __webpack_require__(/*! @babel/runtime-corejs2/core-js/object/get-own-property-descriptors */ "./node_modules/@babel/runtime-corejs2/core-js/object/get-own-property-descriptors.js");
-
-var _Object$getOwnPropertyDescriptor = __webpack_require__(/*! @babel/runtime-corejs2/core-js/object/get-own-property-descriptor */ "./node_modules/@babel/runtime-corejs2/core-js/object/get-own-property-descriptor.js");
-
-var _Object$getOwnPropertySymbols = __webpack_require__(/*! @babel/runtime-corejs2/core-js/object/get-own-property-symbols */ "./node_modules/@babel/runtime-corejs2/core-js/object/get-own-property-symbols.js");
-
-var _defineProperty = __webpack_require__(/*! @babel/runtime-corejs2/helpers/defineProperty */ "./node_modules/@babel/runtime-corejs2/helpers/defineProperty.js");
-
-var _Object$keys = __webpack_require__(/*! @babel/runtime-corejs2/core-js/object/keys */ "./node_modules/@babel/runtime-corejs2/core-js/object/keys.js");
-
-function ownKeys(object, enumerableOnly) { var keys = _Object$keys(object); if (_Object$getOwnPropertySymbols) { var symbols = _Object$getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return _Object$getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (_Object$getOwnPropertyDescriptors) { _Object$defineProperties(target, _Object$getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { _Object$defineProperty(target, key, _Object$getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-class OwnershipWatcher {
-  constructor({
-    players,
-    n,
-    stack,
-    lineupStrings
-  }) {
-    const pool = this.pool = players;
-    const lineupsAllowed = {};
-
-    _Object$keys(pool).forEach(player => {
-      const count = pool[player].ownership / 100 * n;
-      lineupsAllowed[player] = count >= 1 ? lineupsAllowed : 1;
-    });
-
-    this.lineupsAllowed = _objectSpread({}, lineupsAllowed);
-    this.originalLineupsAllowed = _objectSpread({}, lineupsAllowed);
-    this.stack = stack.map(player => player.draftableId);
-    this.lineupStrings = lineupStrings;
-  }
-
-  update(players) {
-    const {
-      lineupsAllowed,
-      lineupStrings
-    } = this;
-    const lineupString = players.sort((a, b) => a > b).join('');
-    lineupStrings.push(lineupString);
-    players.forEach(player => {
-      --lineupsAllowed[player]; // Remove players from pool
-
-      if (lineupsAllowed[player] < 1 && !this.stack.includes(Number(player))) {
-        delete this.pool[player];
-      }
-    });
-  }
-
-  validate(players) {
-    const {
-      lineupsAllowed,
-      lineupStrings
-    } = this;
-    const lineupString = players.sort((a, b) => a > b).join('');
-
-    if (lineupStrings.includes(lineupString)) {
-      return false;
-    }
-
-    const ineligiblePlayers = players.filter(player => {
-      if (lineupsAllowed[player] < 1) {
-        if (this.stack.includes(Number(player))) {
-          return false;
-        }
-
-        return true;
-      }
-
-      return false;
-    });
-    return ineligiblePlayers.length === 0;
-  }
-
-}
-
-module.exports = OwnershipWatcher;
 
 /***/ }),
 
@@ -5674,7 +5663,7 @@ const initializeStore = (preloadedState = initialState) => {
 
 /***/ }),
 
-/***/ 3:
+/***/ 4:
 /*!******************************!*\
   !*** multi ./pages/index.js ***!
   \******************************/

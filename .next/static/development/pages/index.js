@@ -52,10 +52,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _card__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./card */ "./components/card.js");
 /* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
 /* harmony import */ var _solver_index__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../solver/index */ "./solver/index.js");
-/* harmony import */ var _solver_ownership__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../solver/ownership */ "./solver/ownership.js");
-/* harmony import */ var _solver_ownership__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_solver_ownership__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var lodash_clone__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! lodash/clone */ "./node_modules/lodash/clone.js");
-/* harmony import */ var lodash_clone__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(lodash_clone__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var lodash_clone__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lodash/clone */ "./node_modules/lodash/clone.js");
+/* harmony import */ var lodash_clone__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(lodash_clone__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utils */ "./components/utils.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_utils__WEBPACK_IMPORTED_MODULE_5__);
 var _jsxFileName = "/Users/jwesto1/Code/jaw187/dfs-solver/components/generator.js";
 
 var __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;
@@ -177,6 +177,7 @@ var Generator = function Generator() {
   var type = slate.GameType.Name.toLowerCase();
 
   var generate = function generate() {
+    Object(_utils__WEBPACK_IMPORTED_MODULE_5__["log"])('generate');
     var playersForModel = players.convertPlayers(pool, projection, sport, site, type);
     var n = 0;
     stackCounts.forEach(function (count) {
@@ -184,7 +185,7 @@ var Generator = function Generator() {
     });
     var worker = new Worker();
     stacks.forEach(function (stack, i) {
-      var stackPlayers = lodash_clone__WEBPACK_IMPORTED_MODULE_5___default()(playersForModel);
+      var stackPlayers = lodash_clone__WEBPACK_IMPORTED_MODULE_4___default()(playersForModel);
       var model = Models[sport][site][type](stackPlayers); // Force players in stack into lineup
 
       stack.forEach(function (player) {
@@ -218,6 +219,7 @@ var Generator = function Generator() {
     });
     worker.addEventListener('message', function (event) {
       var results = event.data;
+      Object(_utils__WEBPACK_IMPORTED_MODULE_5__["log"])("generated ".concat(results.length, " lineups"));
 
       if (results.length) {
         addResults(results);
@@ -240,26 +242,26 @@ var Generator = function Generator() {
   return __jsx(_card__WEBPACK_IMPORTED_MODULE_1__["default"], {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 131
+      lineNumber: 133
     },
     __self: this
   }, __jsx("h2", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 132
+      lineNumber: 134
     },
     __self: this
   }, "Generator"), __jsx("button", {
     onClick: generate,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 133
+      lineNumber: 135
     },
     __self: this
-  }, "Generateee"), __jsx("ul", {
+  }, "Generate"), __jsx("ul", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 134
+      lineNumber: 136
     },
     __self: this
   }, stacks.map(function (stack, i) {
@@ -267,7 +269,7 @@ var Generator = function Generator() {
       key: i,
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 137
+        lineNumber: 139
       },
       __self: this
     }, "Stack with ", stackCounts[i], " lineups");
@@ -332,10 +334,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
 /* harmony import */ var _material_ui_core_TextField__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @material-ui/core/TextField */ "./node_modules/@material-ui/core/esm/TextField/index.js");
 /* harmony import */ var _material_ui_core_Button__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @material-ui/core/Button */ "./node_modules/@material-ui/core/esm/Button/index.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./utils */ "./components/utils.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_utils__WEBPACK_IMPORTED_MODULE_7__);
 
 var _jsxFileName = "/Users/jwesto1/Code/jaw187/dfs-solver/components/importprojection.js";
 
 var __jsx = react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement;
+
 
 
 
@@ -371,11 +376,13 @@ var getState = function getState() {
   };
 
   var importProjection = function importProjection() {
+    Object(_utils__WEBPACK_IMPORTED_MODULE_7__["log"])('import');
     dispatch({
       type: 'CLEAR_IMPORT_ERRORS'
     });
 
     if (!rawProjection) {
+      Object(_utils__WEBPACK_IMPORTED_MODULE_7__["log"])('import error empty textarea');
       return dispatch({
         type: 'ADD_IMPORT_ERROR',
         payload: new Error('empty textarea')
@@ -398,6 +405,10 @@ var getState = function getState() {
           projection = _ref2[1],
           ownership = _ref2[2];
 
+      if (player === 'ID' || player === '') {
+        return 'REMOVE';
+      }
+
       var result = {
         player: player,
         value: Number(projection),
@@ -406,6 +417,7 @@ var getState = function getState() {
 
       if (players[player]) {
         errors = true;
+        Object(_utils__WEBPACK_IMPORTED_MODULE_7__["log"])('import error duplicate player');
         dispatch({
           type: 'ADD_IMPORT_ERROR',
           payload: new Error("Duplicate player - ".concat(player))
@@ -417,6 +429,7 @@ var getState = function getState() {
 
       if (validation.error) {
         errors = true;
+        Object(_utils__WEBPACK_IMPORTED_MODULE_7__["log"])('import error validation error');
         dispatch({
           type: 'ADD_IMPORT_ERROR',
           payload: validation
@@ -424,9 +437,12 @@ var getState = function getState() {
       }
 
       return result;
+    }).filter(function (result) {
+      return result !== 'REMOVE';
     });
 
     if (!errors) {
+      Object(_utils__WEBPACK_IMPORTED_MODULE_7__["log"])("import ".concat(formattedProjection.length, " records"));
       dispatch({
         type: 'SET_PROJECTION',
         payload: formattedProjection
@@ -436,18 +452,23 @@ var getState = function getState() {
 
   var exportTemplate = function exportTemplate() {
     if (slates && selectedSlate) {
+      Object(_utils__WEBPACK_IMPORTED_MODULE_7__["log"])("export template");
       var players = slates[selectedSlate].players;
 
       var format = function format(player) {
         return "".concat(player.displayName, ",").concat(player.draftableId, ",,50");
       };
 
-      var header = "Delete the player name column and this row\n";
+      var header = "Do not copy the player name column as well as this row\nName,ID,Projection,Ownership\n";
       var csv = "data:text/csv;charset=utf-8," + header + players.map(format).join('\n');
       var _window = window,
-          _encodeURI = _window.encodeURI,
-          open = _window.open;
-      open(_encodeURI(csv));
+          _encodeURI = _window.encodeURI;
+      var downloadLink = document.createElement("a");
+      downloadLink.href = _encodeURI(csv);
+      downloadLink.download = "".concat(selectedSlate, " - Projections.csv");
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
     }
   };
 
@@ -491,8 +512,13 @@ var ImportProjection = function ImportProjection() {
     width: 480,
     padding: 8
   };
-  var buttonContainerStyle = {
+  var buttonsContainerStyle = {
+    display: 'flex',
+    flexDirection: 'row',
     paddingBottom: 24
+  };
+  var buttonContainerStyle = {
+    paddingRight: 24
   };
   var buttonStyle = {
     paddingLeft: 36,
@@ -505,7 +531,7 @@ var ImportProjection = function ImportProjection() {
     style: componentContainer,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 153
+      lineNumber: 178
     },
     __self: this
   }, __jsx("h2", {
@@ -514,27 +540,34 @@ var ImportProjection = function ImportProjection() {
     },
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 154
+      lineNumber: 179
     },
     __self: this
   }, "Your Projections"), __jsx("div", {
     style: cardContainer,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 155
+      lineNumber: 180
     },
     __self: this
   }, __jsx(_card__WEBPACK_IMPORTED_MODULE_2__["default"], {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 156
+      lineNumber: 181
     },
     __self: this
-  }, importErrors && !!importErrors.length && __jsx("div", {
+  }, !projection && __jsx("div", {
     style: infoContainer,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 158
+      lineNumber: 183
+    },
+    __self: this
+  }, "DFS Solver is a Bring Your Own Projection system.  You'll need to copy and paste your projections into the text area below. Use the Export Template button to download a sheet with proper player id's for your selected slate."), importErrors && !!importErrors.length && __jsx("div", {
+    style: infoContainer,
+    __source: {
+      fileName: _jsxFileName,
+      lineNumber: 189
     },
     __self: this
   }, __jsx("h3", {
@@ -543,20 +576,20 @@ var ImportProjection = function ImportProjection() {
     },
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 159
+      lineNumber: 190
     },
     __self: this
   }, "Import Has Errors"), __jsx("ul", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 160
+      lineNumber: 191
     },
     __self: this
   }, importErrors.map(function (err) {
     return __jsx("li", {
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 162
+        lineNumber: 193
       },
       __self: this
     }, err.error && err.error.toString() || err.toString());
@@ -564,7 +597,7 @@ var ImportProjection = function ImportProjection() {
     style: infoContainer,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 169
+      lineNumber: 200
     },
     __self: this
   }, __jsx("h3", {
@@ -573,43 +606,27 @@ var ImportProjection = function ImportProjection() {
     },
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 170
+      lineNumber: 201
     },
     __self: this
   }, "Current Projection"), __jsx("div", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 171
+      lineNumber: 202
     },
     __self: this
   }, "Projections for ".concat(projection.length, " players"))), __jsx("div", {
+    style: buttonsContainerStyle,
+    __source: {
+      fileName: _jsxFileName,
+      lineNumber: 211
+    },
+    __self: this
+  }, __jsx("div", {
     style: buttonContainerStyle,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 180
-    },
-    __self: this
-  }, __jsx(_material_ui_core_Button__WEBPACK_IMPORTED_MODULE_6__["default"], {
-    variant: "contained",
-    onClick: exportTemplate,
-    color: "secondary",
-    style: buttonStyle,
-    __source: {
-      fileName: _jsxFileName,
-      lineNumber: 181
-    },
-    __self: this
-  }, "Export Template"), __jsx("div", {
-    __source: {
-      fileName: _jsxFileName,
-      lineNumber: 182
-    },
-    __self: this
-  }, "Download a csv template which can be used to fill in projections")), __jsx("div", {
-    style: buttonContainerStyle,
-    __source: {
-      fileName: _jsxFileName,
-      lineNumber: 184
+      lineNumber: 212
     },
     __self: this
   }, __jsx(_material_ui_core_Button__WEBPACK_IMPORTED_MODULE_6__["default"], {
@@ -619,10 +636,27 @@ var ImportProjection = function ImportProjection() {
     style: buttonStyle,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 185
+      lineNumber: 213
     },
     __self: this
-  }, "Import")), __jsx(_material_ui_core_TextField__WEBPACK_IMPORTED_MODULE_5__["default"], {
+  }, "Import Projections")), __jsx("div", {
+    style: buttonContainerStyle,
+    __source: {
+      fileName: _jsxFileName,
+      lineNumber: 215
+    },
+    __self: this
+  }, __jsx(_material_ui_core_Button__WEBPACK_IMPORTED_MODULE_6__["default"], {
+    variant: "contained",
+    onClick: exportTemplate,
+    color: "secondary",
+    style: buttonStyle,
+    __source: {
+      fileName: _jsxFileName,
+      lineNumber: 216
+    },
+    __self: this
+  }, "Export Template"))), __jsx(_material_ui_core_TextField__WEBPACK_IMPORTED_MODULE_5__["default"], {
     id: "standard-multiline-static",
     label: "Import projections",
     multiline: true,
@@ -633,7 +667,7 @@ var ImportProjection = function ImportProjection() {
     onChange: onChange,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 187
+      lineNumber: 219
     },
     __self: this
   }))));
@@ -659,8 +693,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _card__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./card */ "./components/card.js");
 /* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
 /* harmony import */ var _solver_index__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../solver/index */ "./solver/index.js");
-/* harmony import */ var _solver_ownership__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../solver/ownership */ "./solver/ownership.js");
-/* harmony import */ var _solver_ownership__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_solver_ownership__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utils */ "./components/utils.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_utils__WEBPACK_IMPORTED_MODULE_5__);
 
 var _jsxFileName = "/Users/jwesto1/Code/jaw187/dfs-solver/components/lineups.js";
 
@@ -786,15 +820,21 @@ var Lineups = function Lineups() {
   };
 
   var exportToCSV = function exportToCSV() {
+    Object(_utils__WEBPACK_IMPORTED_MODULE_5__["log"])('export linieups');
     var header = headers[sport][site][type];
     var csv = "data:text/csv;charset=utf-8," + header + results.map(exporters[sport][site][type]).join('\n');
     var _window = window,
-        encodeURI = _window.encodeURI,
-        open = _window.open;
-    open(encodeURI(csv));
+        encodeURI = _window.encodeURI;
+    var downloadLink = document.createElement("a");
+    downloadLink.href = encodeURI(csv);
+    downloadLink.download = "".concat(selectedSlate, " - Lineups.csv");
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
   };
 
   var remove = function remove(i) {
+    Object(_utils__WEBPACK_IMPORTED_MODULE_5__["log"])('remove lineup');
     return function () {
       return removeLineup(i);
     };
@@ -852,68 +892,68 @@ var Lineups = function Lineups() {
             style: lineupStyle,
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 159
+              lineNumber: 168
             },
             __self: this
           }, __jsx("button", {
             onClick: remove(i),
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 160
+              lineNumber: 169
             },
             __self: this
           }, "Remove"), __jsx("div", {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 161
+              lineNumber: 170
             },
             __self: this
           }, formatPlayer(result.lineup.qb)), __jsx("div", {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 162
+              lineNumber: 171
             },
             __self: this
           }, formatPlayer(result.lineup.rbs[0])), __jsx("div", {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 163
+              lineNumber: 172
             },
             __self: this
           }, formatPlayer(result.lineup.rbs[1])), __jsx("div", {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 164
+              lineNumber: 173
             },
             __self: this
           }, formatPlayer(result.lineup.wrs[0])), __jsx("div", {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 165
+              lineNumber: 174
             },
             __self: this
           }, formatPlayer(result.lineup.wrs[1])), __jsx("div", {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 166
+              lineNumber: 175
             },
             __self: this
           }, formatPlayer(result.lineup.wrs[2])), __jsx("div", {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 167
+              lineNumber: 176
             },
             __self: this
           }, formatPlayer(result.lineup.te)), __jsx("div", {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 168
+              lineNumber: 177
             },
             __self: this
           }, formatPlayer(result.lineup.flex)), __jsx("div", {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 169
+              lineNumber: 178
             },
             __self: this
           }, formatPlayer(result.lineup.dst)));
@@ -928,50 +968,50 @@ var Lineups = function Lineups() {
             style: lineupStyle,
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 177
+              lineNumber: 186
             },
             __self: this
           }, __jsx("button", {
             onClick: remove(i),
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 178
+              lineNumber: 187
             },
             __self: this
           }, "Remove"), __jsx("div", {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 179
+              lineNumber: 188
             },
             __self: this
           }, formatPlayer(result.lineup.g[0])), __jsx("div", {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 180
+              lineNumber: 189
             },
             __self: this
           }, formatPlayer(result.lineup.g[1])), __jsx("div", {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 181
+              lineNumber: 190
             },
             __self: this
           }, formatPlayer(result.lineup.g[2])), __jsx("div", {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 182
+              lineNumber: 191
             },
             __self: this
           }, formatPlayer(result.lineup.g[3])), __jsx("div", {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 183
+              lineNumber: 192
             },
             __self: this
           }, formatPlayer(result.lineup.g[4])), __jsx("div", {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 184
+              lineNumber: 193
             },
             __self: this
           }, formatPlayer(result.lineup.g[5])));
@@ -983,7 +1023,7 @@ var Lineups = function Lineups() {
     style: componentContainer,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 192
+      lineNumber: 201
     },
     __self: this
   }, __jsx("h2", {
@@ -992,20 +1032,20 @@ var Lineups = function Lineups() {
     },
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 193
+      lineNumber: 202
     },
     __self: this
   }, "Lineups"), __jsx("div", {
     style: cardContainer,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 194
+      lineNumber: 203
     },
     __self: this
   }, __jsx(_card__WEBPACK_IMPORTED_MODULE_2__["default"], {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 195
+      lineNumber: 204
     },
     __self: this
   }, __jsx("h3", {
@@ -1014,13 +1054,13 @@ var Lineups = function Lineups() {
     },
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 196
+      lineNumber: 205
     },
     __self: this
   }, "Ownership"), !!ownership.length && __jsx("div", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 199
+      lineNumber: 208
     },
     __self: this
   }, ownership.map(function (data) {
@@ -1028,20 +1068,20 @@ var Lineups = function Lineups() {
       style: ownershipPlayerStyle,
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 202
+        lineNumber: 211
       },
       __self: this
     }, data.player, " - ", data.count, " - ", data.percentage, "%");
   }))), __jsx(_card__WEBPACK_IMPORTED_MODULE_2__["default"], {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 211
+      lineNumber: 220
     },
     __self: this
   }, !!results.length && __jsx("div", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 214
+      lineNumber: 223
     },
     __self: this
   }, __jsx("h3", {
@@ -1050,21 +1090,21 @@ var Lineups = function Lineups() {
     },
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 215
+      lineNumber: 224
     },
     __self: this
   }, results.length, " lineups"), __jsx("button", {
     onClick: exportToCSV,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 216
+      lineNumber: 225
     },
     __self: this
   }, "Export"), __jsx("div", {
     style: containerStyle,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 217
+      lineNumber: 226
     },
     __self: this
   }, results.map(lineupFormats[sport][site][type]))))));
@@ -1543,6 +1583,23 @@ var Pool = function Pool() {
       lineNumber: 236
     },
     __self: this
+  }, __jsx("div", {
+    style: {
+      color: 'red',
+      paddingBottom: 24
+    },
+    __source: {
+      fileName: _jsxFileName,
+      lineNumber: 237
+    },
+    __self: this
+  }, "Player names in red indicate missing projection")), __jsx("div", {
+    style: cardContainer,
+    __source: {
+      fileName: _jsxFileName,
+      lineNumber: 239
+    },
+    __self: this
   }, positionCard("QB"), positionCard("RB"), positionCard("WR"), positionCard("TE"), positionCard("DST"), positionCard("G")));
 };
 
@@ -1765,8 +1822,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _card__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./card */ "./components/card.js");
 /* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
 /* harmony import */ var _stacks__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./stacks */ "./components/stacks.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utils */ "./components/utils.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_utils__WEBPACK_IMPORTED_MODULE_4__);
 var _jsxFileName = "/Users/jwesto1/Code/jaw187/dfs-solver/components/stackbuilder.js";
 var __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;
+
 
 
 
@@ -1850,7 +1910,7 @@ var StackBuilder = function StackBuilder() {
     return __jsx("div", {
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 48
+        lineNumber: 49
       },
       __self: this
     }, "Pick players for pool first.");
@@ -1880,6 +1940,7 @@ var StackBuilder = function StackBuilder() {
   };
 
   var add = function add() {
+    Object(_utils__WEBPACK_IMPORTED_MODULE_4__["log"])('stack add');
     addStack();
     clear();
   };
@@ -1897,13 +1958,13 @@ var StackBuilder = function StackBuilder() {
     style: componentContainer,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 89
+      lineNumber: 91
     },
     __self: this
   }, __jsx("div", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 90
+      lineNumber: 92
     },
     __self: this
   }, __jsx("h2", {
@@ -1912,26 +1973,26 @@ var StackBuilder = function StackBuilder() {
     },
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 91
+      lineNumber: 93
     },
     __self: this
   }, "Stack Builder"), __jsx("div", {
     style: cardContainer,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 92
+      lineNumber: 94
     },
     __self: this
   }, __jsx(_card__WEBPACK_IMPORTED_MODULE_1__["default"], {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 93
+      lineNumber: 95
     },
     __self: this
   }, __jsx("div", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 94
+      lineNumber: 96
     },
     __self: this
   }, __jsx("div", {
@@ -1941,7 +2002,7 @@ var StackBuilder = function StackBuilder() {
     },
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 95
+      lineNumber: 97
     },
     __self: this
   }, __jsx("div", {
@@ -1950,13 +2011,13 @@ var StackBuilder = function StackBuilder() {
     },
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 99
+      lineNumber: 101
     },
     __self: this
   }, __jsx("h3", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 100
+      lineNumber: 102
     },
     __self: this
   }, "Players"), pool && pool.map(function (player, i) {
@@ -1965,7 +2026,7 @@ var StackBuilder = function StackBuilder() {
     return __jsx("div", {
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 107
+        lineNumber: 109
       },
       __self: this
     }, __jsx("input", {
@@ -1975,7 +2036,7 @@ var StackBuilder = function StackBuilder() {
       key: i,
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 108
+        lineNumber: 110
       },
       __self: this
     }), player.displayName, " - $", player.salary);
@@ -1986,19 +2047,19 @@ var StackBuilder = function StackBuilder() {
     },
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 114
+      lineNumber: 116
     },
     __self: this
   }, __jsx("h3", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 115
+      lineNumber: 117
     },
     __self: this
   }, "Stack"), __jsx("ul", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 116
+      lineNumber: 118
     },
     __self: this
   }, stack && stack.map(function (player, i) {
@@ -2006,40 +2067,40 @@ var StackBuilder = function StackBuilder() {
       key: i,
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 119
+        lineNumber: 121
       },
       __self: this
     }, player.displayName);
   })), stack && stack.length > 1 && __jsx("div", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 125
+      lineNumber: 127
     },
     __self: this
   }, __jsx("button", {
     onClick: add,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 126
+      lineNumber: 128
     },
     __self: this
   }, "Add"), __jsx("button", {
     onClick: clear,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 127
+      lineNumber: 129
     },
     __self: this
   }, "Clear")))))))), __jsx("div", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 137
+      lineNumber: 139
     },
     __self: this
   }, __jsx(_stacks__WEBPACK_IMPORTED_MODULE_3__["default"], {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 138
+      lineNumber: 140
     },
     __self: this
   })));
@@ -2065,8 +2126,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _material_ui_core_Slider__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @material-ui/core/Slider */ "./node_modules/@material-ui/core/esm/Slider/index.js");
 /* harmony import */ var _material_ui_core_Input__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @material-ui/core/Input */ "./node_modules/@material-ui/core/esm/Input/index.js");
 /* harmony import */ var _material_ui_core_Button__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @material-ui/core/Button */ "./node_modules/@material-ui/core/esm/Button/index.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./utils */ "./components/utils.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_utils__WEBPACK_IMPORTED_MODULE_6__);
 var _jsxFileName = "/Users/jwesto1/Code/jaw187/dfs-solver/components/stacks.js";
 var __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;
+
 
 
 
@@ -2141,6 +2205,7 @@ var Stacks = function Stacks() {
   }
 
   var remove = function remove(i) {
+    Object(_utils__WEBPACK_IMPORTED_MODULE_6__["log"])('stack remove');
     return function () {
       removeStack(i);
     };
@@ -2200,7 +2265,7 @@ var Stacks = function Stacks() {
   return __jsx("div", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 122
+      lineNumber: 124
     },
     __self: this
   }, __jsx("h2", {
@@ -2209,14 +2274,14 @@ var Stacks = function Stacks() {
     },
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 123
+      lineNumber: 125
     },
     __self: this
   }, "Stacks"), __jsx("div", {
     style: cardContainer,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 124
+      lineNumber: 126
     },
     __self: this
   }, stacks.map(function (stack, j) {
@@ -2227,7 +2292,7 @@ var Stacks = function Stacks() {
     return __jsx(_card__WEBPACK_IMPORTED_MODULE_1__["default"], {
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 132
+        lineNumber: 134
       },
       __self: this
     }, __jsx("div", {
@@ -2240,7 +2305,7 @@ var Stacks = function Stacks() {
       key: j,
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 133
+        lineNumber: 135
       },
       __self: this
     }, __jsx("div", {
@@ -2251,21 +2316,21 @@ var Stacks = function Stacks() {
       },
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 134
+        lineNumber: 136
       },
       __self: this
     }, __jsx("div", {
       onClick: move(j, 'left'),
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 135
+        lineNumber: 137
       },
       __self: this
     }, "Move Left"), __jsx("div", {
       onClick: move(j, 'right'),
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 136
+        lineNumber: 138
       },
       __self: this
     }, "Move Right")), __jsx("div", {
@@ -2274,13 +2339,13 @@ var Stacks = function Stacks() {
       },
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 138
+        lineNumber: 140
       },
       __self: this
     }, __jsx("ul", {
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 139
+        lineNumber: 141
       },
       __self: this
     }, stack.map(function (player, i) {
@@ -2288,7 +2353,7 @@ var Stacks = function Stacks() {
         key: i,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 142
+          lineNumber: 144
         },
         __self: this
       }, player.displayName);
@@ -2299,7 +2364,7 @@ var Stacks = function Stacks() {
       },
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 147
+        lineNumber: 149
       },
       __self: this
     }, __jsx("div", {
@@ -2309,7 +2374,7 @@ var Stacks = function Stacks() {
       },
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 148
+        lineNumber: 150
       },
       __self: this
     }, "No. of lineups", __jsx(_material_ui_core_Slider__WEBPACK_IMPORTED_MODULE_3__["default"], {
@@ -2323,7 +2388,7 @@ var Stacks = function Stacks() {
       "aria-labelledby": "input-slider",
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 150
+        lineNumber: 152
       },
       __self: this
     })), __jsx("div", {
@@ -2332,7 +2397,7 @@ var Stacks = function Stacks() {
       },
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 161
+        lineNumber: 163
       },
       __self: this
     }, __jsx(_material_ui_core_Input__WEBPACK_IMPORTED_MODULE_4__["default"], {
@@ -2349,7 +2414,7 @@ var Stacks = function Stacks() {
       },
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 162
+        lineNumber: 164
       },
       __self: this
     }))), __jsx("div", {
@@ -2359,7 +2424,7 @@ var Stacks = function Stacks() {
       },
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 177
+        lineNumber: 179
       },
       __self: this
     }), __jsx("div", {
@@ -2368,7 +2433,7 @@ var Stacks = function Stacks() {
       },
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 179
+        lineNumber: 181
       },
       __self: this
     }, __jsx(_material_ui_core_Button__WEBPACK_IMPORTED_MODULE_5__["default"], {
@@ -2377,7 +2442,7 @@ var Stacks = function Stacks() {
       color: "secondary",
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 180
+        lineNumber: 182
       },
       __self: this
     }, "Delete"))));
@@ -2385,6 +2450,24 @@ var Stacks = function Stacks() {
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (Stacks);
+
+/***/ }),
+
+/***/ "./components/utils.js":
+/*!*****************************!*\
+  !*** ./components/utils.js ***!
+  \*****************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+var log = function log(data) {
+  var pixel = new Image();
+  pixel.src = "https://logs-01.loggly.com/inputs/8a465978-add2-4b58-9d57-02f8869b2f17.gif?source=pixel&data=".concat(data);
+};
+
+module.exports = {
+  log: log
+};
 
 /***/ }),
 
@@ -44929,7 +45012,7 @@ var Index = function Index() {
   })), __jsx(styled_jsx_style__WEBPACK_IMPORTED_MODULE_10___default.a, {
     id: "2111231969",
     __self: this
-  }, "body{background:#f6f6f6;color:#333;margin:0;padding:0;font-family:'Ubuntu';overflow-x:scroll;}\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9qd2VzdG8xL0NvZGUvamF3MTg3L2Rmcy1zb2x2ZXIvcGFnZXMvaW5kZXguanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBcUV5QixBQUc4QixtQkFDUixXQUNGLFNBQ0MsVUFDVyxxQkFDSCxrQkFDcEIiLCJmaWxlIjoiL1VzZXJzL2p3ZXN0bzEvQ29kZS9qYXcxODcvZGZzLXNvbHZlci9wYWdlcy9pbmRleC5qcyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBIZWFkIGZyb20gJ25leHQvaGVhZCc7XG5pbXBvcnQgSGVhZGVyIGZyb20gICcuLi9jb21wb25lbnRzL2hlYWRlcic7XG5pbXBvcnQgSW1wb3J0UHJvamVjdGlvbiBmcm9tICcuLi9jb21wb25lbnRzL2ltcG9ydHByb2plY3Rpb24uanMnO1xuaW1wb3J0IFNsYXRlUGlja2VyIGZyb20gJy4uL2NvbXBvbmVudHMvc2xhdGVwaWNrZXInO1xuaW1wb3J0IFN0YWNrQnVpbGRlciBmcm9tICcuLi9jb21wb25lbnRzL3N0YWNrYnVpbGRlcic7XG5pbXBvcnQgR2VuZXJhdG9yIGZyb20gJy4uL2NvbXBvbmVudHMvZ2VuZXJhdG9yJztcbmltcG9ydCBQb29sIGZyb20gJy4uL2NvbXBvbmVudHMvcG9vbCc7XG5pbXBvcnQgTmF2aWdhdGlvbiBmcm9tICcuLi9jb21wb25lbnRzL25hdmlnYXRpb24nO1xuaW1wb3J0IExpbmV1cHMgZnJvbSAnLi4vY29tcG9uZW50cy9saW5ldXBzJztcbmltcG9ydCB7IHdpdGhSZWR1eCB9IGZyb20gJy4uL2xpYi9yZWR1eCc7XG5pbXBvcnQgZmV0Y2ggZnJvbSAnaXNvbW9ycGhpYy11bmZldGNoJztcblxuY29uc3Qgc2xhdGVzID0ge307XG5cbmNvbnN0IHN1cHBvcnRlZFNwb3J0cyA9IFsnTkZMJywgJ0dPTEYnXTtcbmNvbnN0IHN1cHBvcnRlZEdhbWVUeXBlcyA9IFsnQ2xhc3NpYyddO1xuXG5jb25zdCBnZXRQbGF5ZXJzID0gYXN5bmMgZnVuY3Rpb24gKHNsYXRlKSB7XG4gIGlmIChzdXBwb3J0ZWRTcG9ydHMuaW5jbHVkZXMoc2xhdGUuU3BvcnQpICYmIHNsYXRlLkdhbWVUeXBlICYmIHN1cHBvcnRlZEdhbWVUeXBlcy5pbmNsdWRlcyhzbGF0ZS5HYW1lVHlwZS5OYW1lKSkge1xuICAgIGNvbnN0IGRyYWZ0R3JvdXBJZCA9IHNsYXRlLkRyYWZ0R3JvdXBJZDtcbiAgICBpZiAoIXNsYXRlc1tkcmFmdEdyb3VwSWRdKSB7XG4gICAgICAvL0hhbmRsZSBlcnJycnJzc3Nkc1xuICAgICAgY29uc29sZS5sb2coYGh0dHA6Ly9hcGkuZHJhZnRraW5ncy5jb20vZHJhZnRncm91cHMvdjEvZHJhZnRncm91cHMvJHtkcmFmdEdyb3VwSWR9L2RyYWZ0YWJsZXM/Zm9ybWF0PWpzb25gKVxuICAgICAgY29uc3QgcGxheWVyc1JlcyA9IGF3YWl0IGZldGNoKGBodHRwOi8vYXBpLmRyYWZ0a2luZ3MuY29tL2RyYWZ0Z3JvdXBzL3YxL2RyYWZ0Z3JvdXBzLyR7ZHJhZnRHcm91cElkfS9kcmFmdGFibGVzP2Zvcm1hdD1qc29uYCwgeyBtb2RlOiAnbm8tY29ycycgfSk7XG5cbiAgICAgIGNvbnN0IHBsYXllcklkcyA9IFtdO1xuICAgICAgY29uc3QgcmF3UGxheWVycyA9IGF3YWl0IHBsYXllcnNSZXMuanNvbigpO1xuXG4gICAgICBjb25zdCBwbGF5ZXJzID0gcmF3UGxheWVycyAmJiByYXdQbGF5ZXJzLmRyYWZ0YWJsZXMgJiYgcmF3UGxheWVycy5kcmFmdGFibGVzLmZpbHRlcigocGxheWVyKSA9PiB7XG4gICAgICAgIGNvbnN0IGlkID0gcGxheWVyLnBsYXllcklkO1xuICAgICAgICBpZiAocGxheWVySWRzLmluY2x1ZGVzKGlkKSkge1xuICAgICAgICAgIHJldHVybiBmYWxzZTtcbiAgICAgICAgfVxuXG4gICAgICAgIHBsYXllcklkcy5wdXNoKGlkKTtcbiAgICAgICAgcmV0dXJuIHRydWU7XG4gICAgICB9KTtcblxuICAgICAgc2xhdGVzW2RyYWZ0R3JvdXBJZF0gPSB7XG4gICAgICAgIC4uLnNsYXRlLFxuICAgICAgICBwbGF5ZXJzXG4gICAgICB9O1xuICAgIH1cbiAgfVxufTtcblxuY29uc3QgY29udGFpbmVyU3R5bGUgPSB7XG4gIGJhY2tncm91bmRDb2xvcjogJyNmNmY2ZjYnLFxuICBoZWlnaHQ6ICcxMDAlJyxcbiAgd2lkdGg6ICcxMDAlJ1xufTtcblxuY29uc3QgdG9wQmFyU3R5bGUgPSB7XG4gIGJhY2tncm91bmRDb2xvcjogJyNmZmZmZmYnLFxuICBtYXJnaW46ICcwcHggMHB4IDE2cHggMHB4JyxcbiAgcGFkZGluZzogMTYsXG4gIGRpc3BsYXk6ICdmbGV4JyxcbiAgZmxleERpcmVjdGlvbjogJ3JvdycsXG4gIGJveFNoYWRvdzogJzFweCAxcHggMTdweCAtMXB4IGhzbGEoMCwgMCUsIDYzJSwgLjY5KSdcbn1cblxuY29uc3QgSW5kZXggPSAoKSA9PiB7XG4gIHJldHVybiAoXG4gICAgPGRpdiBzdHlsZT17Y29udGFpbmVyU3R5bGV9PlxuICAgICAgPEhlYWQ+XG4gICAgICAgIDxtZXRhIG5hbWU9XCJ2aWV3cG9ydFwiIGNvbnRlbnQ9XCJ3aWR0aD1kZXZpY2Utd2lkdGgsIGluaXRpYWwtc2NhbGU9MVwiIC8+XG4gICAgICAgIDxtZXRhIGNoYXJTZXQ9XCJ1dGYtOFwiIC8+XG4gICAgICAgIDxsaW5rIGhyZWY9XCJodHRwczovL2ZvbnRzLmdvb2dsZWFwaXMuY29tL2Nzcz9mYW1pbHk9VWJ1bnR1JmRpc3BsYXk9c3dhcFwiIHJlbD1cInN0eWxlc2hlZXRcIj48L2xpbms+XG4gICAgICA8L0hlYWQ+XG4gICAgICA8c3R5bGUganN4IGdsb2JhbD57YFxuICAgICAgICBib2R5IHtcbiAgICAgICAgICBiYWNrZ3JvdW5kOiAjZjZmNmY2O1xuICAgICAgICAgIGNvbG9yOiAjMzMzO1xuICAgICAgICAgIG1hcmdpbjogMDtcbiAgICAgICAgICBwYWRkaW5nOiAwO1xuICAgICAgICAgIGZvbnQtZmFtaWx5OiAnVWJ1bnR1JztcbiAgICAgICAgICBvdmVyZmxvdy14OiBzY3JvbGw7XG4gICAgICAgIH1cbiAgICAgIGB9PC9zdHlsZT5cbiAgICAgIDxkaXYgc3R5bGU9e3RvcEJhclN0eWxlfT5cbiAgICAgICAgPEhlYWRlciAvPlxuICAgICAgICA8TmF2aWdhdGlvbiAvPlxuICAgICAgPC9kaXY+XG4gICAgICA8U2xhdGVQaWNrZXIgLz5cbiAgICAgIDxJbXBvcnRQcm9qZWN0aW9uIC8+XG4gICAgICA8UG9vbCAvPlxuICAgICAgPFN0YWNrQnVpbGRlciAvPlxuICAgICAgPEdlbmVyYXRvciAvPlxuICAgICAgPExpbmV1cHMgLz5cbiAgICAgIDxpbWcgc3JjPVwiaHR0cHM6Ly9sb2dzLTAxLmxvZ2dseS5jb20vaW5wdXRzLzhhNDY1OTc4LWFkZDItNGI1OC05ZDU3LTAyZjg4NjliMmYxNy5naWY/c291cmNlPXBpeGVsJmRhdGE9d3V0XCIgLz5cbiAgICA8L2Rpdj5cbiAgKTtcbn1cblxuLy8gVGhpcyBpcyB0byB0cnkgYW5kIHN0b3Agc3BhbW1pbmcgREtcbmxldCBmZXRjaGVkID0gZmFsc2U7XG5sZXQgZmV0Y2hpbmcgPSBmYWxzZTtcbmNvbnN0IHJlZnJlc2hTbGF0ZXNSYXRlID0gMTAwMCAqIDYwICogNjA7XG5jb25zdCBjbGVhclNsYXRlcyA9ICgpID0+IHtcbiAgT2JqZWN0LmtleXMoc2xhdGVzKS5mb3JFYWNoKChzbGF0ZSkgPT4ge1xuICAgIGRlbGV0ZSBzbGF0ZXNbc2xhdGVdO1xuICB9KTtcblxuICBmZXRjaGVkID0gZmFsc2U7XG4gIGZldGNoaW5nID0gZmFsc2U7XG59O1xuc2V0SW50ZXJ2YWwoY2xlYXJTbGF0ZXMsIHJlZnJlc2hTbGF0ZXNSYXRlKTtcblxuSW5kZXguZ2V0SW5pdGlhbFByb3BzID0gYXN5bmMgKHsgcmVkdXhTdG9yZSB9KSA9PiB7XG4gIGlmICghZmV0Y2hlZCAmJiAhZmV0Y2hpbmcpIHtcbiAgICBmZXRjaGluZyA9IHRydWU7XG4gICAgLy8gSGFuZGxlIGVycnJycnNcbiAgICAvLyBHZXQgYWxsIHNsYXRlc1xuICAgIC8vIE5lZWRzIHRvIGJlIGltcHJvdmVkIHN1Y2ggdGhhdCBlYWNoIHJlcXVlc3QgZG9lc24ndCB0cmlnZ2VyIGFuIG91dGdvaW5nIHJlcXVlc3RcbiAgICBjb25zb2xlLmxvZygnZ2V0dGluZyBzbGF0ZXMnKVxuICAgIGNvbnN0IHJlcyA9IGF3YWl0IGZldGNoKCdodHRwczovL3d3dy5kcmFmdGtpbmdzLmNvbS9saW5ldXAvZ2V0dXBjb21pbmdjb250ZXN0aW5mbycsIHsgbWV0aG9kOiAncG9zdCcsIG1vZGU6ICduby1jb3JzJyB9KTtcbiAgICBjb25zdCByYXdTbGF0ZXMgPSBhd2FpdCByZXMuanNvbigpO1xuXG4gICAgLy8gR2V0IHBsYXllcnMgZnJvbSBzbGF0ZVxuICAgIGF3YWl0IFByb21pc2UuYWxsKHJhd1NsYXRlcy5tYXAoZ2V0UGxheWVycykpO1xuICAgIGZldGNoZWQgPSB0cnVlO1xuICB9XG5cbiAgY29uc3QgeyBkaXNwYXRjaCB9ID0gcmVkdXhTdG9yZTtcbiAgY29uc29sZS5sb2coJ3NldHRpbmcgc2xhdGVzJykvLywgc2xhdGVzKVxuICBkaXNwYXRjaCh7XG4gICAgdHlwZTogJ1NFVF9TTEFURVMnLFxuICAgIHBheWxvYWQ6IHNsYXRlc1xuICB9KTtcblxuICByZXR1cm4ge307XG59O1xuXG5leHBvcnQgZGVmYXVsdCB3aXRoUmVkdXgoSW5kZXgpO1xuIl19 */\n/*@ sourceURL=/Users/jwesto1/Code/jaw187/dfs-solver/pages/index.js */"), __jsx("div", {
+  }, "body{background:#f6f6f6;color:#333;margin:0;padding:0;font-family:'Ubuntu';overflow-x:scroll;}\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9qd2VzdG8xL0NvZGUvamF3MTg3L2Rmcy1zb2x2ZXIvcGFnZXMvaW5kZXguanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBcUV5QixBQUc4QixtQkFDUixXQUNGLFNBQ0MsVUFDVyxxQkFDSCxrQkFDcEIiLCJmaWxlIjoiL1VzZXJzL2p3ZXN0bzEvQ29kZS9qYXcxODcvZGZzLXNvbHZlci9wYWdlcy9pbmRleC5qcyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBIZWFkIGZyb20gJ25leHQvaGVhZCc7XG5pbXBvcnQgSGVhZGVyIGZyb20gICcuLi9jb21wb25lbnRzL2hlYWRlcic7XG5pbXBvcnQgSW1wb3J0UHJvamVjdGlvbiBmcm9tICcuLi9jb21wb25lbnRzL2ltcG9ydHByb2plY3Rpb24uanMnO1xuaW1wb3J0IFNsYXRlUGlja2VyIGZyb20gJy4uL2NvbXBvbmVudHMvc2xhdGVwaWNrZXInO1xuaW1wb3J0IFN0YWNrQnVpbGRlciBmcm9tICcuLi9jb21wb25lbnRzL3N0YWNrYnVpbGRlcic7XG5pbXBvcnQgR2VuZXJhdG9yIGZyb20gJy4uL2NvbXBvbmVudHMvZ2VuZXJhdG9yJztcbmltcG9ydCBQb29sIGZyb20gJy4uL2NvbXBvbmVudHMvcG9vbCc7XG5pbXBvcnQgTmF2aWdhdGlvbiBmcm9tICcuLi9jb21wb25lbnRzL25hdmlnYXRpb24nO1xuaW1wb3J0IExpbmV1cHMgZnJvbSAnLi4vY29tcG9uZW50cy9saW5ldXBzJztcbmltcG9ydCB7IHdpdGhSZWR1eCB9IGZyb20gJy4uL2xpYi9yZWR1eCc7XG5pbXBvcnQgZmV0Y2ggZnJvbSAnaXNvbW9ycGhpYy11bmZldGNoJztcblxuY29uc3Qgc2xhdGVzID0ge307XG5cbmNvbnN0IHN1cHBvcnRlZFNwb3J0cyA9IFsnTkZMJywgJ0dPTEYnXTtcbmNvbnN0IHN1cHBvcnRlZEdhbWVUeXBlcyA9IFsnQ2xhc3NpYyddO1xuXG5jb25zdCBnZXRQbGF5ZXJzID0gYXN5bmMgZnVuY3Rpb24gKHNsYXRlKSB7XG4gIGlmIChzdXBwb3J0ZWRTcG9ydHMuaW5jbHVkZXMoc2xhdGUuU3BvcnQpICYmIHNsYXRlLkdhbWVUeXBlICYmIHN1cHBvcnRlZEdhbWVUeXBlcy5pbmNsdWRlcyhzbGF0ZS5HYW1lVHlwZS5OYW1lKSkge1xuICAgIGNvbnN0IGRyYWZ0R3JvdXBJZCA9IHNsYXRlLkRyYWZ0R3JvdXBJZDtcbiAgICBpZiAoIXNsYXRlc1tkcmFmdEdyb3VwSWRdKSB7XG4gICAgICAvL0hhbmRsZSBlcnJycnJzc3Nkc1xuICAgICAgY29uc29sZS5sb2coYGh0dHA6Ly9hcGkuZHJhZnRraW5ncy5jb20vZHJhZnRncm91cHMvdjEvZHJhZnRncm91cHMvJHtkcmFmdEdyb3VwSWR9L2RyYWZ0YWJsZXM/Zm9ybWF0PWpzb25gKVxuICAgICAgY29uc3QgcGxheWVyc1JlcyA9IGF3YWl0IGZldGNoKGBodHRwOi8vYXBpLmRyYWZ0a2luZ3MuY29tL2RyYWZ0Z3JvdXBzL3YxL2RyYWZ0Z3JvdXBzLyR7ZHJhZnRHcm91cElkfS9kcmFmdGFibGVzP2Zvcm1hdD1qc29uYCwgeyBtb2RlOiAnbm8tY29ycycgfSk7XG5cbiAgICAgIGNvbnN0IHBsYXllcklkcyA9IFtdO1xuICAgICAgY29uc3QgcmF3UGxheWVycyA9IGF3YWl0IHBsYXllcnNSZXMuanNvbigpO1xuXG4gICAgICBjb25zdCBwbGF5ZXJzID0gcmF3UGxheWVycyAmJiByYXdQbGF5ZXJzLmRyYWZ0YWJsZXMgJiYgcmF3UGxheWVycy5kcmFmdGFibGVzLmZpbHRlcigocGxheWVyKSA9PiB7XG4gICAgICAgIGNvbnN0IGlkID0gcGxheWVyLnBsYXllcklkO1xuICAgICAgICBpZiAocGxheWVySWRzLmluY2x1ZGVzKGlkKSkge1xuICAgICAgICAgIHJldHVybiBmYWxzZTtcbiAgICAgICAgfVxuXG4gICAgICAgIHBsYXllcklkcy5wdXNoKGlkKTtcbiAgICAgICAgcmV0dXJuIHRydWU7XG4gICAgICB9KTtcblxuICAgICAgc2xhdGVzW2RyYWZ0R3JvdXBJZF0gPSB7XG4gICAgICAgIC4uLnNsYXRlLFxuICAgICAgICBwbGF5ZXJzXG4gICAgICB9O1xuICAgIH1cbiAgfVxufTtcblxuY29uc3QgY29udGFpbmVyU3R5bGUgPSB7XG4gIGJhY2tncm91bmRDb2xvcjogJyNmNmY2ZjYnLFxuICBoZWlnaHQ6ICcxMDAlJyxcbiAgd2lkdGg6ICcxMDAlJ1xufTtcblxuY29uc3QgdG9wQmFyU3R5bGUgPSB7XG4gIGJhY2tncm91bmRDb2xvcjogJyNmZmZmZmYnLFxuICBtYXJnaW46ICcwcHggMHB4IDE2cHggMHB4JyxcbiAgcGFkZGluZzogMTYsXG4gIGRpc3BsYXk6ICdmbGV4JyxcbiAgZmxleERpcmVjdGlvbjogJ3JvdycsXG4gIGJveFNoYWRvdzogJzFweCAxcHggMTdweCAtMXB4IGhzbGEoMCwgMCUsIDYzJSwgLjY5KSdcbn1cblxuY29uc3QgSW5kZXggPSAoKSA9PiB7XG4gIHJldHVybiAoXG4gICAgPGRpdiBzdHlsZT17Y29udGFpbmVyU3R5bGV9PlxuICAgICAgPEhlYWQ+XG4gICAgICAgIDxtZXRhIG5hbWU9XCJ2aWV3cG9ydFwiIGNvbnRlbnQ9XCJ3aWR0aD1kZXZpY2Utd2lkdGgsIGluaXRpYWwtc2NhbGU9MVwiIC8+XG4gICAgICAgIDxtZXRhIGNoYXJTZXQ9XCJ1dGYtOFwiIC8+XG4gICAgICAgIDxsaW5rIGhyZWY9XCJodHRwczovL2ZvbnRzLmdvb2dsZWFwaXMuY29tL2Nzcz9mYW1pbHk9VWJ1bnR1JmRpc3BsYXk9c3dhcFwiIHJlbD1cInN0eWxlc2hlZXRcIj48L2xpbms+XG4gICAgICA8L0hlYWQ+XG4gICAgICA8c3R5bGUganN4IGdsb2JhbD57YFxuICAgICAgICBib2R5IHtcbiAgICAgICAgICBiYWNrZ3JvdW5kOiAjZjZmNmY2O1xuICAgICAgICAgIGNvbG9yOiAjMzMzO1xuICAgICAgICAgIG1hcmdpbjogMDtcbiAgICAgICAgICBwYWRkaW5nOiAwO1xuICAgICAgICAgIGZvbnQtZmFtaWx5OiAnVWJ1bnR1JztcbiAgICAgICAgICBvdmVyZmxvdy14OiBzY3JvbGw7XG4gICAgICAgIH1cbiAgICAgIGB9PC9zdHlsZT5cbiAgICAgIDxkaXYgc3R5bGU9e3RvcEJhclN0eWxlfT5cbiAgICAgICAgPEhlYWRlciAvPlxuICAgICAgICA8TmF2aWdhdGlvbiAvPlxuICAgICAgPC9kaXY+XG4gICAgICA8U2xhdGVQaWNrZXIgLz5cbiAgICAgIDxJbXBvcnRQcm9qZWN0aW9uIC8+XG4gICAgICA8UG9vbCAvPlxuICAgICAgPFN0YWNrQnVpbGRlciAvPlxuICAgICAgPEdlbmVyYXRvciAvPlxuICAgICAgPExpbmV1cHMgLz5cbiAgICAgIDxpbWcgc3JjPVwiaHR0cHM6Ly9sb2dzLTAxLmxvZ2dseS5jb20vaW5wdXRzLzhhNDY1OTc4LWFkZDItNGI1OC05ZDU3LTAyZjg4NjliMmYxNy5naWY/c291cmNlPXBpeGVsJmRhdGE9bG9hZFwiIC8+XG4gICAgPC9kaXY+XG4gICk7XG59XG5cbi8vIFRoaXMgaXMgdG8gdHJ5IGFuZCBzdG9wIHNwYW1taW5nIERLXG5sZXQgZmV0Y2hlZCA9IGZhbHNlO1xubGV0IGZldGNoaW5nID0gZmFsc2U7XG5jb25zdCByZWZyZXNoU2xhdGVzUmF0ZSA9IDEwMDAgKiA2MCAqIDYwO1xuY29uc3QgY2xlYXJTbGF0ZXMgPSAoKSA9PiB7XG4gIE9iamVjdC5rZXlzKHNsYXRlcykuZm9yRWFjaCgoc2xhdGUpID0+IHtcbiAgICBkZWxldGUgc2xhdGVzW3NsYXRlXTtcbiAgfSk7XG5cbiAgZmV0Y2hlZCA9IGZhbHNlO1xuICBmZXRjaGluZyA9IGZhbHNlO1xufTtcbnNldEludGVydmFsKGNsZWFyU2xhdGVzLCByZWZyZXNoU2xhdGVzUmF0ZSk7XG5cbkluZGV4LmdldEluaXRpYWxQcm9wcyA9IGFzeW5jICh7IHJlZHV4U3RvcmUgfSkgPT4ge1xuICBpZiAoIWZldGNoZWQgJiYgIWZldGNoaW5nKSB7XG4gICAgZmV0Y2hpbmcgPSB0cnVlO1xuICAgIC8vIEhhbmRsZSBlcnJycnJzXG4gICAgLy8gR2V0IGFsbCBzbGF0ZXNcbiAgICAvLyBOZWVkcyB0byBiZSBpbXByb3ZlZCBzdWNoIHRoYXQgZWFjaCByZXF1ZXN0IGRvZXNuJ3QgdHJpZ2dlciBhbiBvdXRnb2luZyByZXF1ZXN0XG4gICAgY29uc29sZS5sb2coJ2dldHRpbmcgc2xhdGVzJylcbiAgICBjb25zdCByZXMgPSBhd2FpdCBmZXRjaCgnaHR0cHM6Ly93d3cuZHJhZnRraW5ncy5jb20vbGluZXVwL2dldHVwY29taW5nY29udGVzdGluZm8nLCB7IG1ldGhvZDogJ3Bvc3QnLCBtb2RlOiAnbm8tY29ycycgfSk7XG4gICAgY29uc3QgcmF3U2xhdGVzID0gYXdhaXQgcmVzLmpzb24oKTtcblxuICAgIC8vIEdldCBwbGF5ZXJzIGZyb20gc2xhdGVcbiAgICBhd2FpdCBQcm9taXNlLmFsbChyYXdTbGF0ZXMubWFwKGdldFBsYXllcnMpKTtcbiAgICBmZXRjaGVkID0gdHJ1ZTtcbiAgfVxuXG4gIGNvbnN0IHsgZGlzcGF0Y2ggfSA9IHJlZHV4U3RvcmU7XG4gIGNvbnNvbGUubG9nKCdzZXR0aW5nIHNsYXRlcycpLy8sIHNsYXRlcylcbiAgZGlzcGF0Y2goe1xuICAgIHR5cGU6ICdTRVRfU0xBVEVTJyxcbiAgICBwYXlsb2FkOiBzbGF0ZXNcbiAgfSk7XG5cbiAgcmV0dXJuIHt9O1xufTtcblxuZXhwb3J0IGRlZmF1bHQgd2l0aFJlZHV4KEluZGV4KTtcbiJdfQ== */\n/*@ sourceURL=/Users/jwesto1/Code/jaw187/dfs-solver/pages/index.js */"), __jsx("div", {
     style: topBarStyle,
     className: "jsx-2111231969",
     __source: {
@@ -44986,7 +45069,7 @@ var Index = function Index() {
     },
     __self: this
   }), __jsx("img", {
-    src: "https://logs-01.loggly.com/inputs/8a465978-add2-4b58-9d57-02f8869b2f17.gif?source=pixel&data=wut",
+    src: "https://logs-01.loggly.com/inputs/8a465978-add2-4b58-9d57-02f8869b2f17.gif?source=pixel&data=load",
     className: "jsx-2111231969",
     __source: {
       fileName: _jsxFileName,
@@ -45229,120 +45312,6 @@ module.exports = {
     }
   }
 };
-
-/***/ }),
-
-/***/ "./solver/ownership.js":
-/*!*****************************!*\
-  !*** ./solver/ownership.js ***!
-  \*****************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-var _Object$defineProperty = __webpack_require__(/*! @babel/runtime-corejs2/core-js/object/define-property */ "./node_modules/@babel/runtime-corejs2/core-js/object/define-property.js");
-
-var _Object$defineProperties = __webpack_require__(/*! @babel/runtime-corejs2/core-js/object/define-properties */ "./node_modules/@babel/runtime-corejs2/core-js/object/define-properties.js");
-
-var _Object$getOwnPropertyDescriptors = __webpack_require__(/*! @babel/runtime-corejs2/core-js/object/get-own-property-descriptors */ "./node_modules/@babel/runtime-corejs2/core-js/object/get-own-property-descriptors.js");
-
-var _Object$getOwnPropertyDescriptor = __webpack_require__(/*! @babel/runtime-corejs2/core-js/object/get-own-property-descriptor */ "./node_modules/@babel/runtime-corejs2/core-js/object/get-own-property-descriptor.js");
-
-var _Object$getOwnPropertySymbols = __webpack_require__(/*! @babel/runtime-corejs2/core-js/object/get-own-property-symbols */ "./node_modules/@babel/runtime-corejs2/core-js/object/get-own-property-symbols.js");
-
-var _defineProperty = __webpack_require__(/*! @babel/runtime-corejs2/helpers/defineProperty */ "./node_modules/@babel/runtime-corejs2/helpers/defineProperty.js");
-
-var _Object$keys = __webpack_require__(/*! @babel/runtime-corejs2/core-js/object/keys */ "./node_modules/@babel/runtime-corejs2/core-js/object/keys.js");
-
-var _classCallCheck = __webpack_require__(/*! @babel/runtime-corejs2/helpers/classCallCheck */ "./node_modules/@babel/runtime-corejs2/helpers/classCallCheck.js");
-
-var _createClass = __webpack_require__(/*! @babel/runtime-corejs2/helpers/createClass */ "./node_modules/@babel/runtime-corejs2/helpers/createClass.js");
-
-function ownKeys(object, enumerableOnly) { var keys = _Object$keys(object); if (_Object$getOwnPropertySymbols) { var symbols = _Object$getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return _Object$getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (_Object$getOwnPropertyDescriptors) { _Object$defineProperties(target, _Object$getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { _Object$defineProperty(target, key, _Object$getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-var OwnershipWatcher =
-/*#__PURE__*/
-function () {
-  "use strict";
-
-  function OwnershipWatcher(_ref) {
-    var players = _ref.players,
-        n = _ref.n,
-        stack = _ref.stack,
-        lineupStrings = _ref.lineupStrings;
-
-    _classCallCheck(this, OwnershipWatcher);
-
-    var pool = this.pool = players;
-    var lineupsAllowed = {};
-
-    _Object$keys(pool).forEach(function (player) {
-      var count = pool[player].ownership / 100 * n;
-      lineupsAllowed[player] = count >= 1 ? lineupsAllowed : 1;
-    });
-
-    this.lineupsAllowed = _objectSpread({}, lineupsAllowed);
-    this.originalLineupsAllowed = _objectSpread({}, lineupsAllowed);
-    this.stack = stack.map(function (player) {
-      return player.draftableId;
-    });
-    this.lineupStrings = lineupStrings;
-  }
-
-  _createClass(OwnershipWatcher, [{
-    key: "update",
-    value: function update(players) {
-      var _this = this;
-
-      var lineupsAllowed = this.lineupsAllowed,
-          lineupStrings = this.lineupStrings;
-      var lineupString = players.sort(function (a, b) {
-        return a > b;
-      }).join('');
-      lineupStrings.push(lineupString);
-      players.forEach(function (player) {
-        --lineupsAllowed[player]; // Remove players from pool
-
-        if (lineupsAllowed[player] < 1 && !_this.stack.includes(Number(player))) {
-          delete _this.pool[player];
-        }
-      });
-    }
-  }, {
-    key: "validate",
-    value: function validate(players) {
-      var _this2 = this;
-
-      var lineupsAllowed = this.lineupsAllowed,
-          lineupStrings = this.lineupStrings;
-      var lineupString = players.sort(function (a, b) {
-        return a > b;
-      }).join('');
-
-      if (lineupStrings.includes(lineupString)) {
-        return false;
-      }
-
-      var ineligiblePlayers = players.filter(function (player) {
-        if (lineupsAllowed[player] < 1) {
-          if (_this2.stack.includes(Number(player))) {
-            return false;
-          }
-
-          return true;
-        }
-
-        return false;
-      });
-      return ineligiblePlayers.length === 0;
-    }
-  }]);
-
-  return OwnershipWatcher;
-}();
-
-module.exports = OwnershipWatcher;
 
 /***/ }),
 
@@ -45825,7 +45794,7 @@ var initializeStore = function initializeStore() {
 
 /***/ }),
 
-/***/ 0:
+/***/ 1:
 /*!***********************************************************************************************************************************!*\
   !*** multi next-client-pages-loader?page=%2F&absolutePagePath=%2FUsers%2Fjwesto1%2FCode%2Fjaw187%2Fdfs-solver%2Fpages%2Findex.js ***!
   \***********************************************************************************************************************************/
@@ -45848,5 +45817,5 @@ module.exports = dll_ef0ff7c60362f24a921f;
 
 /***/ })
 
-},[[0,"static/runtime/webpack.js"]]]);
+},[[1,"static/runtime/webpack.js"]]]);
 //# sourceMappingURL=index.js.map

@@ -36,21 +36,26 @@
     "byName": {
       "init-server.js": 0,
       "on-error-server.js": 1,
-      "static/9WIhuJXMfGHQSP1TzxPNj/pages/_app.js": 2,
-      "static/9WIhuJXMfGHQSP1TzxPNj/pages/_document.js": 3,
-      "static/9WIhuJXMfGHQSP1TzxPNj/pages/_error.js": 4,
-      "static/9WIhuJXMfGHQSP1TzxPNj/pages/about.js": 5,
-      "static/9WIhuJXMfGHQSP1TzxPNj/pages/index.js": 6
+      "static/geVuPI6Edoql9gdxua5_P/pages/_app.js": 2,
+      "static/geVuPI6Edoql9gdxua5_P/pages/_document.js": 3,
+      "static/geVuPI6Edoql9gdxua5_P/pages/_error.js": 4,
+      "static/geVuPI6Edoql9gdxua5_P/pages/about.js": 5,
+      "static/geVuPI6Edoql9gdxua5_P/pages/index.js": 6,
+      "static/J5QgY9-m92_pyfSQz0J9q/pages/_app.js": 7,
+      "static/J5QgY9-m92_pyfSQz0J9q/pages/_document.js": 8,
+      "static/J5QgY9-m92_pyfSQz0J9q/pages/_error.js": 9,
+      "static/J5QgY9-m92_pyfSQz0J9q/pages/about.js": 10,
+      "static/J5QgY9-m92_pyfSQz0J9q/pages/index.js": 11
     },
     "bySource": {},
     "usedIds": [
       0,
       1,
-      2,
-      3,
-      4,
-      5,
-      6
+      10,
+      11,
+      7,
+      8,
+      9
     ]
   }
 }
