@@ -1,1 +1,0 @@
-{"ast":null,"code":"module.exports = function () {\n  return new Worker(\"/_next/\" + \"static/64470936f89ddceff490.worker.js\");\n};","map":null,"metadata":{},"sourceType":"script"}

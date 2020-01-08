@@ -1,1 +1,0 @@
-{"ast":null,"code":"var log = function log(data) {\n  var pixel = new Image();\n  pixel.src = \"https://logs-01.loggly.com/inputs/8a465978-add2-4b58-9d57-02f8869b2f17.gif?source=pixel&data=\".concat(data);\n};\n\nmodule.exports = {\n  log: log\n};","map":null,"metadata":{},"sourceType":"script"}

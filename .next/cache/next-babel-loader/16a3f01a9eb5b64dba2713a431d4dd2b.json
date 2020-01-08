@@ -1,1 +1,0 @@
-{"ast":null,"code":"import React from \"react\";\nvar __jsx = React.createElement;\nconst headerStyle = {\n  fontSize: 36,\n  fontWeight: 900,\n  paddingTop: 6,\n  paddingRight: 16\n};\n\nconst Header = () => __jsx(\"div\", {\n  style: headerStyle\n}, \"DFS Solver\");\n\nexport default Header;","map":null,"metadata":{},"sourceType":"module"}
