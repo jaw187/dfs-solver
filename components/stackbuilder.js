@@ -3,6 +3,7 @@ import Card from "./card"
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import Stacks from "./stacks";
 import { log } from './utils';
+import Button from '@material-ui/core/Button';
 
 const getState = () => {
   const dispatch = useDispatch();
@@ -87,6 +88,32 @@ const StackBuilder = () => {
     flexDirection: 'row'
   };
 
+  const poolPlayer = {
+    paddingLeft: 4,
+    verticalAlign: 'middle',
+    fontSize: 12
+  };
+
+  const playerContainer = {
+    paddingBottom: 4,
+    verticalAlign: 'middle'
+  };
+
+  const stackPlayer = {
+    paddingLeft: 16,
+    paddingBottom: 4
+  }
+
+  const stackButtons = {
+    display: 'flex',
+    flexDirection: 'row',
+    marginTop: 16
+  }
+
+  const stackButton = {
+    marginRight: 16
+  }
+
   return (
     <div style={componentContainer}>
       <div>
@@ -106,8 +133,10 @@ const StackBuilder = () => {
                         checkboxes.push(ref);
 
                         return (
-                          <div>
-                            <input ref={ref} type="checkbox" onClick={togglePlayer(player)} key={i} />{player.displayName} - ${player.salary}
+                          <div style={playerContainer}>
+                            <label>
+                              <input ref={ref} type="checkbox" onClick={togglePlayer(player)} key={i} /><span style={poolPlayer}>{player.displayName} - ${player.salary}</span>
+                            </label>
                           </div>
                         )
                       })
@@ -115,18 +144,20 @@ const StackBuilder = () => {
                 </div>
                 <div style={{ paddingLeft: 16, minWidth: 240 }}>
                   <h3>Stack</h3>
-                  <ul>
-                    {
-                      stack && stack.map((player, i) => (
-                        <li key={i}>{player.displayName}</li>
-                      ))
-                    }
-                  </ul>
+                  {
+                    stack && stack.map((player, i) => (
+                      <div key={i} style={stackPlayer}>{player.displayName}</div>
+                    ))
+                  }
                   {
                     stack && stack.length > 1 && (
-                      <div>
-                        <button onClick={add}>Add</button>
-                        <button onClick={clear}>Clear</button>
+                      <div style={stackButtons}>
+                        <div style={stackButton}>
+                          <Button onClick={add} variant="contained" color="primary">Add</Button>
+                        </div>
+                        <div style={stackButton}>
+                          <Button onClick={clear} variant="contained" color="secondary">Clear</Button>
+                        </div>
                       </div>
                     )
                   }

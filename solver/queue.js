@@ -13,7 +13,7 @@ const Queue = {
       const response = top.go();
 
       if (response.notFeasible || top.isDone()) {
-        top.results.forEach((result) => results.push(result));
+        results.push(top.results);
         continue;
       }
 

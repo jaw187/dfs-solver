@@ -108,13 +108,7 @@ const Pool = () => {
     padding: 16
   };
 
-  const positionCard = (which) => {
-    const players = poolPositions[which];
-
-    if (!players) {
-      return null;
-    }
-
+  const generatePositionCard = (which, players) => {
     const playerContainerStyle = {
       whiteSpace: 'nowrap',
       fontSize: 12
@@ -129,11 +123,12 @@ const Pool = () => {
       marginRight: 8
     };
 
+
     return (
       <Card>
         <h3 style={{ marginTop: 0 }}>{which.toUpperCase()}</h3>
         {
-          players && players.map((player, i) => {
+          players.map((player, i) => {
             const ref = React.createRef();
             checkboxes.push(ref);
 
@@ -152,6 +147,35 @@ const Pool = () => {
         }
       </Card>
     );
+  }
+
+  const positionCard = (which) => {
+    const players = poolPositions[which];
+    if (!players) {
+      return null;
+    }
+
+    const singlePositions = ['G'];
+
+    if (singlePositions.includes(which)) {
+      const splitPlayers = [];
+      players.forEach((player, i) => {
+        const j = Math.floor(i/40);
+        if (!splitPlayers[j]) {
+          splitPlayers[j] = [];
+        }
+
+        splitPlayers[j].push(player);
+      });
+
+      return (
+        <div style={cardContainer}>
+          { splitPlayers.map((split) => generatePositionCard(which, split)) }
+        </div>
+      );
+    }
+
+    return generatePositionCard(which, players);
   };
 
   const games = slate;

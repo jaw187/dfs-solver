@@ -12,12 +12,16 @@ const initialState = {
   results: [],
   pool: [],
   view: 'slatepicker',
-  showPoolTools: false
+  showPoolTools: false,
+  generating: false,
+  stacksUsed: []
 };
 
 const reducer = (state = initialState, { type, payload }) => {
 
   const stackCounts = [...state.stackCounts];
+
+  const { i, j, n } = payload ? payload : {};
 
   switch (type) {
     case 'SET_SLATES':
@@ -78,7 +82,6 @@ const reducer = (state = initialState, { type, payload }) => {
         stack: state.stack.filter((player) => player.playerId !== payload.playerId)
       }
     case 'SET_STACK_N':
-      const { i, n } = payload;
       stackCounts[i] = Number(n);
 
       return {
@@ -91,9 +94,28 @@ const reducer = (state = initialState, { type, payload }) => {
         results: state.results.concat(payload)
       }
     case 'REMOVE_RESULT':
+      const newResults = [];
+      const { results, stacksUsed } = state;
+      const stacksToRemove = [];
+      results.forEach((result, resultsIndex) => {
+        if (resultsIndex !== i) {
+          return newResults.push([].concat(result))
+        }
+
+        const newResult = result.filter((r, index) => index !== j);
+        if (newResult.length) {
+          return newResults.push(newResult);
+        }
+
+        stacksToRemove.push(resultsIndex);
+      });
+
+      const stacksUsedAfterRemove = stacksUsed.filter((s, stacksIndex) => !stacksToRemove.includes(stacksIndex));
+
       return {
         ...state,
-        results: state.results.filter((result, i) => i !== payload)
+        results: newResults,
+        stacksUsed: stacksUsedAfterRemove
       }
     case 'ADD_PLAYER_TO_POOL':
       return {
@@ -111,7 +133,7 @@ const reducer = (state = initialState, { type, payload }) => {
         view: payload
       }
     case 'MOVE_STACK':
-      const { j, which } = payload;
+      const { which } = payload;
       const stacks = state.stacks.concat([]);
       const stack = stacks[j];
 
@@ -149,6 +171,19 @@ const reducer = (state = initialState, { type, payload }) => {
       }
     case 'PURGE':
       return state
+    case 'GENERATE':
+      const newStacksUsed = !state.generating ? state.stacksUsed.concat(state.stacks) : state.stacksUsed;
+
+      return {
+        ...state,
+        generating: !state.generating,
+        stacksUsed: newStacksUsed
+      }
+    case 'CLEAR_LINEUPS':
+      return {
+        ...state,
+        results: []
+      }
     default:
       return state
   }

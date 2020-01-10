@@ -70,7 +70,6 @@ const Navigation = () => {
       {navigationButton('importprojections', 'Projections')}
       {navigationButton('playerpool', 'Player Pool')}
       {navigationButton('stackbuilder', 'Stacks')}
-      {navigationButton('generator', 'Generate')}
       {navigationButton('results', 'Lineups')}
       <div style={linkContainerStyle}>
       <button style={clearButtonStyle} onClick={clear}>Clear</button>

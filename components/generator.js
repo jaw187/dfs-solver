@@ -3,6 +3,8 @@ import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import Solver from "../solver/index";
 import clone from 'lodash/clone';
 import { log } from './utils';
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const { Models, players, Worker } = Solver;
 
@@ -17,6 +19,7 @@ const getState = () => {
   const results = useSelector(state => state.results);
   const pool = useSelector(state => state.pool);
   const view = useSelector(state => state.view);
+  const generating = useSelector(state => state.generating);
 
   const addResults = (results) => {
     dispatch({
@@ -24,6 +27,12 @@ const getState = () => {
       payload: results
     });
   };
+
+  const toggleGenerate = () => {
+    dispatch({
+      type: 'GENERATE'
+    });
+  }
 
   return {
     stacks,
@@ -34,7 +43,9 @@ const getState = () => {
     addResults,
     results,
     pool,
-    view
+    view,
+    toggleGenerate,
+    generating
   };
 };
 
@@ -48,10 +59,12 @@ const Generator = () => {
     addResults,
     results,
     pool,
-    view
+    view,
+    toggleGenerate,
+    generating
   } = getState();
 
-  if (view !== 'generator') {
+  if (view !== 'generator' && view !== 'results') {
     return null;
   }
 
@@ -77,14 +90,15 @@ const Generator = () => {
   const site = 'draftkings';
   const type = slate.GameType.Name.toLowerCase();
 
+  let n = 0;
+  stackCounts.forEach((count) => {
+    n = n + count;
+  });
+
   const generate = () => {
     log('generate');
+    toggleGenerate();
     const playersForModel = players.convertPlayers(pool, projection, sport, site, type);
-
-    let n = 0;
-    stackCounts.forEach((count) => {
-      n = n + count;
-    });
 
     const worker = new Worker();
 
@@ -113,6 +127,7 @@ const Generator = () => {
     worker.postMessage({ action: 'solve' });
     worker.addEventListener('message', (event) => {
       const results = event.data;
+      toggleGenerate();
       log(`generated ${results.length} lineups`);
       if (results.length) {
         addResults(results);
@@ -127,19 +142,40 @@ const Generator = () => {
     }
 
     return `${player.position} - ${player.displayName} - ${player.salary}`;
-  }
+  };
+
+  const generateInfoStyle = {
+    paddingLeft: 24
+  };
+
+  const generateContainerStyle = {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center'
+  };
+
+  const progressContainerStyle = {
+    paddingLeft: 24
+  };
 
   return (
     <Card>
-      <h2>Generator</h2>
-      <button onClick={generate}>Generate</button>
-      <ul>
-      {
-        stacks.map((stack, i) => (
-          <li key={i}>Stack with {stackCounts[i]} lineups</li>
-        ))
-      }
-      </ul>
+      <div style={generateContainerStyle}>
+        <Button onClick={generate} variant="contained" color="primary">{ `Generate ${n} Lineups` }</Button>
+        {
+          generating && (
+            <div style={progressContainerStyle}>
+              <CircularProgress />
+            </div>
+          )
+        }
+        <div style={generateInfoStyle}>
+          {`Pool length: ${pool.length}`}
+        </div>
+        <div style={generateInfoStyle}>
+          {`Stacks: ${stacks.length}`}
+        </div>
+      </div>
     </Card>
   );
 };

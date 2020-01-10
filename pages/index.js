@@ -3,7 +3,6 @@ import Header from  '../components/header';
 import ImportProjection from '../components/importprojection.js';
 import SlatePicker from '../components/slatepicker';
 import StackBuilder from '../components/stackbuilder';
-import Generator from '../components/generator';
 import Pool from '../components/pool';
 import Navigation from '../components/navigation';
 import Lineups from '../components/lineups';
@@ -85,7 +84,6 @@ const Index = () => {
       <ImportProjection />
       <Pool />
       <StackBuilder />
-      <Generator />
       <Lineups />
       <img src="https://logs-01.loggly.com/inputs/8a465978-add2-4b58-9d57-02f8869b2f17.gif?source=pixel&data=load" />
     </div>
