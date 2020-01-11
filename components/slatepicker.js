@@ -15,10 +15,6 @@ const getState = () => {
 
   const dispatch = useDispatch();
   const setSelectedSlate = (selected) => {
-    console.log('set', {
-      type: 'SET_SELECTED_SLATE',
-      payload: selected
-    })
     dispatch({
       type: 'SET_SELECTED_SLATE',
       payload: selected

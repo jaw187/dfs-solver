@@ -79,11 +79,18 @@ const Lineups = () => {
           return `${g[0].id},${g[1].id},${g[2].id},${g[3].id},${g[4].id},${g[5].id}`;
         }
       }
+    },
+    mma: {
+      draftkings: {
+        classic: (result) => {
+          const { lineup: { f } } =  result;
+          return `${f[0].id},${f[1].id},${f[2].id},${f[3].id},${f[4].id},${f[5].id}`;
+        }
+      }
     }
   };
 
   const generateLineupString = (lineup) => {
-    exporters[sport][site][type]
     const ids = exporters[sport][site][type](lineup).split(',');
     ids.sort((a,b) => a > b ? 1 : -1);
 
@@ -126,6 +133,11 @@ const Lineups = () => {
     golf: {
       draftkings: {
         classic: "G,G,G,G,G,G\n"
+      }
+    },
+    mma: {
+      draftkings: {
+        classic: "F,F,F,F,F,F\n"
       }
     }
   };
@@ -233,7 +245,6 @@ const Lineups = () => {
         classic: (i) => {
           return (result, j) => (
             <div key={j} style={lineupStyle}>
-              <Button onClick={remove(i, j)} variant="contained" color="secondary" size="small" style={removeButtonStyle}>Remove</Button>
               <div>
                 <div>{formatPlayer(result.lineup.g[0])}</div>
                 <div>{formatPlayer(result.lineup.g[1])}</div>
@@ -242,6 +253,26 @@ const Lineups = () => {
                 <div>{formatPlayer(result.lineup.g[4])}</div>
                 <div>{formatPlayer(result.lineup.g[5])}</div>
               </div>
+              <Button onClick={remove(i, j)} variant="contained" color="secondary" size="small" style={removeButtonStyle}>Remove</Button>
+            </div>
+          );
+        }
+      }
+    },
+    mma: {
+      draftkings: {
+        classic: (i) => {
+          return (result, j) => (
+            <div key={j} style={lineupStyle}>
+              <div>
+                <div>{formatPlayer(result.lineup.f[0])}</div>
+                <div>{formatPlayer(result.lineup.f[1])}</div>
+                <div>{formatPlayer(result.lineup.f[2])}</div>
+                <div>{formatPlayer(result.lineup.f[3])}</div>
+                <div>{formatPlayer(result.lineup.f[4])}</div>
+                <div>{formatPlayer(result.lineup.f[5])}</div>
+              </div>
+              <Button onClick={remove(i, j)} variant="contained" color="secondary" size="small" style={removeButtonStyle}>Remove</Button>
             </div>
           );
         }
@@ -258,7 +289,6 @@ const Lineups = () => {
   }
 
   const displayStack = (stack, i) => {
-    console.log('watttttt', stack)
     return (
       <div>
         <h5 style={stackHeaderStyle}>{ stack.map((player) => player.displayName).join(' - ') }</h5>

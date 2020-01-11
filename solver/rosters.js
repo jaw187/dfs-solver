@@ -64,7 +64,22 @@ module.exports = {
             ...player,
             ...positions
           }
-        },
+        }
+      }
+    }
+  },
+  mma: {
+    draftkings: {
+      classic: {
+        F: (points, salary, ownership, startTime) => {
+          const positions = { f: 1 };
+          const player = createPlayer(points, salary, ownership, startTime);
+
+          return {
+            ...player,
+            ...positions
+          }
+        }
       }
     }
   }

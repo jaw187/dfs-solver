@@ -11,7 +11,7 @@ import fetch from 'isomorphic-unfetch';
 
 const slates = {};
 
-const supportedSports = ['NFL', 'GOLF'];
+const supportedSports = ['NFL', 'GOLF', 'MMA'];
 const supportedGameTypes = ['Classic'];
 
 const getPlayers = async function (slate) {

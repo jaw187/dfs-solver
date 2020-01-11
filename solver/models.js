@@ -23,6 +23,15 @@ const constraintList = {
         g: { equal: 6 }
       }
     }
+  },
+  mma: {
+    draftkings: {
+      classic: {
+        pointz: { max: 100000 },
+        salary: { max: 50000 },
+        f: { equal: 6 }
+      }
+    }
   }
 };
 
@@ -63,6 +72,11 @@ module.exports = {
   golf: {
     draftkings: {
       classic: (players) => new Model(players, clone(constraintList.golf.draftkings.classic))
+    }
+  },
+  mma: {
+    draftkings: {
+      classic: (players) => new Model(players, clone(constraintList.mma.draftkings.classic))
     }
   }
 };
