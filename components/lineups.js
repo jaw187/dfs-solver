@@ -87,6 +87,14 @@ const Lineups = () => {
           return `${f[0].id},${f[1].id},${f[2].id},${f[3].id},${f[4].id},${f[5].id}`;
         }
       }
+    },
+    nba: {
+      draftkings: {
+        classic: (result) => {
+          const { lineup: { pg, sg, sf, pf, c, g, f, flex } } =  result;
+          return `${pg.id},${sg.id},${sf.id},${pf.id},${c.id},${g.id},${f.id},${flex.id}`;
+        }
+      }
     }
   };
 
@@ -138,6 +146,11 @@ const Lineups = () => {
     mma: {
       draftkings: {
         classic: "F,F,F,F,F,F\n"
+      }
+    },
+    nba: {
+      draftkings: {
+        classic: "PG,SG,SF,PF,C,G,F,FLEX\n"
       }
     }
   };
@@ -271,6 +284,27 @@ const Lineups = () => {
                 <div>{formatPlayer(result.lineup.f[3])}</div>
                 <div>{formatPlayer(result.lineup.f[4])}</div>
                 <div>{formatPlayer(result.lineup.f[5])}</div>
+              </div>
+              <Button onClick={remove(i, j)} variant="contained" color="secondary" size="small" style={removeButtonStyle}>Remove</Button>
+            </div>
+          );
+        }
+      }
+    },
+    nba: {
+      draftkings: {
+        classic: (i) => {
+          return (result, j) => (
+            <div key={j} style={lineupStyle}>
+              <div>
+                <div>{formatPlayer(result.lineup.pg)}</div>
+                <div>{formatPlayer(result.lineup.sg)}</div>
+                <div>{formatPlayer(result.lineup.sf)}</div>
+                <div>{formatPlayer(result.lineup.pf)}</div>
+                <div>{formatPlayer(result.lineup.c)}</div>
+                <div>{formatPlayer(result.lineup.g)}</div>
+                <div>{formatPlayer(result.lineup.f)}</div>
+                <div>{formatPlayer(result.lineup.flex)}</div>
               </div>
               <Button onClick={remove(i, j)} variant="contained" color="secondary" size="small" style={removeButtonStyle}>Remove</Button>
             </div>

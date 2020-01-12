@@ -266,8 +266,16 @@ const Pool = () => {
         { positionCard("WR") }
         { positionCard("TE") }
         { positionCard("DST") }
+
         { positionCard("G") }
+
         { positionCard("F") }
+
+        { positionCard("PG") }
+        { positionCard("SG") }
+        { positionCard("SF") }
+        { positionCard("PF") }
+        { positionCard("C") }
       </div>
     </div>
   );

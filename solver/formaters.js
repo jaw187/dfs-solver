@@ -152,7 +152,6 @@ module.exports = {
           });
 
           // Add players to positions their eligible for
-          const playersEligibleAtMoreThanOnePosition = [];
           resultPlayers.forEach((playerId) => {
 
             const player = players[playerId];
@@ -197,7 +196,6 @@ module.exports = {
           });
 
           // Add players to positions their eligible for
-          const playersEligibleAtMoreThanOnePosition = [];
           resultPlayers.forEach((playerId) => {
 
             const player = players[playerId];
@@ -214,6 +212,138 @@ module.exports = {
           const lineup = {
             f: roster.positions.f
           };
+
+          return {
+            points,
+            lineup,
+            players: resultPlayers
+          }
+        }
+      }
+    }
+  },
+  nba: {
+    draftkings: {
+      classic: (players) => {
+        return (solution) => {
+
+          const points = solution.result;
+          const roster = {
+            positions: {
+              pg: [],
+              sg: [],
+              sf: [],
+              pf: [],
+              c: []
+            }
+          };
+
+          const resultPlayers = Object.keys(solution).filter((key) => {
+            const keysToRemove = ['feasible', 'result', 'bounded', 'isIntegral']
+            return !keysToRemove.includes(key);
+          });
+
+          // Add players to positions their eligible for
+          const playersEligibleAtMoreThanOnePosition = [];
+          resultPlayers.forEach((playerId) => {
+
+            let positions = 0;
+            const player = players[playerId];
+            player.id = playerId;
+
+            if (player.pg) {
+              ++positions;
+              roster.positions.pg.push(player);
+            }
+
+            if (player.sg) {
+              ++positions;
+              roster.positions.sg.push(player);
+            }
+
+            if (player.sf) {
+              ++positions;
+              roster.positions.sf.push(player)
+            }
+
+            if (player.pf) {
+              ++positions;
+              roster.positions.pf.push(player)
+            }
+
+            if (player.c) {
+              ++positions;
+              roster.positions.c.push(player)
+            }
+
+            const playsMultiplePositions = positions > 1;
+            if (playsMultiplePositions) {
+              playersEligibleAtMoreThanOnePosition.push(player);
+            }
+          });
+
+          const removePlayerFromOtherPositions = (player, positionToIgnore) => {
+            Object.keys(roster.positions).forEach((key) => {
+              if (key !== positionToIgnore) {
+                const removePlayer = (positionPlayer) => !(player.id === positionPlayer.id);
+                roster.positions[key] = roster.positions[key].filter(removePlayer);
+              }
+            })
+          }
+
+          // Remove eligibility at multiple positions if the position only has one player.
+          playersEligibleAtMoreThanOnePosition.forEach((player) => {
+            if (player.pg && roster.positions.pg.length === 1) {
+              return removePlayerFromOtherPositions(player, 'pg');
+            }
+
+            if (player.sg && roster.positions.sg.length === 1) {
+              return removePlayerFromOtherPositions(player, 'sg');
+            }
+
+            if (player.sf && roster.positions.sf.length === 1) {
+              return removePlayerFromOtherPositions(player, 'sf');
+            }
+
+            if (player.pf && roster.positions.pf.length === 1) {
+              return removePlayerFromOtherPositions(player, 'pf');
+            }
+
+            if (player.c && roster.positions.c.length === 1) {
+              return removePlayerFromOtherPositions(player, 'c');
+            }
+          });
+
+          // Sort by start time
+          // Attempting to account for late swap
+          const sort = (a, b) => a.startTime - b.startTime;
+          Object.keys(roster.positions).forEach((key) => roster.positions[key].sort(sort));
+
+          // Fill out lineup
+          const lineup = {};
+          lineup.pg = roster.positions.pg.shift();
+          removePlayerFromOtherPositions(lineup.pg);
+
+          lineup.sg = roster.positions.sg.shift();
+          removePlayerFromOtherPositions(lineup.sg);
+
+          lineup.sf = roster.positions.sf.shift();
+          removePlayerFromOtherPositions(lineup.sf);
+
+          lineup.pf = roster.positions.pf.shift();
+          removePlayerFromOtherPositions(lineup.pf);
+
+          lineup.c = roster.positions.c.shift();
+          removePlayerFromOtherPositions(lineup.c);
+
+          lineup.g = roster.positions.pg[0] || roster.positions.sg[0];
+          removePlayerFromOtherPositions(lineup.g);
+
+          lineup.f = roster.positions.pf[0] || roster.positions.sf[0];
+          removePlayerFromOtherPositions(lineup.g);
+
+          // May be possible that flex start time is before G or F
+          lineup.flex = roster.positions.pg[0] || roster.positions.sg[0] ||  roster.positions.pf[0] || roster.positions.sf[0] || roster.positions.c[0]
 
           return {
             points,
