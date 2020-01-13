@@ -340,7 +340,7 @@ module.exports = {
           removePlayerFromOtherPositions(lineup.g);
 
           lineup.f = roster.positions.pf[0] || roster.positions.sf[0];
-          removePlayerFromOtherPositions(lineup.g);
+          removePlayerFromOtherPositions(lineup.f);
 
           // May be possible that flex start time is before G or F
           lineup.flex = roster.positions.pg[0] || roster.positions.sg[0] ||  roster.positions.pf[0] || roster.positions.sf[0] || roster.positions.c[0]
