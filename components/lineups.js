@@ -59,9 +59,9 @@ const Lineups = () => {
   }
 
   const slate = slates && slates[selectedSlate];
-  const sport = slate.Sport.toLowerCase();
+  const sport = slate && slate.Sport.toLowerCase();
   const site = 'draftkings';
-  const type = slate.GameType.Name.toLowerCase();
+  const type = slate && slate.GameType.Name.toLowerCase();
 
   const exporters = {
     nfl: {
@@ -150,7 +150,7 @@ const Lineups = () => {
     },
     nba: {
       draftkings: {
-        classic: "PG,SG,SF,PF,C,G,F,FLEX\n"
+        classic: "PG,SG,SF,PF,C,G,F,UTIL\n"
       }
     }
   };

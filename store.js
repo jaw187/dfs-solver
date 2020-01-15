@@ -14,7 +14,40 @@ const initialState = {
   view: 'slatepicker',
   showPoolTools: false,
   generating: false,
-  stacksUsed: []
+  stacksUsed: [],
+  slateBackups: {},
+  selectedSlate: null
+};
+
+const setSelectedSlate = (state, slate) => {
+
+  const { selectedSlate } = state;
+  if (selectedSlate) {
+    const backup = { ...state };
+    delete backup.slateBackups;
+    delete backup.slates;
+    state.slateBackups[selectedSlate] = backup;
+  }
+
+  if (state.slateBackups[slate]) {
+    return {
+      ...state,
+      ...state.slateBackups[slate]
+    };
+  }
+
+  const newState = {
+    ...initialState,
+    selectedSlate: slate
+  };
+
+  delete newState.slates;
+  delete newState.slateBackups;
+
+  return {
+    ...state,
+    ...newState
+  };
 };
 
 const reducer = (state = initialState, { type, payload }) => {
@@ -30,10 +63,7 @@ const reducer = (state = initialState, { type, payload }) => {
         slates: { ...payload }
       };
     case 'SET_SELECTED_SLATE':
-      return {
-        ...state,
-        selectedSlate: payload
-      };
+      return setSelectedSlate(state, payload);
     case 'CLEAR_IMPORT_ERRORS':
       return {
         ...state,
@@ -120,7 +150,7 @@ const reducer = (state = initialState, { type, payload }) => {
     case 'ADD_PLAYER_TO_POOL':
       return {
         ...state,
-        pool: state.pool.concat([payload])
+        pool: state.pool.concat([payload]).sort((a, b) => b.salary - a.salary)
       }
     case 'REMOVE_PLAYER_FROM_POOL':
       return {
