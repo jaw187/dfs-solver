@@ -123,28 +123,49 @@ const Pool = () => {
       marginRight: 8
     };
 
+    const playerProjectionStyle = {
+      textAlign: 'center',
+      fontWeight: 700
+    }
+
+    const tableHeaderStyle = {
+      textAlign: 'left'
+    }
 
     return (
       <Card>
         <h3 style={{ marginTop: 0 }}>{which.toUpperCase()}</h3>
-        {
-          players.map((player, i) => {
-            const ref = React.createRef();
-            checkboxes.push(ref);
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th style={tableHeaderStyle}>Player</th>
+              <th style={tableHeaderStyle}>Salary</th>
+              <th style={tableHeaderStyle}>Proj</th>
+            </tr>
+          </thead>
+          {
+            players.map((player, i) => {
+              const ref = React.createRef();
+              checkboxes.push(ref);
 
-            const hasProjection = projection && projection.filter((row) => row.player == player.draftableId).length === 1;
-            const style = hasProjection ? playerContainerStyle : missingProjectionStyle;
 
-            const inPool = pool && !!pool.find((poolPlayer) => player.playerId === poolPlayer.playerId);
-            return (
-              <div style={style} key={i}>
-                <label>
-                  <input ref={ref} style={checkboxStyle} type="checkbox" onClick={togglePlayer(player)} checked={inPool} />{player.displayName} - ${player.salary}
-                </label>
-              </div>
-            )
-          })
-        }
+              const playerProjection = projection && projection.filter((row) => row.player == player.draftableId)[0];
+              const hasProjection = !!playerProjection;
+              const style = hasProjection ? playerContainerStyle : missingProjectionStyle;
+
+              const inPool = pool && !!pool.find((poolPlayer) => player.playerId === poolPlayer.playerId);
+              return (
+                <tr style={style} key={i}>
+                  <td><label style={{ display: 'block' }}><input ref={ref} style={checkboxStyle} type="checkbox" onClick={togglePlayer(player)} checked={inPool} /></label></td>
+                  <td onClick={togglePlayer(player)}>{player.displayName}</td>
+                  <td onClick={togglePlayer(player)}>${player.salary}</td>
+                  <td style={playerProjectionStyle} onClick={togglePlayer(player)}>{playerProjection && Math.round(playerProjection.value)}</td>
+                </tr>
+              )
+            })
+          }
+        </table>
       </Card>
     );
   }

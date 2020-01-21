@@ -15,6 +15,7 @@ const getState = () => {
   const results = useSelector(state => state.results);
   const view = useSelector(state => state.view);
   const stacksUsed = useSelector(state => state.stacksUsed);
+  const projection = useSelector(state => state.projection);
 
   const removeLineup = (i, j) => {
     dispatch({
@@ -34,7 +35,8 @@ const getState = () => {
     view,
     removeLineup,
     stacksUsed,
-    clearLineups
+    clearLineups,
+    projection
   };
 };
 
@@ -46,7 +48,8 @@ const Lineups = () => {
     view,
     removeLineup,
     stacksUsed,
-    clearLineups
+    clearLineups,
+    projection
   } = getState();
 
   if (view !== 'results') {
@@ -123,13 +126,38 @@ const Lineups = () => {
     });
   });
 
-  const formatPlayer = (lineupPlayer) => {
-    const player = slate.players.find((player) => player.draftableId == lineupPlayer.id);
+  const projectionStyle = {
+    fontWeight: 700,
+    textAlign: 'center'
+  };
+
+  const ownershipDataStyle = {
+    textAlign: 'center'
+  };
+
+  const formatPlayer = ({ id, data }) => {
+    const player = slate.players.find((player) => player.draftableId == id);
     if (!player) {
-      return lineupPlayer.id;
+      return id;
     }
 
-    return `${player.position} - ${player.displayName} - $${player.salary}`;
+    const numberWithCommas = (x) => x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+    const playerProjection = Math.round(projection.filter((projectionPlayer) => projectionPlayer.player === id)[0].value);
+    return (
+      <tr>
+        <td>{player.position}</td>
+        <td>{player.displayName}</td>
+        <td>${numberWithCommas(player.salary)}</td>
+        <td style={projectionStyle}>{playerProjection}</td>
+        { data && (
+          <td style={ownershipDataStyle}>{data.count}</td>
+        )}
+        {data && (
+          <td style={ownershipDataStyle}>{data.percentage}%</td>
+        )}
+      </tr>
+    );
   };
 
   const headers = {
@@ -215,11 +243,12 @@ const Lineups = () => {
   };
 
   const ownership = Object.keys(playerCounts).map((player) => {
-    return {
-      player: formatPlayer({ id: player }),
+    const data = {
       count: playerCounts[player],
       percentage: ((playerCounts[player] / lineupStrings.length) * 100).toFixed(0)
-    }
+    };
+
+    return formatPlayer({ id: player, data })
   });
 
   const ownershipPlayerStyle = {
@@ -230,23 +259,44 @@ const Lineups = () => {
     marginTop: 16
   }
 
+  const lineupTotalStyle = {
+    paddingTop: 8,
+    display: 'flex',
+    fontSize: 18,
+    justifyContent: 'center',
+    fontWeight: 700
+  };
+
+  const tableHeaderStyle = {
+    textAlign: 'left'
+  };
+
   const lineupFormats = {
     nfl: {
       draftkings: {
         classic: (i) => {
           return (result, j) => (
             <div key={j} style={lineupStyle}>
-              <div>
-                <div>{formatPlayer(result.lineup.qb)}</div>
-                <div>{formatPlayer(result.lineup.rbs[0])}</div>
-                <div>{formatPlayer(result.lineup.rbs[1])}</div>
-                <div>{formatPlayer(result.lineup.wrs[0])}</div>
-                <div>{formatPlayer(result.lineup.wrs[1])}</div>
-                <div>{formatPlayer(result.lineup.wrs[2])}</div>
-                <div>{formatPlayer(result.lineup.te)}</div>
-                <div>{formatPlayer(result.lineup.flex)}</div>
-                <div>{formatPlayer(result.lineup.dst)}</div>
-              </div>
+              <table>
+                <thead>
+                  <tr>
+                    <th style={tableHeaderStyle}>Pos</th>
+                    <th style={tableHeaderStyle}>Player</th>
+                    <th style={tableHeaderStyle}>Salary</th>
+                    <th style={tableHeaderStyle}>Proj</th>
+                  </tr>
+                </thead>
+                {formatPlayer(result.lineup.qb)}
+                {formatPlayer(result.lineup.rbs[0])}
+                {formatPlayer(result.lineup.rbs[1])}
+                {formatPlayer(result.lineup.wrs[0])}
+                {formatPlayer(result.lineup.wrs[1])}
+                {formatPlayer(result.lineup.wrs[2])}
+                {formatPlayer(result.lineup.te)}
+                {formatPlayer(result.lineup.flex)}
+                {formatPlayer(result.lineup.dst)}
+              </table>
+              <div style={lineupTotalStyle}>{Math.round(result.points)}</div>
               <Button onClick={remove(i, j)} variant="contained" color="secondary" size="small" style={removeButtonStyle}>Remove</Button>
             </div>
           )
@@ -258,14 +308,23 @@ const Lineups = () => {
         classic: (i) => {
           return (result, j) => (
             <div key={j} style={lineupStyle}>
-              <div>
-                <div>{formatPlayer(result.lineup.g[0])}</div>
-                <div>{formatPlayer(result.lineup.g[1])}</div>
-                <div>{formatPlayer(result.lineup.g[2])}</div>
-                <div>{formatPlayer(result.lineup.g[3])}</div>
-                <div>{formatPlayer(result.lineup.g[4])}</div>
-                <div>{formatPlayer(result.lineup.g[5])}</div>
-              </div>
+              <table>
+                <thead>
+                  <tr>
+                    <th style={tableHeaderStyle}>Pos</th>
+                    <th style={tableHeaderStyle}>Player</th>
+                    <th style={tableHeaderStyle}>Salary</th>
+                    <th style={tableHeaderStyle}>Proj</th>
+                  </tr>
+                </thead>
+                {formatPlayer(result.lineup.g[0])}
+                {formatPlayer(result.lineup.g[1])}
+                {formatPlayer(result.lineup.g[2])}
+                {formatPlayer(result.lineup.g[3])}
+                {formatPlayer(result.lineup.g[4])}
+                {formatPlayer(result.lineup.g[5])}
+              </table>
+              <div style={lineupTotalStyle}>{Math.round(result.points)}</div>
               <Button onClick={remove(i, j)} variant="contained" color="secondary" size="small" style={removeButtonStyle}>Remove</Button>
             </div>
           );
@@ -277,14 +336,23 @@ const Lineups = () => {
         classic: (i) => {
           return (result, j) => (
             <div key={j} style={lineupStyle}>
-              <div>
-                <div>{formatPlayer(result.lineup.f[0])}</div>
-                <div>{formatPlayer(result.lineup.f[1])}</div>
-                <div>{formatPlayer(result.lineup.f[2])}</div>
-                <div>{formatPlayer(result.lineup.f[3])}</div>
-                <div>{formatPlayer(result.lineup.f[4])}</div>
-                <div>{formatPlayer(result.lineup.f[5])}</div>
-              </div>
+              <table>
+                <thead>
+                  <tr>
+                    <th style={tableHeaderStyle}>Pos</th>
+                    <th style={tableHeaderStyle}>Player</th>
+                    <th style={tableHeaderStyle}>Salary</th>
+                    <th style={tableHeaderStyle}>Proj</th>
+                  </tr>
+                </thead>
+                {formatPlayer(result.lineup.f[0])}
+                {formatPlayer(result.lineup.f[1])}
+                {formatPlayer(result.lineup.f[2])}
+                {formatPlayer(result.lineup.f[3])}
+                {formatPlayer(result.lineup.f[4])}
+                {formatPlayer(result.lineup.f[5])}
+              </table>
+              <div style={lineupTotalStyle}>{Math.round(result.points)}</div>
               <Button onClick={remove(i, j)} variant="contained" color="secondary" size="small" style={removeButtonStyle}>Remove</Button>
             </div>
           );
@@ -296,16 +364,25 @@ const Lineups = () => {
         classic: (i) => {
           return (result, j) => (
             <div key={j} style={lineupStyle}>
-              <div>
-                <div>{formatPlayer(result.lineup.pg)}</div>
-                <div>{formatPlayer(result.lineup.sg)}</div>
-                <div>{formatPlayer(result.lineup.sf)}</div>
-                <div>{formatPlayer(result.lineup.pf)}</div>
-                <div>{formatPlayer(result.lineup.c)}</div>
-                <div>{formatPlayer(result.lineup.g)}</div>
-                <div>{formatPlayer(result.lineup.f)}</div>
-                <div>{formatPlayer(result.lineup.flex)}</div>
-              </div>
+              <table>
+                <thead>
+                  <tr>
+                    <th style={tableHeaderStyle}>Pos</th>
+                    <th style={tableHeaderStyle}>Player</th>
+                    <th style={tableHeaderStyle}>Salary</th>
+                    <th style={tableHeaderStyle}>Proj</th>
+                  </tr>
+                </thead>
+                {formatPlayer(result.lineup.pg)}
+                {formatPlayer(result.lineup.sg)}
+                {formatPlayer(result.lineup.sf)}
+                {formatPlayer(result.lineup.pf)}
+                {formatPlayer(result.lineup.c)}
+                {formatPlayer(result.lineup.g)}
+                {formatPlayer(result.lineup.f)}
+                {formatPlayer(result.lineup.flex)}
+              </table>
+              <div style={lineupTotal}>{Math.round(result.points)}</div>
               <Button onClick={remove(i, j)} variant="contained" color="secondary" size="small" style={removeButtonStyle}>Remove</Button>
             </div>
           );
@@ -347,14 +424,22 @@ const Lineups = () => {
             <h3 style={{ marginTop: 0 }}>Ownership</h3>
             {
               !!ownership.length && (
-                <div>
-                  {
-                    ownership.map((data) => (
-                      <div style={ownershipPlayerStyle}>
-                        {data.player} - {data.count} - {data.percentage}%
-                      </div>
-                    ))
-                  }
+                <div style={ownershipPlayerStyle}>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th style={tableHeaderStyle}>Pos</th>
+                        <th style={tableHeaderStyle}>Player</th>
+                        <th style={tableHeaderStyle}>Salary</th>
+                        <th style={tableHeaderStyle}>Proj</th>
+                        <th style={tableHeaderStyle}>Count</th>
+                        <th style={tableHeaderStyle}>Own %</th>
+                      </tr>
+                    </thead>
+                    {
+                      ownership.map((result) => result)
+                    }
+                  </table>
                 </div>
               )
             }
