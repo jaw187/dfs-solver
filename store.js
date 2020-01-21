@@ -212,6 +212,7 @@ const reducer = (state = initialState, { type, payload }) => {
     case 'CLEAR_LINEUPS':
       return {
         ...state,
+        stacksUsed: [],
         results: []
       }
     default:
