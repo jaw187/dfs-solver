@@ -382,7 +382,7 @@ const Lineups = () => {
                 {formatPlayer(result.lineup.f)}
                 {formatPlayer(result.lineup.flex)}
               </table>
-              <div style={lineupTotal}>{Math.round(result.points)}</div>
+              <div style={lineupTotalStyle}>{Math.round(result.points)}</div>
               <Button onClick={remove(i, j)} variant="contained" color="secondary" size="small" style={removeButtonStyle}>Remove</Button>
             </div>
           );
