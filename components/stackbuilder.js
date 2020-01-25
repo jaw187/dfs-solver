@@ -4,17 +4,23 @@ import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import Stacks from "./stacks";
 import { log } from './utils';
 import Button from '@material-ui/core/Button';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 
 const getState = () => {
   const dispatch = useDispatch();
 
-  const { pool, stack, slates, selectedSlate, view } = useSelector(state => state, shallowEqual);
+  const { pool, stack, slates, selectedSlate, view, stackBuilderGame } = useSelector(state => state, shallowEqual);
 
   const clearStack = () => dispatch({ type: "CLEAR_STACK" });
   const addStack = () => dispatch({ type: "ADD_STACK", payload: stack });
   const removeStack = (i) => dispatch({ type: "REMOVE_STACK", payload: i });
   const addPlayerToStack = (player) => dispatch({ type: "ADD_PLAYER_TO_STACK", payload: player});
   const removePlayerFromStack = (player) => dispatch({ type: "REMOVE_PLAYER_FROM_STACK", payload: player });
+  const setStackBuilderGame = (competitionId) => dispatch({ type: "SET_STACK_BUILDER_GAME", payload: competitionId });
+  const clearStackBuilderGame = () => dispatch({ type: "CLEAR_STACK_BUILDER_GAME" });
 
   return {
     pool,
@@ -25,7 +31,10 @@ const getState = () => {
     removeStack,
     addPlayerToStack,
     removePlayerFromStack,
-    view
+    view,
+    stackBuilderGame,
+    setStackBuilderGame,
+    clearStackBuilderGame
   }
 }
 
@@ -38,7 +47,10 @@ const StackBuilder = () => {
     addStack,
     addPlayerToStack,
     removePlayerFromStack,
-    view
+    view,
+    stackBuilderGame,
+    setStackBuilderGame,
+    clearStackBuilderGame
   } = getState();
 
   if (view !== 'stackbuilder') {
@@ -112,12 +124,47 @@ const StackBuilder = () => {
 
   const stackButton = {
     marginRight: 16
-  }
+  };
+
+  const selectStackBuilderGame = (event) => {
+    const { value } = event.target;
+    if (value === null) {
+      return clearStackBuilderGame();
+    }
+
+    return setStackBuilderGame(value);
+  };
+
+  const filterPlayers = (player) => {
+    if (stackBuilderGame) {
+      if (player.competition.competitionId !== stackBuilderGame) {
+        return false;
+      }
+    }
+
+    return true;
+  };
 
   return (
     <div style={componentContainer}>
       <div>
         <h2 style={{ marginTop: 0 }}>Stack Builder</h2>
+        <div style={cardContainer}>
+          <Card>
+            <h3 style={{ marginTop: 0 }}>Filters</h3>
+            <FormControl style={{ minWidth: 120,  }}>
+              <InputLabel id="select-label">Games</InputLabel>
+              <Select labelId="select-label" onChange={selectStackBuilderGame} value={stackBuilderGame}>
+              {
+                slate.competitions && slate.competitions.map((competition, i) => (
+                  <MenuItem value={competition.competitionId} key={i}>{competition.name}</MenuItem>
+                ))
+              }
+                <MenuItem value={null} selected={true}>ALL</MenuItem>
+              </Select>
+            </FormControl>
+          </Card>
+        </div>
         <div style={cardContainer}>
           <Card>
             <div>
@@ -126,9 +173,9 @@ const StackBuilder = () => {
                 flexDirection: "row"
               }}>
                 <div style={{ minWidth: 240 }}>
-                  <h3>Players</h3>
+                  <h3 style={{ marginTop: 0 }}>Players</h3>
                     {
-                      pool && pool.map((player, i) => {
+                      pool && pool.filter(filterPlayers).map((player, i) => {
                         const ref = React.createRef();
                         checkboxes.push(ref);
 

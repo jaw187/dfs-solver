@@ -215,6 +215,26 @@ const reducer = (state = initialState, { type, payload }) => {
         stacksUsed: [],
         results: []
       }
+    case 'SET_POOL_GAME':
+      return {
+        ...state,
+        poolGame: payload
+      }
+    case 'CLEAR_POOL_GAME':
+      return {
+        ...state,
+        poolGame: null
+      }
+    case 'SET_STACK_BUILDER_GAME':
+      return {
+        ...state,
+        stackBuilderGame: payload
+      }
+    case 'CLEAR_STACK_BUILDER_GAME':
+      return {
+        ...state,
+        stackBuilderGame: null
+      }
     default:
       return state
   }

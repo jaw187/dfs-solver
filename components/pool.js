@@ -9,18 +9,21 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Slider from '@material-ui/core/Slider';
 import Collapse from '@material-ui/core/Collapse';
+import players from "../solver/players";
 
 
 const getState = () => {
   const dispatch = useDispatch();
 
-  const { slates, selectedSlate, pool, view, projection, poolSalaryRange, showPoolTools } = useSelector(state => state, shallowEqual);
+  const { slates, selectedSlate, pool, view, projection, poolSalaryRange, showPoolTools, poolGame } = useSelector(state => state, shallowEqual);
 
   const addPlayerToPool = (player) => dispatch({ type: "ADD_PLAYER_TO_POOL", payload: player});
   const removePlayerFromPool = (player) => dispatch({ type: "REMOVE_PLAYER_FROM_POOL", payload: player });
   const clearPool = () => dispatch({ type: "CLEAR_POOL" });
   const setPoolSalaryRange = (range) => dispatch({ type: "SET_POOL_SALARY_RANGE", payload: range });
   const togglePoolTools = () => dispatch({ type: "TOGGLE_POOL_TOOLS"});
+  const setPoolGame = (competitionId) => dispatch({ type: "SET_POOL_GAME", payload: competitionId });
+  const clearPoolGame = () => dispatch({ type: "CLEAR_POOL_GAME" });
 
   return {
     slates,
@@ -34,7 +37,10 @@ const getState = () => {
     setPoolSalaryRange,
     poolSalaryRange,
     showPoolTools,
-    togglePoolTools
+    togglePoolTools,
+    setPoolGame,
+    poolGame,
+    clearPoolGame
   }
 }
 
@@ -51,7 +57,10 @@ const Pool = () => {
     setPoolSalaryRange,
     poolSalaryRange = [2500,13000],
     showPoolTools,
-    togglePoolTools
+    togglePoolTools,
+    setPoolGame,
+    poolGame,
+    clearPoolGame
   } = getState();
 
   if (view !== 'playerpool') {
@@ -99,6 +108,16 @@ const Pool = () => {
     clearPool();
   };
 
+  const addAll = () => {
+    clear();
+
+    checkboxes.forEach((checkbox) => {
+      checkbox.current.checked = true;
+    });
+
+    slate.players.forEach((player) => addPlayerToPool(player));
+  };
+
   const cardContainer = {
     display: 'flex',
     flexDirection: 'row'
@@ -130,7 +149,21 @@ const Pool = () => {
 
     const tableHeaderStyle = {
       textAlign: 'left'
-    }
+    };
+
+    const filterPlayers = (player, i) => {
+      if (poolGame) {
+        if (player.competition.competitionId !== poolGame) {
+          return false;
+        }
+      }
+
+      if (player.salary < poolSalaryRange[0] || player.salary > poolSalaryRange[1]) {
+        return false;
+      }
+
+      return true;
+    };
 
     return (
       <Card>
@@ -145,7 +178,7 @@ const Pool = () => {
             </tr>
           </thead>
           {
-            players.map((player, i) => {
+            players.filter(filterPlayers).map((player, i) => {
               const ref = React.createRef();
               checkboxes.push(ref);
 
@@ -223,21 +256,32 @@ const Pool = () => {
     }
   ];
 
+  const selectPoolGame = (event) => {
+    const { value } = event.target;
+    if (value === null) {
+      return clearPoolGame();
+    }
+
+    return setPoolGame(value);
+  }
+
   return (
     <div style={componentContainer}>
       <h2 style={{ marginTop: 0 }}>Player Pool</h2>
-        {/* {
+        {
           showPoolTools && (
             <div style={cardContainer}>
               <Card>
                 <h3 style={{ marginTop: 0 }}>Filters</h3>
                 <FormControl style={{ minWidth: 120,  }}>
                   <InputLabel id="select-label">Games</InputLabel>
-                  <Select labelId="select-label">
+                  <Select labelId="select-label" onChange={selectPoolGame} value={poolGame}>
                   {
-      console.log(slate)
+                    slate.competitions && slate.competitions.map((competition, i) => (
+                      <MenuItem value={competition.competitionId} key={i}>{competition.name}</MenuItem>
+                    ))
                   }
-                    <MenuItem value="foo">BAR</MenuItem>
+                    <MenuItem value={null} selected={true}>ALL</MenuItem>
                   </Select>
                 </FormControl>
 
@@ -256,7 +300,11 @@ const Pool = () => {
                 </div>
               </Card>
               <Card>
-                <h3 style={{ marginTop: 0 }}>Clear</h3>
+                <h3 style={{ marginTop: 0 }}>Add All</h3>
+                <div>
+                  <Button variant="contained" color="secondary" onClick={addAll}>Add All Players From Pool</Button>
+                </div>
+                <h3>Clear</h3>
                 <div>
                   <Button variant="contained" color="secondary" onClick={clear}>Remove All Players From Pool</Button>
                 </div>
@@ -277,7 +325,7 @@ const Pool = () => {
               </Card>
             </div>
           )
-        } */}
+        }
       <div style={cardContainer}>
           <div style={{ color: 'red', paddingBottom: 24 } }>Player names in red indicate missing projection</div>
       </div>

@@ -37,7 +37,8 @@ const getPlayers = async function (slate) {
 
       slates[draftGroupId] = {
         ...slate,
-        players
+        players,
+        competitions: rawPlayers.competitions
       };
     }
   }
