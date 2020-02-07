@@ -1,10 +1,32 @@
 const solver = require('javascript-lp-solver');
 const formaters = require('./formaters');
 
-module.exports.solve = (n, maxIterations, model, ownership, players, sport, site, type) => {
+module.exports.solve = (n, maxIterations, model, ownership, players, sport, site, type, stack, preventMmaFightersInSameFight) => {
   const format = formaters[sport][site][type](players);
 
   const results = [];
+
+  if (sport === 'mma') {
+    const competitions = [];
+    Object.keys(players).forEach((playerId) => {
+      const player = players[playerId];
+      const { competition } = player;
+      if (!competitions.includes(competition)) {
+        competitions.push(competition);
+      }
+    });
+
+    if (preventMmaFightersInSameFight) {
+      competitions.forEach((competition) => {
+        model.constraints[`comp${competition}`] = { max: 1 };
+      });
+    }
+    else {
+      competitions.forEach((competition) => {
+        delete model.constraints[`comp${competition}`];
+      });
+    }
+  }
 
   let i = 0;
   const go = () => {
@@ -19,17 +41,22 @@ module.exports.solve = (n, maxIterations, model, ownership, players, sport, site
     // Prevents finding solutions which have the same total points
     model.constraints.pointz.max = solution.result - 1;
 
-    const result = format(solution);
+    try {
+      const result = format(solution);
 
-    // Test if lineup is allowed as per ownership
-    if (!ownership.validate(result.players)) {
+      // Test if lineup is allowed as per ownership
+      if (!ownership.validate(result.players)) {
+        return {};
+      }
+
+      ownership.update(result.players);
+      results.push(result);
+
       return {};
     }
-
-    ownership.update(result.players);
-    results.push(result);
-
-    return {};
+    catch (e) {
+      return {};
+    }
   };
 
   const isDone = () => {
@@ -39,34 +66,7 @@ module.exports.solve = (n, maxIterations, model, ownership, players, sport, site
   return {
     go,
     isDone,
-    results
+    results,
+    stack
   };
-/*
-  for (let i = 0; i < maxIterations; ++i) {
-    const solution = solver.Solve(model);
-    console.log(`Iteration ${i + 1} is ${solution.feasible ? '' : 'not'} feasible`);
-    if (!solution.feasible) {
-      break;
-    }
-
-    // Prevents finding solutions which have the same total points
-    model.constraints.pointz.max = solution.result - 1;
-
-    const result = format(solution);
-
-    // Test if lineup is allowed as per ownership
-    if (!ownership.validate(result.players)) {
-      continue;
-    }
-
-    results.push(result);
-    ownership.update(result.players);
-
-    if (results.length === n) {
-      break;
-    }
-  }
-
-  return results;
-  */
 }

@@ -57,7 +57,7 @@ const Lineups = () => {
   }
 
   // Reorganized results.  Breaking change.
-  if (results.length && !(results[0].length >= 0)) {
+  if (results.length && !results[0].stack) {
     return 'Old state observed.  Clear session';
   }
 
@@ -111,7 +111,7 @@ const Lineups = () => {
   const playerCounts = {};
   const lineupStrings = [];
   results.forEach((stack) => {
-    stack.forEach((result) => {
+    stack.results.forEach((result) => {
       const lineupString = generateLineupString(result);
       if (!lineupStrings.includes(lineupString)) {
         lineupStrings.push(lineupString)
@@ -188,8 +188,8 @@ const Lineups = () => {
     const header = headers[sport][site][type];
     const lines = [];
     const exportedLines = []
-    results.forEach((result) => {
-      result.forEach((line) => {
+    results.forEach((stack) => {
+      stack.results.forEach((line) => {
         const lineupString = generateLineupString(line);
         if (!exportedLines.includes(lineupString)) {
           lines.push(line);
@@ -402,10 +402,10 @@ const Lineups = () => {
   const displayStack = (stack, i) => {
     return (
       <div>
-        <h5 style={stackHeaderStyle}>{ stack.map((player) => player.displayName).join(' - ') }</h5>
+        <h5 style={stackHeaderStyle}>{ stack.stack.map((player) => player.displayName).join(' - ') }</h5>
         <div style={containerStyle}>
           {
-            results[i] && results[i].map(lineupFormats[sport][site][type](i))
+            stack.results.map(lineupFormats[sport][site][type](i))
           }
         </div>
       </div>
@@ -452,7 +452,7 @@ const Lineups = () => {
                   <Button onClick={exportToCSV} variant="contained" color="primary">Export</Button>
                   <Button onClick={clearLineups} variant="contained" color="secondary" style={removeAllButtonStyle}>Remove All</Button>
                   <h4>{lineupStrings.length} unique results</h4>
-                  { stacksUsed && stacksUsed.map(displayStack) }
+                  { results && results.map(displayStack) }
                 </div>
               )
             }

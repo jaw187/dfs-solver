@@ -16,7 +16,8 @@ const initialState = {
   generating: false,
   stacksUsed: [],
   slateBackups: {},
-  selectedSlate: null
+  selectedSlate: null,
+  preventMmaFightersInSameFight: false
 };
 
 const setSelectedSlate = (state, slate) => {
@@ -234,6 +235,11 @@ const reducer = (state = initialState, { type, payload }) => {
       return {
         ...state,
         stackBuilderGame: null
+      }
+    case 'MMA_FIGHERS_IN_SAME_FIGHT':
+      return {
+        ...state,
+        preventMmaFightersInSameFight: !state.preventMmaFightersInSameFight
       }
     default:
       return state

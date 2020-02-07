@@ -234,7 +234,9 @@ module.exports = {
               sg: [],
               sf: [],
               pf: [],
-              c: []
+              c: [],
+              g: [],
+              f: []
             }
           };
 
@@ -250,7 +252,6 @@ module.exports = {
             let positions = 0;
             const player = players[playerId];
             player.id = playerId;
-
             if (player.pg) {
               ++positions;
               roster.positions.pg.push(player);
@@ -263,17 +264,25 @@ module.exports = {
 
             if (player.sf) {
               ++positions;
-              roster.positions.sf.push(player)
+              roster.positions.sf.push(player);
             }
 
             if (player.pf) {
               ++positions;
-              roster.positions.pf.push(player)
+              roster.positions.pf.push(player);
             }
 
             if (player.c) {
               ++positions;
-              roster.positions.c.push(player)
+              roster.positions.c.push(player);
+            }
+
+            if (player.g) {
+              roster.positions.g.push(player);
+            }
+
+            if (player.f) {
+              roster.positions.f.push(player);
             }
 
             const playsMultiplePositions = positions > 1;
@@ -291,29 +300,6 @@ module.exports = {
             })
           }
 
-          // Remove eligibility at multiple positions if the position only has one player.
-          playersEligibleAtMoreThanOnePosition.forEach((player) => {
-            if (player.pg && roster.positions.pg.length === 1) {
-              return removePlayerFromOtherPositions(player, 'pg');
-            }
-
-            if (player.sg && roster.positions.sg.length === 1) {
-              return removePlayerFromOtherPositions(player, 'sg');
-            }
-
-            if (player.sf && roster.positions.sf.length === 1) {
-              return removePlayerFromOtherPositions(player, 'sf');
-            }
-
-            if (player.pf && roster.positions.pf.length === 1) {
-              return removePlayerFromOtherPositions(player, 'pf');
-            }
-
-            if (player.c && roster.positions.c.length === 1) {
-              return removePlayerFromOtherPositions(player, 'c');
-            }
-          });
-
           // Sort by start time
           // Attempting to account for late swap
           const sort = (a, b) => a.startTime - b.startTime;
@@ -321,28 +307,15 @@ module.exports = {
 
           // Fill out lineup
           const lineup = {};
-          lineup.pg = roster.positions.pg.shift();
-          removePlayerFromOtherPositions(lineup.pg);
 
-          lineup.sg = roster.positions.sg.shift();
-          removePlayerFromOtherPositions(lineup.sg);
+          const lineupPositions = ['pg', 'sg', 'sf', 'pf', 'c', 'g', 'f'];
+          lineupPositions.sort((a, b) => roster.positions[a].length - roster.positions[b].length);
 
-          lineup.sf = roster.positions.sf.shift();
-          removePlayerFromOtherPositions(lineup.sf);
+          lineupPositions.forEach((position) => {
+            lineup[position] = roster.positions[position].shift();
+            removePlayerFromOtherPositions(lineup[position]);
+          });
 
-          lineup.pf = roster.positions.pf.shift();
-          removePlayerFromOtherPositions(lineup.pf);
-
-          lineup.c = roster.positions.c.shift();
-          removePlayerFromOtherPositions(lineup.c);
-
-          lineup.g = roster.positions.pg[0] || roster.positions.sg[0];
-          removePlayerFromOtherPositions(lineup.g);
-
-          lineup.f = roster.positions.pf[0] || roster.positions.sf[0];
-          removePlayerFromOtherPositions(lineup.f);
-
-          // May be possible that flex start time is before G or F
           lineup.flex = roster.positions.pg[0] || roster.positions.sg[0] ||  roster.positions.pf[0] || roster.positions.sf[0] || roster.positions.c[0]
 
           return {

@@ -2,8 +2,8 @@ import { solve } from './solver';
 const queue = [];
 
 const Queue = {
-  register: (n, maxIterations, model, ownership, players, sport, site, type) => {
-    queue.push(solve(n, maxIterations, model, ownership, players, sport, site, type))
+  register: (n, maxIterations, model, ownership, players, sport, site, type, stack, preventMmaFightersInSameFight) => {
+    queue.push(solve(n, maxIterations, model, ownership, players, sport, site, type, stack, preventMmaFightersInSameFight))
   },
   go: () => {
     const results = [];
@@ -13,7 +13,7 @@ const Queue = {
       const response = top.go();
 
       if (response.notFeasible || top.isDone()) {
-        results.push(top.results);
+        results.push({ results: top.results, stack: top.stack });
         continue;
       }
 

@@ -8,7 +8,8 @@ const convertPlayer = (rawPlayer, positions) => {
     projection,
     ownership,
     competition: {
-      startTime
+      startTime,
+      competitionId
     }
   } = rawPlayer;
 
@@ -17,10 +18,23 @@ const convertPlayer = (rawPlayer, positions) => {
 
   const player = positions[primaryPosition](projection, salary, ownership, new Date(startTime));
   playerPositions.forEach((extraPosition) => {
+    extraPosition = extraPosition.toLowerCase();
     player[extraPosition] = 1;
+
+    if (extraPosition.indexOf("g") > -1) {
+      player.g = 1;
+      player.conly = 0;
+    }
+
+    if (extraPosition.indexOf("f") > -1) {
+      player.f = 1;
+      player.conly = 0;
+    }
   });
 
   player[draftableId] = 1;
+  player[`comp${competitionId}`] = 1;
+  player.competition = competitionId;
 
   return player;
 };

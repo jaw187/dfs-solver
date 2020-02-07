@@ -45,7 +45,8 @@ const constraintList = {
         c: { min: 1 },
         g: { min: 3 },
         f: { min: 3 },
-        player: { equal: 8 }
+        player: { equal: 8 },
+        conly: { max: 2 }
       }
     }
   }

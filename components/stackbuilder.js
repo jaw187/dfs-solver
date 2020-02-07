@@ -135,15 +135,37 @@ const StackBuilder = () => {
     return setStackBuilderGame(value);
   };
 
-  const filterPlayers = (player) => {
+  const filterPlayers = (container) => {
     if (stackBuilderGame) {
-      if (player.competition.competitionId !== stackBuilderGame) {
+      if (container.player.competition.competitionId !== stackBuilderGame) {
         return false;
       }
     }
 
     return true;
   };
+
+  const isPlayerInStack = (player) => {
+    return !!(stack && stack.find((stackPlayer) => player.playerId === stackPlayer.playerId));
+  };
+
+  const displayPoolPlayer = (player, ref, i) => (
+    <div style={playerContainer}>
+      <label>
+        <input ref={ref} type="checkbox" onChange={togglePlayer(player)} key={i} checked={isPlayerInStack(player)} /><span style={poolPlayer}>{player.displayName} - ${player.salary}</span>
+      </label>
+    </div>
+  );
+
+  const poolDisplayItems = pool.map((player, i) => {
+    const ref = React.createRef();
+    checkboxes.push(ref);
+
+    return {
+      player,
+      container: displayPoolPlayer(player, ref, i)
+    };
+  });
 
   return (
     <div style={componentContainer}>
@@ -175,18 +197,7 @@ const StackBuilder = () => {
                 <div style={{ minWidth: 240 }}>
                   <h3 style={{ marginTop: 0 }}>Players</h3>
                     {
-                      pool && pool.filter(filterPlayers).map((player, i) => {
-                        const ref = React.createRef();
-                        checkboxes.push(ref);
-
-                        return (
-                          <div style={playerContainer}>
-                            <label>
-                              <input ref={ref} type="checkbox" onClick={togglePlayer(player)} key={i} /><span style={poolPlayer}>{player.displayName} - ${player.salary}</span>
-                            </label>
-                          </div>
-                        )
-                      })
+                      poolDisplayItems && poolDisplayItems.filter(filterPlayers).map(({ container }) => container)
                     }
                 </div>
                 <div style={{ paddingLeft: 16, minWidth: 240 }}>

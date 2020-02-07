@@ -87,7 +87,7 @@ module.exports = {
     draftkings: {
       classic: {
         PG: (points, salary, ownership, startTime) => {
-          const positions = { pg: 1, sg: 0, sf: 0, pf: 0, c: 0, g: 1, f: 0 };
+          const positions = { pg: 1, sg: 0, sf: 0, pf: 0, c: 0, g: 1, f: 0, conly: 0 };
           const player = createPlayer(points, salary, ownership, startTime);
 
           return {
@@ -96,7 +96,7 @@ module.exports = {
           }
         },
         SG: (points, salary, ownership, startTime) => {
-          const positions = { pg: 0, sg: 1, sf: 0, pf: 0, c: 0, g: 1, f: 0  };
+          const positions = { pg: 0, sg: 1, sf: 0, pf: 0, c: 0, g: 1, f: 0, conly: 0  };
           const player = createPlayer(points, salary, ownership, startTime);
 
           return {
@@ -105,7 +105,7 @@ module.exports = {
           }
         },
         SF: (points, salary, ownership, startTime) => {
-          const positions = { pg: 0, sg: 0, sf: 1, pf: 0, c: 0, g: 0, f: 1  };
+          const positions = { pg: 0, sg: 0, sf: 1, pf: 0, c: 0, g: 0, f: 1, conly: 0  };
           const player = createPlayer(points, salary, ownership, startTime);
 
           return {
@@ -114,7 +114,7 @@ module.exports = {
           }
         },
         PF: (points, salary, ownership, startTime) => {
-          const positions = { pg: 0, sg: 0, sf: 0, pf: 1, c: 0, g: 0, f: 1 };
+          const positions = { pg: 0, sg: 0, sf: 0, pf: 1, c: 0, g: 0, f: 1, conly: 0 };
           const player = createPlayer(points, salary, ownership, startTime);
 
           return {
@@ -123,7 +123,7 @@ module.exports = {
           }
         },
         C: (points, salary, ownership, startTime) => {
-          const positions = { pg: 0, sg: 0, sf: 0, pf: 0, c: 1, g: 0, f: 0 };
+          const positions = { pg: 0, sg: 0, sf: 0, pf: 0, c: 1, g: 0, f: 0, conly: 1 };
           const player = createPlayer(points, salary, ownership, startTime);
 
           return {

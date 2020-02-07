@@ -5,6 +5,8 @@ import clone from 'lodash/clone';
 import { log } from './utils';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 const { Models, players, Worker } = Solver;
 
@@ -20,6 +22,7 @@ const getState = () => {
   const pool = useSelector(state => state.pool);
   const view = useSelector(state => state.view);
   const generating = useSelector(state => state.generating);
+  const preventMmaFightersInSameFight = useSelector(state => state.preventMmaFightersInSameFight);
 
   const addResults = (results) => {
     dispatch({
@@ -32,7 +35,13 @@ const getState = () => {
     dispatch({
       type: 'GENERATE'
     });
-  }
+  };
+
+  const toggleMmaFightersInSameFight = () => {
+    dispatch({
+      type: 'MMA_FIGHERS_IN_SAME_FIGHT'
+    });
+  };
 
   return {
     stacks,
@@ -45,7 +54,9 @@ const getState = () => {
     pool,
     view,
     toggleGenerate,
-    generating
+    generating,
+    preventMmaFightersInSameFight,
+    toggleMmaFightersInSameFight
   };
 };
 
@@ -61,7 +72,9 @@ const Generator = () => {
     pool,
     view,
     toggleGenerate,
-    generating
+    generating,
+    preventMmaFightersInSameFight,
+    toggleMmaFightersInSameFight
   } = getState();
 
   if (view !== 'generator' && view !== 'results') {
@@ -119,7 +132,9 @@ const Generator = () => {
         players: stackPlayers,
         sport,
         site,
-        type
+        type,
+        stack,
+        preventMmaFightersInSameFight
       };
       worker.postMessage(enqueueOptions);
     });
@@ -176,6 +191,23 @@ const Generator = () => {
           {`Stacks: ${stacks.length}`}
         </div>
       </div>
+      {
+        sport === 'mma' && (
+          <div>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={preventMmaFightersInSameFight}
+                  onChange={toggleMmaFightersInSameFight}
+                  value="checkedB"
+                  color="primary"
+                />
+              }
+              label="Prevent fighters in the same fight from being in the same lineup"
+            />
+          </div>
+        )
+      }
     </Card>
   );
 };
