@@ -41,7 +41,7 @@ module.exports.solve = (n, maxIterations, model, ownership, players, sport, site
     // Prevents finding solutions which have the same total points
     model.constraints.pointz.max = solution.result - 1;
 
-    try {
+    //try {
       const result = format(solution);
 
       // Test if lineup is allowed as per ownership
@@ -53,10 +53,10 @@ module.exports.solve = (n, maxIterations, model, ownership, players, sport, site
       results.push(result);
 
       return {};
-    }
-    catch (e) {
-      return {};
-    }
+    // }
+    // catch (e) {
+    //   return {};
+    // }
   };
 
   const isDone = () => {

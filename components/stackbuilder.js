@@ -78,7 +78,9 @@ const StackBuilder = () => {
 
   const clear = () => {
     checkboxes.forEach((checkbox) => {
-      checkbox.current.checked = false;
+      if (checkbox.current) {
+        checkbox.current.checked = false;
+      }
     });
     clearStack();
   };

@@ -49,7 +49,20 @@ const constraintList = {
         conly: { max: 2 }
       }
     }
-  }
+  },
+  xfl: {
+    draftkings: {
+      classic: {
+        pointz: { max: 100000 },
+        salary: { max: 50000 },
+        qb: { equal: 1 },
+        rb: { min: 1 },
+        wr: { min: 2 },
+        dst: { equal: 1 },
+        player: { equal: 9 }
+      }
+    }
+  },
 };
 
 class Model {
@@ -99,6 +112,11 @@ module.exports = {
   nba: {
     draftkings: {
       classic: (players) => new Model(players, clone(constraintList.nba.draftkings.classic))
+    }
+  },
+  xfl: {
+    draftkings: {
+      classic: (players) => new Model(players, clone(constraintList.xfl.draftkings.classic))
     }
   }
 };

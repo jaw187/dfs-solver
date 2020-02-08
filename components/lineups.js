@@ -98,7 +98,15 @@ const Lineups = () => {
           return `${pg.id},${sg.id},${sf.id},${pf.id},${c.id},${g.id},${f.id},${flex.id}`;
         }
       }
-    }
+    },
+    xfl: {
+      draftkings: {
+        classic: (result) => {
+          const { lineup: { qb, rb, wrs, flexes, dst } } = result;
+          return `${qb.id},${rb.id},${wrs[0].id},${wrs[1].id},${flexes[0].id},${flexes[1].id},${dst.id}`
+        }
+      }
+    },
   };
 
   const generateLineupString = (lineup) => {
@@ -180,7 +188,12 @@ const Lineups = () => {
       draftkings: {
         classic: "PG,SG,SF,PF,C,G,F,UTIL\n"
       }
-    }
+    },
+    xfl: {
+      draftkings: {
+        classic: "QB,RB,WR,WR,FLEX,FLEX,DST\n"
+      }
+    },
   };
 
   const exportToCSV = () => {
@@ -388,7 +401,36 @@ const Lineups = () => {
           );
         }
       }
-    }
+    },
+    xfl: {
+      draftkings: {
+        classic: (i) => {
+          return (result, j) => (
+            <div key={j} style={lineupStyle}>
+              <table>
+                <thead>
+                  <tr>
+                    <th style={tableHeaderStyle}>Pos</th>
+                    <th style={tableHeaderStyle}>Player</th>
+                    <th style={tableHeaderStyle}>Salary</th>
+                    <th style={tableHeaderStyle}>Proj</th>
+                  </tr>
+                </thead>
+                {formatPlayer(result.lineup.qb)}
+                {formatPlayer(result.lineup.rb)}
+                {formatPlayer(result.lineup.wrs[0])}
+                {formatPlayer(result.lineup.wrs[1])}
+                {formatPlayer(result.lineup.flexes[0])}
+                {formatPlayer(result.lineup.flexes[1])}
+                {formatPlayer(result.lineup.dst)}
+              </table>
+              <div style={lineupTotalStyle}>{Math.round(result.points)}</div>
+              <Button onClick={remove(i, j)} variant="contained" color="secondary" size="small" style={removeButtonStyle}>Remove</Button>
+            </div>
+          )
+        }
+      }
+    },
   };
 
   const removeAllButtonStyle = {
