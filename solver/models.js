@@ -63,6 +63,15 @@ const constraintList = {
       }
     }
   },
+  nas: {
+    draftkings: {
+      classic: {
+        pointz: { max: 100000 },
+        salary: { max: 50000 },
+        d: { equal: 6 }
+      }
+    }
+  }
 };
 
 class Model {
@@ -117,6 +126,11 @@ module.exports = {
   xfl: {
     draftkings: {
       classic: (players) => new Model(players, clone(constraintList.xfl.draftkings.classic))
+    }
+  },
+  nas: {
+    draftkings: {
+      classic: (players) => new Model(players, clone(constraintList.nas.draftkings.classic))
     }
   }
 };

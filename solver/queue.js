@@ -9,7 +9,9 @@ const Queue = {
     const results = [];
 
     while (queue.length) {
+      console.log('wat')
       const top = queue.shift();
+      console.log('errr')
       const response = top.go();
 
       if (response.notFeasible || top.isDone()) {

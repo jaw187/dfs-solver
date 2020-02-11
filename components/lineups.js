@@ -103,10 +103,18 @@ const Lineups = () => {
       draftkings: {
         classic: (result) => {
           const { lineup: { qb, rb, wrs, flexes, dst } } = result;
-          return `${qb.id},${rb.id},${wrs[0].id},${wrs[1].id},${flexes[0].id},${flexes[1].id},${dst.id}`
+          return `${qb.id},${rb.id},${wrs[0].id},${wrs[1].id},${flexes[0].id},${flexes[1].id},${dst.id}`;
         }
       }
     },
+    nas: {
+      draftkings: {
+        classic: (result) => {
+          const { lineup: { d } } = result;
+          return `${d[0].id},${d[1].id},${d[2].id},${d[3].id},${d[4].id},${d[5].id}`;
+        }
+      }
+    }
   };
 
   const generateLineupString = (lineup) => {
@@ -194,6 +202,11 @@ const Lineups = () => {
         classic: "QB,RB,WR,WR,FLEX,FLEX,DST\n"
       }
     },
+    mma: {
+      draftkings: {
+        classic: "D,D,D,D,D,D\n"
+      }
+    }
   };
 
   const exportToCSV = () => {
@@ -431,6 +444,34 @@ const Lineups = () => {
         }
       }
     },
+    nas: {
+      draftkings: {
+        classic: (i) => {
+          return (result, j) => (
+            <div key={j} style={lineupStyle}>
+              <table>
+                <thead>
+                  <tr>
+                    <th style={tableHeaderStyle}>Pos</th>
+                    <th style={tableHeaderStyle}>Player</th>
+                    <th style={tableHeaderStyle}>Salary</th>
+                    <th style={tableHeaderStyle}>Proj</th>
+                  </tr>
+                </thead>
+                {formatPlayer(result.lineup.d[0])}
+                {formatPlayer(result.lineup.d[1])}
+                {formatPlayer(result.lineup.d[2])}
+                {formatPlayer(result.lineup.d[3])}
+                {formatPlayer(result.lineup.d[4])}
+                {formatPlayer(result.lineup.d[5])}
+              </table>
+              <div style={lineupTotalStyle}>{Math.round(result.points)}</div>
+              <Button onClick={remove(i, j)} variant="contained" color="secondary" size="small" style={removeButtonStyle}>Remove</Button>
+            </div>
+          );
+        }
+      }
+    }
   };
 
   const removeAllButtonStyle = {

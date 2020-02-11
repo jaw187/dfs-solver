@@ -449,4 +449,48 @@ module.exports = {
       }
     }
   },
+  nas: {
+    draftkings: {
+      classic: (players) => {
+        return (solution) => {
+
+          const points = solution.result;
+          const roster = {
+            positions: {
+              d: []
+            }
+          };
+
+          const resultPlayers = Object.keys(solution).filter((key) => {
+            const keysToRemove = ['feasible', 'result', 'bounded', 'isIntegral']
+            return !keysToRemove.includes(key);
+          });
+
+          // Add players to positions their eligible for
+          resultPlayers.forEach((playerId) => {
+
+            const player = players[playerId];
+            player.id = playerId;
+            roster.positions.d.push(player);
+          });
+
+          // Sort by start time
+          // Attempting to account for late swap
+          const sort = (a, b) => a.startTime - b.startTime;
+          roster.positions.d.sort(sort);
+
+          //construct lineup
+          const lineup = {
+            d: roster.positions.d
+          };
+
+          return {
+            points,
+            lineup,
+            players: resultPlayers
+          }
+        }
+      }
+    }
+  }
 }

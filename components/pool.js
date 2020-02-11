@@ -345,6 +345,8 @@ const Pool = () => {
         { positionCard("SF") }
         { positionCard("PF") }
         { positionCard("C") }
+
+        { positionCard("D") }
       </div>
     </div>
   );

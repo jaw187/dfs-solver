@@ -175,5 +175,20 @@ module.exports = {
         }
       }
     }
+  },
+  nas: {
+    draftkings: {
+      classic: {
+        D: (points, salary, ownership, startTime) => {
+          const positions = { d: 1 };
+          const player = createPlayer(points, salary, ownership, startTime);
+
+          return {
+            ...player,
+            ...positions
+          }
+        }
+      }
+    }
   }
 };
