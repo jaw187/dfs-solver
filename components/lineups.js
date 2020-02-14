@@ -202,7 +202,7 @@ const Lineups = () => {
         classic: "QB,RB,WR,WR,FLEX,FLEX,DST\n"
       }
     },
-    mma: {
+    nas: {
       draftkings: {
         classic: "D,D,D,D,D,D\n"
       }
