@@ -5,7 +5,7 @@ class OwnershipWatcher {
     const lineupsAllowed = {};
     Object.keys(pool).forEach((player) => {
       const count = (pool[player].ownership/100) * n;
-      lineupsAllowed[player] = count >= 1 ? lineupsAllowed : 1;
+      lineupsAllowed[player] = count >= 1 ? count : 1;
     });
 
     this.lineupsAllowed = { ...lineupsAllowed };
