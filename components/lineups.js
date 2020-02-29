@@ -159,7 +159,7 @@ const Lineups = () => {
 
     const numberWithCommas = (x) => x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
-    const playerProjection = Math.round(projection.filter((projectionPlayer) => projectionPlayer.player === id)[0].value);
+    const playerProjection = Math.round(projection.filter((projectionPlayer) => projectionPlayer.player == id)[0].value);
     return (
       <tr>
         <td>{player.position}</td>
