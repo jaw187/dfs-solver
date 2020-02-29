@@ -20,7 +20,7 @@ const getState = () => {
       payload: selected
     });
 
-    const nextView = projection ? 'playerpool' : 'importprojections';
+    const nextView = projection && projection.length ? 'playerpool' : 'importprojections';
     dispatch({
       type: 'SET_VIEW',
       payload: nextView

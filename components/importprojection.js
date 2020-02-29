@@ -14,6 +14,8 @@ const getState = () => {
   const view = useSelector(state => state.view, shallowEqual);
   const slates = useSelector(state => state.slates, shallowEqual);
   const selectedSlate = useSelector(state => state.selectedSlate, shallowEqual);
+  const redirectToEdit = (selected) => { dispatch({ type: 'SET_VIEW', payload: 'editprojections' }) };
+  const setPlayerProjection = (player, value, ownership) => dispatch({ type: "SET_PLAYER_PROJECTION", payload: { player, value, ownership } });
 
   const setRawProjection = (value) => {
     dispatch({
@@ -97,7 +99,7 @@ const getState = () => {
       log(`export template`)
       const { players } = slates[selectedSlate];
       const format = (player) => {
-        return `${player.displayName},${player.draftableId},,50`;
+        return `${player.displayName},${player.draftableId},,100`;
       };
       const header = "Do not copy the player name column as well as this row\nName,ID,Projection,Ownership\n"
       const csv = "data:text/csv;charset=utf-8," + header + players.map(format).join('\n');
@@ -119,7 +121,11 @@ const getState = () => {
     importErrors,
     importProjection,
     view,
-    exportTemplate
+    exportTemplate,
+    slates,
+    selectedSlate,
+    redirectToEdit,
+    setPlayerProjection
   };
 };
 
@@ -142,11 +148,13 @@ player id projection  desired ownership
 
 const ImportProjection  = () => {
 
-  const { importErrors, projection, setRawProjection, importProjection, view, exportTemplate } = getState();
+  const { importErrors, projection, setRawProjection, importProjection, view, exportTemplate, slates, selectedSlate, setPlayerProjection, redirectToEdit } = getState();
 
   if (view !== 'importprojections') {
     return null;
   }
+
+  const { players } = slates[selectedSlate];
 
   const onChange = (event) => setRawProjection(event.target.value);
 
@@ -174,6 +182,14 @@ const ImportProjection  = () => {
     paddingBottom: 36
   };
 
+  const loadBlank = () => {
+    players.forEach((player) => {
+      setPlayerProjection(player.draftableId, 0, 100);
+    });
+
+    redirectToEdit();
+  };
+
   return (
     <div style={componentContainer}>
       <h2 style={{ marginTop: 0 }}>Your Projections</h2>
@@ -196,21 +212,23 @@ const ImportProjection  = () => {
             </div>
           )}
           {
-            projection && (
+            projection && projection.length > 0 && (
               <div style={infoContainer}>
                 <h3 style={{ marginTop: 0 }}>Current Projection</h3>
                 <div>
                   {`Projections for ${projection.length} players`}
-                  {
-                    //projection.map((projection) => (<li>{projection.player} - {projection.value}</li>))
-                  }
                 </div>
               </div>
             )
           }
           <div style={buttonsContainerStyle}>
             <div style={buttonContainerStyle}>
-              <Button variant="contained" onClick={importProjection} color="primary" style={buttonStyle}>Import Projections</Button>
+              <Button variant="contained" onClick={loadBlank} color="primary" style={buttonStyle}>Click Here To Load Blank Projections</Button>
+            </div>
+          </div>
+          <div style={buttonsContainerStyle}>
+            <div style={buttonContainerStyle}>
+              <Button variant="contained" onClick={importProjection} color="primary" style={buttonStyle}>Import Projections Below</Button>
             </div>
             <div style={buttonContainerStyle}>
               <Button variant="contained" onClick={exportTemplate} color="secondary" style={buttonStyle}>Export Template</Button>

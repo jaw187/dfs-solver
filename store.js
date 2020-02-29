@@ -17,7 +17,9 @@ const initialState = {
   stacksUsed: [],
   slateBackups: {},
   selectedSlate: null,
-  preventMmaFightersInSameFight: false
+  preventMmaFightersInSameFight: false,
+  showEditProjectionsTools: false,
+  projection: []
 };
 
 const setSelectedSlate = (state, slate) => {
@@ -240,6 +242,39 @@ const reducer = (state = initialState, { type, payload }) => {
       return {
         ...state,
         preventMmaFightersInSameFight: !state.preventMmaFightersInSameFight
+      }
+    case 'CLEAR_PROJECTIONS':
+      return {
+        ...state,
+        projection: []
+      }
+    case 'SET_PLAYER_PROJECTION':
+      const newProjection = state.projection.filter((row) => row.player != payload.player);
+      newProjection.push(payload);
+
+      return {
+        ...state,
+        projection: newProjection
+      }
+    case 'SET_EDIT_PROJECTIONS_SALARY_RANGE':
+      return {
+        ...state,
+        editProjectionsSalaryRange: payload
+      }
+    case 'TOGGLE_EDIT_PROJECTIONS_TOOLS':
+      return {
+        ...state,
+        showEditProjectionsTools: !state.showEditProjectionsTools
+      }
+    case 'SET_EDIT_PROJECTIONS_GAME':
+      return {
+        ...state,
+        editProjectionsGame: payload
+      }
+    case 'CLEAR_EDIT_PROJECTIONS_GAME':
+      return {
+        ...state,
+        editProjectionsGame: null
       }
     default:
       return state

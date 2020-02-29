@@ -6,6 +6,7 @@ import StackBuilder from '../components/stackbuilder';
 import Pool from '../components/pool';
 import Navigation from '../components/navigation';
 import Lineups from '../components/lineups';
+import EditProjection from  '../components/editprojection'
 import { withRedux } from '../lib/redux';
 import fetch from 'isomorphic-unfetch';
 
@@ -86,6 +87,7 @@ const Index = () => {
       <Pool />
       <StackBuilder />
       <Lineups />
+      <EditProjection />
       <img src="https://logs-01.loggly.com/inputs/8a465978-add2-4b58-9d57-02f8869b2f17.gif?source=pixel&data=load" />
     </div>
   );

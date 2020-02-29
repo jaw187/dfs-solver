@@ -67,7 +67,7 @@ const Navigation = () => {
   return (
     <div style={containerStyle}>
       {navigationButton('slatepicker', 'Slate')}
-      {navigationButton('importprojections', 'Projections')}
+      {navigationButton('editprojections', 'Projections')}
       {navigationButton('playerpool', 'Player Pool')}
       {navigationButton('stackbuilder', 'Stacks')}
       {navigationButton('results', 'Lineups')}
