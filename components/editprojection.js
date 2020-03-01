@@ -10,6 +10,7 @@ import Select from '@material-ui/core/Select';
 import Slider from '@material-ui/core/Slider';
 import Collapse from '@material-ui/core/Collapse';
 import players from "../solver/players";
+import { log } from './utils';
 
 
 const getState = () => {
@@ -90,6 +91,7 @@ const EditProjections = () => {
   });
 
   const clear = () => {
+    log('reset all player projections');
     slate.players.forEach((player) => setPlayerProjection(player.draftableId, 0, 100))
   };
 
@@ -148,10 +150,12 @@ const EditProjections = () => {
               const playerProjection = projection && projection.filter((row) => row.player == player.draftableId)[0];
 
               const updateProjection = (e) => {
+                log('update player projection');
                 setPlayerProjection(player.draftableId, Number(e.target.value), playerProjection.ownership);
               };
 
               const updateOwnership = (e) => {
+                log('update player ownership');
                 setPlayerProjection(player.draftableId, playerProjection.value, Number(e.target.value));
               };
 
