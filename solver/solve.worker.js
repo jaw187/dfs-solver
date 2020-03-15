@@ -12,8 +12,8 @@ self.addEventListener('message', (event) => {
   }
 
   if (action === 'enqueue') {
-    const { data: { n, maxIterations, model, players, sport, site, type, stack, preventMmaFightersInSameFight } } = event;
-    Queue.register(n, maxIterations, model, ownership, players, sport, site, type, stack, preventMmaFightersInSameFight);
+    const { data: { n, maxIterations, model, players, sport, site, type, stack, preventMmaFightersInSameFight, preventMlbOffenseVsPitcher } } = event;
+    Queue.register(n, maxIterations, model, ownership, players, sport, site, type, stack, preventMmaFightersInSameFight, preventMlbOffenseVsPitcher);
   }
 
   if (action === 'solve') {

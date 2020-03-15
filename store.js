@@ -2,6 +2,7 @@ import { createStore, applyMiddleware } from 'redux'
 import { composeWithDevTools } from 'redux-devtools-extension'
 import { persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
+import { cloneDeep } from 'lodash'
 
 const initialState = {
   slates: {},
@@ -19,7 +20,9 @@ const initialState = {
   selectedSlate: null,
   preventMmaFightersInSameFight: false,
   showEditProjectionsTools: false,
-  projection: []
+  projection: [],
+  stackBuilderType: 'players',
+  preventMlbOffenseVsPitcher: false
 };
 
 const setSelectedSlate = (state, slate) => {
@@ -93,16 +96,24 @@ const reducer = (state = initialState, { type, payload }) => {
         stack: []
       }
     case 'ADD_STACK':
+      const newStack = {
+        players: payload,
+        count: 10,
+        type: state.stackBuilderType,
+      };
+
+      if (state.stackBuilderType === 'teams') {
+        newStack.ranges = payload.map(() => [3,5]);
+      }
+
       return {
         ...state,
-        stacks: state.stacks.concat([payload]),
-        stackCounts: state.stackCounts.concat([0])
+        stacks: state.stacks.concat([newStack])
       }
     case 'REMOVE_STACK':
       return {
         ...state,
-        stacks: state.stacks.filter((stack, i) => i !== payload),
-        stackCounts: state.stackCounts.filter((n, i) => i !== payload)
+        stacks: state.stacks.filter((stack, i) => i !== payload)
       }
     case 'ADD_PLAYER_TO_STACK':
       return {
@@ -117,9 +128,17 @@ const reducer = (state = initialState, { type, payload }) => {
     case 'SET_STACK_N':
       stackCounts[i] = Number(n);
 
+      const newStacks = state.stacks.map((stack, j) => {
+        const newStack = cloneDeep(stack);
+        if (i === j) {
+          newStack.count = Number(n);
+        }
+        return newStack;
+      });
+
       return {
         ...state,
-        stackCounts
+        stacks: newStacks
       }
     case 'ADD_RESULT':
       return {
@@ -275,6 +294,30 @@ const reducer = (state = initialState, { type, payload }) => {
       return {
         ...state,
         editProjectionsGame: null
+      }
+    case 'TOGGLE_STACK_BUILDER_TYPE':
+      const newStackBuilderType = state.stackBuilderType === 'players' ? 'teams' : 'players';
+      return {
+        ...state,
+        stackBuilderType: newStackBuilderType
+      }
+    case 'SET_STACK_RANGE':
+      const newStacksForRange = state.stacks.map((stack, m) => {
+        const newStack = cloneDeep(stack);
+        if (j === m) {
+          newStack.ranges[i] = payload.range;
+        }
+        return newStack;
+      });
+
+      return {
+        ...state,
+        stacks: newStacksForRange
+      }
+    case 'MLB_OFFENSE_VS_PITCHER':
+      return {
+        ...state,
+        preventMlbOffenseVsPitcher: !state.preventMlbOffenseVsPitcher
       }
     default:
       return state

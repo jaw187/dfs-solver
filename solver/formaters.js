@@ -492,5 +492,174 @@ module.exports = {
         }
       }
     }
+  },
+  mlb: {
+    draftkings: {
+      classic: (players) => {
+        return (solution) => {
+          const points = solution.result;
+          const roster = {
+            positions: {
+              p: [],
+              c: [],
+              '1b': [],
+              '2b': [],
+              '3b': [],
+              ss: [],
+              of: []
+            }
+          };
+
+          const resultPlayers = Object.keys(solution).filter((key) => {
+            const keysToRemove = ['feasible', 'result', 'bounded', 'isIntegral']
+            return !keysToRemove.includes(key);
+          });
+
+          // Add players to positions their eligible for
+          const playersEligibleAtMoreThanOnePosition = [];
+          resultPlayers.forEach((playerId) => {
+
+            let positions = 0;
+            const player = players[playerId];
+            player.id = playerId;
+
+            console.log('reviewing player positions', player)
+            if (player.p) {
+              ++positions;
+              roster.positions.p.push(player);
+            }
+
+            if (player.c) {
+              ++positions;
+              roster.positions.c.push(player);
+            }
+
+            if (player['1b']) {
+              ++positions;
+              roster.positions['1b'].push(player)
+            }
+
+            if (player['2b']) {
+              ++positions;
+              roster.positions['2b'].push(player)
+            }
+
+            if (player['3b']) {
+              ++positions;
+              roster.positions['3b'].push(player)
+            }
+
+            if (player.ss) {
+              ++positions;
+              console.log('prepush', roster.positions.ss)
+              roster.positions.ss.push(player)
+              console.log('postpush', roster.positions.ss)
+            }
+
+            if (player.of) {
+              ++positions;
+              roster.positions.of.push(player)
+            }
+
+            const playsMultiplePositions = positions > 1;
+            if (playsMultiplePositions) {
+              player.multiplePositions = true;
+              playersEligibleAtMoreThanOnePosition.push(player);
+            }
+          });
+
+          console.log('eligible players', roster.positions)
+
+          const removePlayerFromOtherPositions = (position, player) => {
+            console.log('remove player', position, player)
+            const removePlayer = (positionPlayer) => !(player.id === positionPlayer.id);
+            Object.keys(roster.positions).forEach((key) => {
+              if (key !== position) {
+                roster.positions[key] = roster.positions[key].filter(removePlayer);
+              }
+            })
+          }
+
+          // Determine expected position of player.
+          // Assume pitchers are not eligable for multiple positions
+          playersEligibleAtMoreThanOnePosition.forEach((player) => {
+            const removePlayer = (positionPlayer) => !(player.id === positionPlayer.id);
+
+            if (player.c && roster.positions.c.length === 1) {
+              return removePlayerFromOtherPositions('c', player);
+            }
+
+            if (player['1b'] && roster.positions['1b'].length === 1) {
+              return removePlayerFromOtherPositions('1b', player);
+            }
+
+            if (player['2b'] && roster.positions['2b'].length === 1) {
+              return removePlayerFromOtherPositions('2b', player);
+            }
+
+            if (player['3b'] && roster.positions['3b'].length === 1) {
+              return removePlayerFromOtherPositions('3b', player);
+            }
+
+            if (player.ss && roster.positions.ss.length === 1) {
+              return removePlayerFromOtherPositions('ss', player);
+            }
+
+            if (player.of && roster.positions.of.length === 3) {
+              return removePlayerFromOtherPositions('of', player);
+            }
+          });
+
+          // Fill out lineup
+          const lineup = {
+            p: roster.positions.p.slice(0,2)
+          };
+
+          const lineupPositions = ['c', '1b', '2b', 'ss', '3b', 'of'];
+
+          // Find positions without extra options
+          // Add them to lineup
+          lineupPositions.filter((position) => {
+            if (position === 'of') {
+              return roster.positions[position].length === 3;
+            }
+
+            return roster.positions[position].length === 1;
+          }).forEach((position) => {
+            const positionPlayers = roster.positions[position];
+
+            if (position === 'of') {
+              lineup.of = positionPlayers.slice(0,3);
+              lineup.of.forEach((player) => removePlayerFromOtherPositions(position, player));
+              return null;
+            }
+
+            lineup[position] = positionPlayers[0];
+            removePlayerFromOtherPositions(position, lineup[position]);
+          });
+
+          lineupPositions.forEach((position) => {
+            if (!lineup[position]) {
+              const positionPlayers = roster.positions[position];
+
+              if (position === 'of') {
+                lineup.of = positionPlayers.slice(0,3);
+                lineup.of.forEach((player) => removePlayerFromOtherPositions(position, player));
+                return null;
+              }
+
+              lineup[position] = positionPlayers[0];
+              removePlayerFromOtherPositions(position, lineup[position]);
+            }
+          });
+
+          return {
+            points,
+            lineup,
+            players: resultPlayers
+          }
+        }
+      }
+    }
   }
 }

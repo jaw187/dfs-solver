@@ -71,6 +71,22 @@ const constraintList = {
         d: { equal: 6 }
       }
     }
+  },
+  mlb: {
+    draftkings: {
+      classic: {
+        pointz: { max: 100000 },
+        salary: { max: 50000 },
+        p: { equal: 2 },
+        c: { min: 1 },
+        '1b': { min: 1 },
+        '2b': { min: 1 },
+        '3b': { min: 1 },
+        ss: { min: 1 },
+        of: { min: 3 },
+        player: { equal: 10 }
+      }
+    }
   }
 };
 
@@ -131,6 +147,11 @@ module.exports = {
   nas: {
     draftkings: {
       classic: (players) => new Model(players, clone(constraintList.nas.draftkings.classic))
+    }
+  },
+  mlb: {
+    draftkings: {
+      classic: (players) => new Model(players, clone(constraintList.mlb.draftkings.classic))
     }
   }
 };

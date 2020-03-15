@@ -12,7 +12,7 @@ import Select from '@material-ui/core/Select';
 const getState = () => {
   const dispatch = useDispatch();
 
-  const { pool, stack, slates, selectedSlate, view, stackBuilderGame } = useSelector(state => state, shallowEqual);
+  const { pool, stack, slates, selectedSlate, view, stackBuilderGame, stackBuilderType } = useSelector(state => state, shallowEqual);
 
   const clearStack = () => dispatch({ type: "CLEAR_STACK" });
   const addStack = () => dispatch({ type: "ADD_STACK", payload: stack });
@@ -21,6 +21,7 @@ const getState = () => {
   const removePlayerFromStack = (player) => dispatch({ type: "REMOVE_PLAYER_FROM_STACK", payload: player });
   const setStackBuilderGame = (competitionId) => dispatch({ type: "SET_STACK_BUILDER_GAME", payload: competitionId });
   const clearStackBuilderGame = () => dispatch({ type: "CLEAR_STACK_BUILDER_GAME" });
+  const toggleStackBuilderType = () => dispatch({ type: "TOGGLE_STACK_BUILDER_TYPE" });
 
   return {
     pool,
@@ -34,7 +35,9 @@ const getState = () => {
     view,
     stackBuilderGame,
     setStackBuilderGame,
-    clearStackBuilderGame
+    clearStackBuilderGame,
+    stackBuilderType,
+    toggleStackBuilderType
   }
 }
 
@@ -50,7 +53,9 @@ const StackBuilder = () => {
     view,
     stackBuilderGame,
     setStackBuilderGame,
-    clearStackBuilderGame
+    clearStackBuilderGame,
+    stackBuilderType,
+    toggleStackBuilderType
   } = getState();
 
   if (view !== 'stackbuilder') {
@@ -169,63 +174,143 @@ const StackBuilder = () => {
     };
   });
 
+  const switchType = (type) => {
+    return () => {
+      toggleStackBuilderType(type);
+    };
+  };
+
+  const teams = [];
+  pool.map((player) => {
+    const { teamId, teamAbbreviation } = player;
+    if (!teams.find((team) => team.id === teamId)) {
+      teams.push({ id: teamId, abbreviation: teamAbbreviation });
+    }
+  });
+
+  const displayTeam = (team, i) => {
+    const ref = React.createRef();
+    checkboxes.push(ref);
+
+    return (
+      <div style={playerContainer}>
+      <label>
+        <input ref={ref} type="checkbox" onChange={togglePlayer({ playerId: team.id, displayName: team.abbreviation })} key={i} checked={isPlayerInStack({ playerId: team.id })} /><span style={poolPlayer}>{team.abbreviation}</span>
+      </label>
+    </div>
+    );
+  };
+
   return (
     <div style={componentContainer}>
       <div>
         <h2 style={{ marginTop: 0 }}>Stack Builder</h2>
-        <div style={cardContainer}>
-          <Card>
-            <h3 style={{ marginTop: 0 }}>Filters</h3>
-            <FormControl style={{ minWidth: 120,  }}>
-              <InputLabel id="select-label">Games</InputLabel>
-              <Select labelId="select-label" onChange={selectStackBuilderGame} value={stackBuilderGame}>
-              {
-                slate.competitions && slate.competitions.map((competition, i) => (
-                  <MenuItem value={competition.competitionId} key={i}>{competition.name}</MenuItem>
-                ))
-              }
-                <MenuItem value={null} selected={true}>ALL</MenuItem>
-              </Select>
-            </FormControl>
-          </Card>
-        </div>
-        <div style={cardContainer}>
-          <Card>
-            <div>
-              <div style={{
-                display: "flex",
-                flexDirection: "row"
-              }}>
-                <div style={{ minWidth: 240 }}>
-                  <h3 style={{ marginTop: 0 }}>Players</h3>
-                    {
-                      poolDisplayItems && poolDisplayItems.filter(filterPlayers).map(({ container }) => container)
-                    }
-                </div>
-                <div style={{ paddingLeft: 16, minWidth: 240 }}>
-                  <h3>Stack</h3>
+        {stackBuilderType === 'players' && (
+          <div>
+            <div style={cardContainer}>
+              <Card>
+                <h3 style={{ marginTop: 0 }}>Stack Types</h3>
+                <Button onClick={switchType('teams')} variant="contained" color="primary">Build Team Stacks</Button>
+                <h3>Filters</h3>
+                <FormControl style={{ minWidth: 120,  }}>
+                  <InputLabel id="select-label">Games</InputLabel>
+                  <Select labelId="select-label" onChange={selectStackBuilderGame} value={stackBuilderGame}>
                   {
-                    stack && stack.map((player, i) => (
-                      <div key={i} style={stackPlayer}>{player.displayName}</div>
+                    slate.competitions && slate.competitions.map((competition, i) => (
+                      <MenuItem value={competition.competitionId} key={i}>{competition.name}</MenuItem>
                     ))
                   }
-                  {
-                    stack && stack.length > 1 && (
-                      <div style={stackButtons}>
-                        <div style={stackButton}>
-                          <Button onClick={add} variant="contained" color="primary">Add</Button>
-                        </div>
-                        <div style={stackButton}>
-                          <Button onClick={clear} variant="contained" color="secondary">Clear</Button>
-                        </div>
-                      </div>
-                    )
-                  }
-                </div>
-              </div>
+                    <MenuItem value={null} selected={true}>ALL</MenuItem>
+                  </Select>
+                </FormControl>
+              </Card>
             </div>
-          </Card>
-        </div>
+            <div style={cardContainer}>
+              <Card>
+                <div>
+                  <div style={{
+                    display: "flex",
+                    flexDirection: "row"
+                  }}>
+                    <div style={{ minWidth: 240 }}>
+                      <h3 style={{ marginTop: 0 }}>Players</h3>
+                        {
+                          poolDisplayItems && poolDisplayItems.filter(filterPlayers).map(({ container }) => container)
+                        }
+                    </div>
+                    <div style={{ paddingLeft: 16, minWidth: 240 }}>
+                      <h3>Stack</h3>
+                      {
+                        stack && stack.map((player, i) => (
+                          <div key={i} style={stackPlayer}>{player.displayName}</div>
+                        ))
+                      }
+                      {
+                        stack && stack.length > 1 && (
+                          <div style={stackButtons}>
+                            <div style={stackButton}>
+                              <Button onClick={add} variant="contained" color="primary">Add</Button>
+                            </div>
+                            <div style={stackButton}>
+                              <Button onClick={clear} variant="contained" color="secondary">Clear</Button>
+                            </div>
+                          </div>
+                        )
+                      }
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </div>
+        )}
+        {stackBuilderType === 'teams' && (
+          <div>
+            <div style={cardContainer}>
+              <Card>
+                <h3 style={{ marginTop: 0 }}>Stack Types</h3>
+                <Button onClick={switchType('players')} variant="contained" color="primary">Build Player Stacks</Button>
+              </Card>
+            </div>
+            <div style={cardContainer}>
+              <Card>
+                <div>
+                  <div style={{
+                    display: "flex",
+                    flexDirection: "row"
+                  }}>
+                    <div style={{ minWidth: 240 }}>
+                      <h3 style={{ marginTop: 0 }}>Teams</h3>
+                        {
+                          teams && teams.map(displayTeam)
+                        }
+                    </div>
+                    <div style={{ paddingLeft: 16, minWidth: 240 }}>
+                      <h3>Stack</h3>
+                      {
+                        stack && stack.map((player, i) => (
+                          <div key={i} style={stackPlayer}>{player.displayName}</div>
+                        ))
+                      }
+                      {
+                        stack && stack.length > 1 && (
+                          <div style={stackButtons}>
+                            <div style={stackButton}>
+                              <Button onClick={add} variant="contained" color="primary">Add</Button>
+                            </div>
+                            <div style={stackButton}>
+                              <Button onClick={clear} variant="contained" color="secondary">Clear</Button>
+                            </div>
+                          </div>
+                        )
+                      }
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </div>
+        )}
       </div>
       <div>
         <Stacks />

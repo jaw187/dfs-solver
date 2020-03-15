@@ -114,6 +114,14 @@ const Lineups = () => {
           return `${d[0].id},${d[1].id},${d[2].id},${d[3].id},${d[4].id},${d[5].id}`;
         }
       }
+    },
+    mlb: {
+      draftkings: {
+        classic: (result) => {
+          const { lineup } = result;
+          return `${lineup.p[0].id},${lineup.p[1].id},${lineup.c.id},${lineup['1b'].id},${lineup['2b'].id},${lineup['3b'].id},${lineup.ss.id},${lineup.of[0].id},${lineup.of[1].id},${lineup.of[2].id}}`;
+        }
+      }
     }
   };
 
@@ -205,6 +213,11 @@ const Lineups = () => {
     nas: {
       draftkings: {
         classic: "D,D,D,D,D,D\n"
+      }
+    },
+    mlb: {
+      draftkings: {
+        classic: "P,P,C,1B,2B,3B,SS,OF,OF,OF\N"
       }
     }
   };
@@ -469,6 +482,38 @@ const Lineups = () => {
               <Button onClick={remove(i, j)} variant="contained" color="secondary" size="small" style={removeButtonStyle}>Remove</Button>
             </div>
           );
+        }
+      }
+    },
+    mlb: {
+      draftkings: {
+        classic: (i) => {
+          return (result, j) => (
+            <div key={j} style={lineupStyle}>
+              <table>
+                <thead>
+                  <tr>
+                    <th style={tableHeaderStyle}>Pos</th>
+                    <th style={tableHeaderStyle}>Player</th>
+                    <th style={tableHeaderStyle}>Salary</th>
+                    <th style={tableHeaderStyle}>Proj</th>
+                  </tr>
+                </thead>
+                {formatPlayer(result.lineup.p[0])}
+                {formatPlayer(result.lineup.p[1])}
+                {formatPlayer(result.lineup.c)}
+                {formatPlayer(result.lineup['1b'])}
+                {formatPlayer(result.lineup['2b'])}
+                {formatPlayer(result.lineup['3b'])}
+                {formatPlayer(result.lineup.ss)}
+                {formatPlayer(result.lineup.of[0])}
+                {formatPlayer(result.lineup.of[1])}
+                {formatPlayer(result.lineup.of[2])}
+              </table>
+              <div style={lineupTotalStyle}>{Math.round(result.points)}</div>
+              <Button onClick={remove(i, j)} variant="contained" color="secondary" size="small" style={removeButtonStyle}>Remove</Button>
+            </div>
+          )
         }
       }
     }

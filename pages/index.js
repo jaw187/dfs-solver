@@ -12,7 +12,7 @@ import fetch from 'isomorphic-unfetch';
 
 const slates = {};
 
-const supportedSports = ['NFL', 'GOLF', 'MMA', 'NBA', 'XFL', 'NAS'];
+const supportedSports = ['NFL', 'GOLF', 'MMA', 'NBA', 'XFL', 'NAS', 'MLB'];
 const supportedGameTypes = ['Classic'];
 
 const getPlayers = async function (slate) {

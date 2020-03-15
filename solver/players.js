@@ -10,7 +10,8 @@ const convertPlayer = (rawPlayer, positions) => {
     competition: {
       startTime,
       competitionId
-    }
+    },
+    teamId
   } = rawPlayer;
 
   const playerPositions = position.split('/');
@@ -35,6 +36,8 @@ const convertPlayer = (rawPlayer, positions) => {
   player[draftableId] = 1;
   player[`comp${competitionId}`] = 1;
   player.competition = competitionId;
+  player[`team${teamId}`] = 1;
+  player.team = teamId;
 
   return player;
 };

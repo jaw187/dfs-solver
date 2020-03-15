@@ -2,16 +2,14 @@ import { solve } from './solver';
 const queue = [];
 
 const Queue = {
-  register: (n, maxIterations, model, ownership, players, sport, site, type, stack, preventMmaFightersInSameFight) => {
-    queue.push(solve(n, maxIterations, model, ownership, players, sport, site, type, stack, preventMmaFightersInSameFight))
+  register: (n, maxIterations, model, ownership, players, sport, site, type, stack, preventMmaFightersInSameFight, preventMlbOffenseVsPitcher) => {
+    queue.push(solve(n, maxIterations, model, ownership, players, sport, site, type, stack, preventMmaFightersInSameFight, preventMlbOffenseVsPitcher))
   },
   go: () => {
     const results = [];
 
     while (queue.length) {
-      console.log('wat')
       const top = queue.shift();
-      console.log('errr')
       const response = top.go();
 
       if (response.notFeasible || top.isDone()) {

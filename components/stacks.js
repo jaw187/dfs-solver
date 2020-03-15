@@ -11,7 +11,6 @@ const getState = () => {
 
   const stacks = useSelector(state => state.stacks, shallowEqual);
   const view = useSelector(state => state.view);
-  const stackCounts = useSelector(state => state.stackCounts);
 
   const removeStack = (i) => dispatch({ type: "REMOVE_STACK", payload: i });
   const setStackN = (i, n) => {
@@ -28,13 +27,20 @@ const getState = () => {
     });
   };
 
+  const setStackRange = (i, j, range) => {
+    dispatch({
+      type: "SET_STACK_RANGE",
+      payload: { i, j, range }
+    })
+  }
+
   return {
     stacks,
     removeStack,
     setStackN,
     view,
-    stackCounts,
-    moveStack
+    moveStack,
+    setStackRange
   };
 };
 
@@ -44,8 +50,8 @@ const Stacks = () => {
     removeStack,
     setStackN,
     view,
-    stackCounts,
-    moveStack
+    moveStack,
+    setStackRange
   } = getState();
 
   if (view !== 'stackbuilder') {
@@ -54,6 +60,10 @@ const Stacks = () => {
 
   if (!stacks || stacks.length === 0) {
     return null;
+  }
+
+  if (stacks && stacks[0] && !stacks[0].count) {
+    return 'Old state observed.  Clear session';
   }
 
   const remove = (i) => {
@@ -106,9 +116,9 @@ const Stacks = () => {
 
   const handleBlur = (i) => {
     return () => {
-      if (stackCounts[i] < 0) {
+      if (stacks[i].count < 0) {
         setStackN(i, 1)
-      } else if (stackCounts[i] > 20) {
+      } else if (stacks[i].count > 20) {
         setStackN(i, 20)
       }
     };
@@ -120,16 +130,34 @@ const Stacks = () => {
     }
   };
 
+
+  const playerRangeContainer = {
+    width: 200,
+    padding: 4,
+    paddingLeft: 12
+  }
+
+  const handleStackRangeSliderChange = (i, j) => {
+    return (event, newValue) => {
+      setStackRange(i, j, newValue);
+    };
+  };
+
+  const stackPlayerNameContainer = {
+    padding: 4
+  };
+
+  const stackContainer = {
+    marginTop: 18,
+    marginBottom: 18
+  };
+
   return (
     <div>
       <h2 style={{ marginTop: 0 }}>Stacks</h2>
       <div style={cardContainer}>
         {
           stacks.map((stack, j) => {
-            if (!stackCounts[j]) {
-              stackCounts[j] = 10;
-            }
-
             return (
               <Card>
                 <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }} key={j}>
@@ -138,20 +166,44 @@ const Stacks = () => {
                     <div onClick={move(j, 'right')}>Move Right</div>
                   </div>
                   <div style={{ display: 'flex' }}>
-                    <ul>
+                    <table style={stackContainer}>
                       {
-                        stack.map((player, i) => (
-                          <li key={i}>{player.displayName}</li>
+                        stack.type === 'teams' && (
+                          <thead>
+                            <th></th>
+                            <th>Players per lineup</th>
+                          </thead>
+                        )
+                      }
+                      {
+                        stack.players.map((player, i) => (
+                          <tr key={i}>
+                            <td style={stackPlayerNameContainer}>{player.displayName}</td>
+                            {stack.type === 'teams' && (
+                              <td style={playerRangeContainer}>
+                                <Slider
+                                  defaultValue={[3,5]}
+                                  value={stack.ranges[i]}
+                                  step={1}
+                                  min={2}
+                                  max={5}
+                                  onChange={handleStackRangeSliderChange(i, j)}
+                                  aria-labelledby="range-slider"
+                                  valueLabelDisplay="auto"
+                                />
+                              </td>
+                            )}
+                          </tr>
                         ))
                       }
-                    </ul>
+                    </table>
                   </div>
                   <div style={{display: "flex", flexDirection: "row" }}>
                     <div style={{ minWidth: 240, marginRight: 16 }}>
                       No. of lineups
                       <Slider
-                        defaultValue={stackCounts[j]}
-                        value={stackCounts[j]}
+                        defaultValue={stack.count}
+                        value={stack.count}
                         step={1}
                         marks={marks}
                         min={1}
@@ -162,7 +214,7 @@ const Stacks = () => {
                     </div>
                     <div style={{ marginTop: 4 }}>
                       <Input
-                        value={stackCounts[j]}
+                        value={stack.count}
                         margin="dense"
                         onChange={handleInputChange(j)}
                         onBlur={handleBlur(j)}

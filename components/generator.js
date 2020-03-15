@@ -14,7 +14,6 @@ const getState = () => {
   const dispatch = useDispatch();
 
   const stacks = useSelector(state => state.stacks, shallowEqual);
-  const stackCounts = useSelector(state => state.stackCounts, shallowEqual);
   const slates = useSelector(state => state.slates, shallowEqual);
   const selectedSlate = useSelector(state => state.selectedSlate);
   const projection = useSelector(state => state.projection);
@@ -23,6 +22,7 @@ const getState = () => {
   const view = useSelector(state => state.view);
   const generating = useSelector(state => state.generating);
   const preventMmaFightersInSameFight = useSelector(state => state.preventMmaFightersInSameFight);
+  const preventMlbOffenseVsPitcher = useSelector(state => state.preventMlbOffenseVsPitcher);
 
   const addResults = (results) => {
     dispatch({
@@ -43,9 +43,10 @@ const getState = () => {
     });
   };
 
+  const toggleMlbOffenseVsPitcher = () => dispatch({ type: 'MLB_OFFENSE_VS_PITCHER' });
+
   return {
     stacks,
-    stackCounts,
     slates,
     selectedSlate,
     projection,
@@ -56,14 +57,15 @@ const getState = () => {
     toggleGenerate,
     generating,
     preventMmaFightersInSameFight,
-    toggleMmaFightersInSameFight
+    toggleMmaFightersInSameFight,
+    preventMlbOffenseVsPitcher,
+    toggleMlbOffenseVsPitcher
   };
 };
 
 const Generator = () => {
   const {
     stacks,
-    stackCounts,
     slates,
     selectedSlate,
     projection,
@@ -74,7 +76,9 @@ const Generator = () => {
     toggleGenerate,
     generating,
     preventMmaFightersInSameFight,
-    toggleMmaFightersInSameFight
+    toggleMmaFightersInSameFight,
+    preventMlbOffenseVsPitcher,
+    toggleMlbOffenseVsPitcher
   } = getState();
 
   if (view !== 'generator' && view !== 'results') {
@@ -104,8 +108,8 @@ const Generator = () => {
   const type = slate.GameType.Name.toLowerCase();
 
   let n = 0;
-  stackCounts.forEach((count) => {
-    n = n + count;
+  stacks.forEach((stack) => {
+    n = n + stack.count;
   });
 
   const generate = () => {
@@ -119,23 +123,32 @@ const Generator = () => {
       const stackPlayers = clone(playersForModel);
       const model = Models[sport][site][type](stackPlayers);
       // Force players in stack into lineup
-      stack.forEach((player) => model.constraints[player.draftableId] = { equal: 1 });
+      stack.players.forEach((player, j) => {
+        if (stack.type === 'players') {
+          model.constraints[player.draftableId] = { equal: 1 };
+          return null;
+        }
 
-      const ownershipOptions = { players: stackPlayers, n: stackCounts[i], stack }
+        model.constraints[`team${player.playerId}`] = { min: stack.ranges[j][0], max: stack.ranges[j][1]}
+      });
+
+      const ownershipOptions = { players: stackPlayers, n: stack.count, stack: stack.players }
       worker.postMessage({ action: 'ownership', options: ownershipOptions});
 
       const enqueueOptions = {
         action: 'enqueue',
-        n: stackCounts[i],
+        n: stack.count,
         maxIterations: 500,
         model,
         players: stackPlayers,
         sport,
         site,
         type,
-        stack,
-        preventMmaFightersInSameFight
+        stack: stack.players,
+        preventMmaFightersInSameFight,
+        preventMlbOffenseVsPitcher
       };
+      console.log('enqueue', enqueueOptions)
       worker.postMessage(enqueueOptions);
     });
 
@@ -204,6 +217,23 @@ const Generator = () => {
                 />
               }
               label="Prevent fighters in the same fight from being in the same lineup"
+            />
+          </div>
+        )
+      }
+      {
+        sport === 'mlb' && (
+          <div>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={preventMlbOffenseVsPitcher}
+                  onChange={toggleMlbOffenseVsPitcher}
+                  value="checkedB"
+                  color="primary"
+                />
+              }
+              label="Prevent offense from being matched up vs pitcher"
             />
           </div>
         )

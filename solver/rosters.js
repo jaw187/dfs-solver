@@ -190,5 +190,83 @@ module.exports = {
         }
       }
     }
+  },
+  mlb: {
+    draftkings: {
+      classic: {
+        SP: (points, salary, ownership, startTime) => {
+          const positions = { p: 1 };
+          const player = createPlayer(points, salary, ownership, startTime);
+
+          return {
+            ...player,
+            ...positions
+          }
+        },
+        RP: (points, salary, ownership, startTime) => {
+          const positions = { p: 1 };
+          const player = createPlayer(points, salary, ownership, startTime);
+
+          return {
+            ...player,
+            ...positions
+          }
+        },
+        C: (points, salary, ownership, startTime) => {
+          const positions = { c: 1 };
+          const player = createPlayer(points, salary, ownership, startTime);
+
+          return {
+            ...player,
+            ...positions
+          }
+        },
+        '1B': (points, salary, ownership, startTime) => {
+          const positions = { '1b': 1 };
+          const player = createPlayer(points, salary, ownership, startTime);
+
+          return {
+            ...player,
+            ...positions
+          }
+        },
+        '2B': (points, salary, ownership, startTime) => {
+          const positions = { '2b': 1 };
+          const player = createPlayer(points, salary, ownership, startTime);
+
+          return {
+            ...player,
+            ...positions
+          }
+        },
+        '3B': (points, salary, ownership, startTime) => {
+          const positions = { '3b': 1 };
+          const player = createPlayer(points, salary, ownership, startTime);
+
+          return {
+            ...player,
+            ...positions
+          }
+        },
+        SS: (points, salary, ownership, startTime) => {
+          const positions = { ss: 1 };
+          const player = createPlayer(points, salary, ownership, startTime);
+
+          return {
+            ...player,
+            ...positions
+          }
+        },
+        OF: (points, salary, ownership, startTime) => {
+          const positions = { of: 1 };
+          const player = createPlayer(points, salary, ownership, startTime);
+
+          return {
+            ...player,
+            ...positions
+          }
+        }
+      }
+    }
   }
 };
